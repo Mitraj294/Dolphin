@@ -10,70 +10,18 @@
       </div>
       <div class="org-table-container">
         <table class="org-table">
-          <thead>
-            <tr>
-              <th class="rounded-th-left">
-                <span class="org-th-content">
-                  Organizations Name
-                  <button
-                    class="org-th-sort-btn"
-                    type="button"
-                    @click="sortBy('name')"
-                  >
-                    <img
-                      src="@/assets/images/up-down.svg"
-                      class="org-th-sort"
-                      alt="Sort"
-                    />
-                  </button>
-                </span>
-              </th>
-              <th>
-                <span class="org-th-content">Size</span>
-              </th>
-              <th>
-                <span class="org-th-content">Admin Name</span>
-              </th>
-              <th>
-                <span class="org-th-content">
-                  Contract Start
-                  <button
-                    class="org-th-sort-btn"
-                    type="button"
-                    @click="sortBy('contractStart')"
-                  >
-                    <img
-                      src="@/assets/images/up-down.svg"
-                      class="org-th-sort"
-                      alt="Sort"
-                    />
-                  </button>
-                </span>
-              </th>
-              <th>
-                <span class="org-th-content">
-                  Contract End
-                  <button
-                    class="org-th-sort-btn"
-                    type="button"
-                    @click="sortBy('contractEnd')"
-                  >
-                    <img
-                      src="@/assets/images/up-down.svg"
-                      class="org-th-sort"
-                      alt="Sort"
-                    />
-                  </button>
-                </span>
-              </th>
-              <th>
-                <span class="org-th-content">Last Login</span>
-              </th>
-              <th class="rounded-th-right">
-                <span class="org-th-content">Action</span>
-              </th>
-            </tr>
-          </thead>
+          <TableHeader
+            :columns="[
+              { label: 'Organizations Name', key: 'name', sortable: true },
+              { label: 'Size', key: 'size' },
+              { label: 'Admin Name', key: 'admin' },
+              { label: 'Contract Start', key: 'contractStart', sortable: true },
+              { label: 'Contract End', key: 'contractEnd', sortable: true },
+              { label: 'Last Login', key: 'lastLogin' },
+              { label: 'Action', key: 'action' },
+            ]"
+            @sort="sortBy"
+          />
           <tbody>
             <tr
               v-for="org in paginatedOrganizations"
@@ -120,11 +68,10 @@
 
 <script>
 import Pagination from '@/components/layout/Pagination.vue';
+import TableHeader from '@/components/Common/Common_UI/TableHeader.vue';
 export default {
   name: 'OrganizationTable',
-  components: {
-    Pagination,
-  },
+  components: { Pagination, TableHeader },
   data() {
     return {
       search: '',
@@ -734,7 +681,7 @@ export default {
 }
 
 .org-table-search-bar {
-  padding: 24px 46px 0 24px;
+  padding: 18px 46px 18px 24px;
   background: #fff;
   border-top-left-radius: 24px; /* was 18px */
   border-top-right-radius: 24px; /* was 18px */
@@ -751,13 +698,16 @@ export default {
   border: none;
   background: #f8f8f8;
   font-size: 14px;
-  margin: 0 0 16px 0;
   outline: none;
-  background-image: url('data:image/svg+xml;utf8,<svg fill="gray" height="14" viewBox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99c.41.41 1.09.41 1.5 0s.41-1.09 0-1.5l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>');
+  background-image: url('@/assets/images/Search.svg');
   background-repeat: no-repeat;
   background-position: 8px center;
+  background-size: 16px 16px;
   margin-left: 0;
   margin-right: auto;
+}
+.org-search::placeholder {
+  margin-left: 4px;
 }
 
 .org-table-container {
@@ -843,7 +793,7 @@ export default {
 
 /* Increase left padding for only the first column's data cells to match the header and align with your design */
 .org-table td.org-td-content:first-child {
-  padding-left: 32px !important;
+  padding-left: 20px !important;
 }
 
 /* --- Pagination and footer spacing --- */
@@ -872,7 +822,7 @@ export default {
     border-radius: 14px; /* was 10px */
   }
   .org-table-search-bar {
-    padding: 8px 8px 0 8px;
+    padding: 8px 8px 8px 8px;
     border-top-left-radius: 14px; /* was 10px */
     border-top-right-radius: 14px; /* was 10px */
   }
@@ -881,7 +831,6 @@ export default {
     padding: 8px 16px 8px 32px;
     max-width: 320px;
     border-radius: 12px;
-    margin: 0 0 16px 0;
   }
   .org-table-container {
     padding: 0 8px 8px 8px;
@@ -904,7 +853,7 @@ export default {
     border-radius: 10px; /* was 6px */
   }
   .org-table-search-bar {
-    padding: 8px 4px 0 4px;
+    padding: 8px 4px 8px 4px;
     border-top-left-radius: 10px; /* was 6px */
     border-top-right-radius: 10px; /* was 6px */
   }

@@ -60,7 +60,7 @@
             <div class="schedule-demo-actions">
               <button
                 type="submit"
-                class="schedule-demo-btn"
+                class="btn btn-primary"
               >
                 Schedule Classes/Training
               </button>
@@ -185,21 +185,7 @@ export default {
   justify-content: flex-end;
   margin-top: 18px;
 }
-.schedule-demo-btn {
-  background: #0164a5;
-  color: #fff;
-  border: none;
-  border-radius: 24px;
-  padding: 12px 32px;
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.schedule-demo-btn:hover {
-  background: #005b8e;
-}
-/* Responsive styles to match other pages */
+
 @media (max-width: 1400px) {
   .schedule-demo-outer {
     margin: 12px;
@@ -226,25 +212,6 @@ export default {
   .schedule-demo-row {
     flex-direction: column !important;
     gap: 12px;
-  }
-}
-
-.page {
-  padding: 0 32px 32px 32px;
-  display: flex;
-  background-color: #fff;
-  justify-content: center;
-  box-sizing: border-box;
-}
-
-@media (max-width: 1400px) {
-  .page {
-    padding: 16px;
-  }
-}
-@media (max-width: 900px) {
-  .page {
-    padding: 4px;
   }
 }
 </style>

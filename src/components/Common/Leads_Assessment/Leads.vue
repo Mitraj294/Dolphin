@@ -1,200 +1,159 @@
 <template>
   <MainLayout>
-    <div class="leads-table-outer">
-      <div class="leads-table-card">
-        <div class="leads-table-header-bar">
-          <button
-            class="leads-add-btn"
-            @click="$router.push('/leads/lead-capture')"
-          >
-            <img
-              src="@/assets/images/Add.svg"
-              alt="Add"
-              class="leads-add-btn-icon"
-            />
-            Add New
-          </button>
-        </div>
-        <div class="leads-table-container">
-          <table class="leads-table">
-            <thead>
-              <tr>
-                <th class="rounded-th-left">Contact</th>
-                <th>Email</th>
-                <th>Phone Number</th>
-                <th>Organization</th>
-                <th>Size</th>
-                <th>Source</th>
-                <th>Status</th>
-                <th>Notes</th>
-                <th class="rounded-th-right"></th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="(lead, idx) in paginatedLeads"
-                :key="lead.email"
-              >
-                <td>
-                  <span
-                    class="lead-contact-link"
-                    @click="goToLeadDetail(lead)"
-                    >{{ lead.contact }}</span
-                  >
-                </td>
-                <td>{{ lead.email }}</td>
-                <td>{{ lead.phone }}</td>
-                <td>{{ lead.organization }}</td>
-                <td>{{ lead.size }}</td>
-                <td>{{ lead.source }}</td>
-                <td>{{ lead.status }}</td>
-                <td>
-                  <button
-                    class="leads-notes-btn"
-                    @click="openNotesModal(lead, idx)"
-                  >
-                    <span v-if="lead.notesAction === 'View'">
-                      <svg
-                        width="18"
-                        height="18"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        style="vertical-align: middle; margin-right: 4px"
-                      >
-                        <rect
-                          x="3"
-                          y="3"
-                          width="18"
-                          height="18"
-                          rx="2"
-                          stroke="#888"
-                          stroke-width="2"
-                        />
-                        <path
-                          d="M7 7h10M7 11h10M7 15h6"
-                          stroke="#888"
-                          stroke-width="2"
-                        />
-                      </svg>
-                      View
-                    </span>
-                    <span v-else>
-                      <svg
-                        width="18"
-                        height="18"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        style="vertical-align: middle; margin-right: 4px"
-                      >
-                        <circle
-                          cx="12"
-                          cy="12"
-                          r="9"
-                          stroke="#888"
-                          stroke-width="2"
-                        />
-                        <path
-                          d="M12 8v8M8 12h8"
-                          stroke="#888"
-                          stroke-width="2"
-                        />
-                      </svg>
-                      Add
-                    </span>
-                  </button>
-                </td>
-                <td
-                  style="position: relative"
-                  @click.stop
+    <div class="page">
+      <div class="leads-table-outer">
+        <div class="leads-table-card">
+          <div class="leads-table-header-bar">
+            <button
+              class="btn btn-primary"
+              @click="$router.push('/leads/lead-capture')"
+            >
+              <img
+                src="@/assets/images/Add.svg"
+                alt="Add"
+                class="leads-add-btn-icon"
+              />
+              Add New
+            </button>
+          </div>
+          <div class="leads-table-container">
+            <table class="leads-table">
+              <TableHeader
+                :columns="[
+                  { label: 'Contact', key: 'contact', sortable: true },
+                  { label: 'Email', key: 'email' },
+                  { label: 'Phone Number', key: 'phone' },
+                  {
+                    label: 'Organization',
+                    key: 'organization',
+                    sortable: true,
+                  },
+                  { label: 'Size', key: 'size' },
+                  { label: 'Source', key: 'source' },
+                  { label: 'Status', key: 'status' },
+                  { label: 'Notes', key: 'notes' },
+                  { label: '', key: 'actions' },
+                ]"
+                @sort="sortBy"
+              />
+              <tbody>
+                <tr
+                  v-for="(lead, idx) in paginatedLeads"
+                  :key="lead.email"
                 >
-                  <button
-                    class="leads-menu-btn"
-                    @click.stop="toggleMenu(idx)"
-                  >
-                    <svg
-                      width="20"
-                      height="20"
-                      fill="none"
-                      viewBox="0 0 24 24"
+                  <td>
+                    <span
+                      class="lead-contact-link"
+                      @click="goToLeadDetail(lead)"
+                      >{{ lead.contact }}</span
                     >
-                      <circle
-                        cx="5"
-                        cy="12"
-                        r="2"
-                        fill="#888"
-                      />
-                      <circle
-                        cx="12"
-                        cy="12"
-                        r="2"
-                        fill="#888"
-                      />
-                      <circle
-                        cx="19"
-                        cy="12"
-                        r="2"
-                        fill="#888"
-                      />
-                    </svg>
-                  </button>
-                  <div
-                    v-if="menuOpen === idx"
-                    class="leads-menu custom-leads-menu"
+                  </td>
+                  <td>{{ lead.email }}</td>
+                  <td>{{ lead.phone }}</td>
+                  <td>{{ lead.organization }}</td>
+                  <td>{{ lead.size }}</td>
+                  <td>{{ lead.source }}</td>
+                  <td>{{ lead.status }}</td>
+                  <td>
+                    <button
+                      class="btn-view"
+                      @click="openNotesModal(lead, idx)"
+                    >
+                      <template v-if="lead.notesAction === 'View'">
+                        <img
+                          src="@/assets/images/Detail.svg"
+                          alt="View"
+                          class="btn-view-icon"
+                        />
+                        View
+                      </template>
+                      <template v-else>
+                        <img
+                          src="@/assets/images/AddBlack.svg"
+                          alt="Add"
+                          class="btn-view-icon"
+                        />
+                        Add
+                      </template>
+                    </button>
+                  </td>
+                  <td
+                    style="position: relative"
                     @click.stop
                   >
-                    <div
-                      class="leads-menu-item"
-                      v-for="option in customMenuOptions"
-                      :key="option"
-                      @click="selectCustomAction(idx, option)"
+                    <button
+                      class="leads-menu-btn"
+                      @click.stop="toggleMenu(idx)"
                     >
-                      {{ option }}
+                      <img
+                        src="@/assets/images/Actions.svg"
+                        alt="Actions"
+                        width="20"
+                        height="20"
+                        class="leads-menu-icon"
+                      />
+                    </button>
+                    <div
+                      v-if="menuOpen === idx"
+                      class="leads-menu custom-leads-menu"
+                      :style="getMenuPosition($event, idx)"
+                      ref="menuDropdown"
+                      @click.stop
+                    >
+                      <div
+                        class="leads-menu-item"
+                        v-for="option in customMenuOptions"
+                        :key="option"
+                        @click="selectCustomAction(idx, option)"
+                      >
+                        {{ option }}
+                      </div>
                     </div>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
-      <Pagination
-        :pageSize="pageSize"
-        :pageSizes="[10, 25, 100]"
-        :showPageDropdown="showPageDropdown"
-        :currentPage="currentPage"
-        :totalPages="totalPages"
-        :paginationPages="paginationPages"
-        @goToPage="goToPage"
-        @selectPageSize="selectPageSize"
-        @togglePageDropdown="showPageDropdown = !showPageDropdown"
-      />
-      <!-- Notes Modal -->
-      <div
-        v-if="showNotesModal"
-        class="notes-modal-overlay"
-        @click.self="closeNotesModal"
-      >
-        <div class="notes-modal">
-          <h3>{{ notesModalMode === 'add' ? 'Add Notes' : 'Notes' }}</h3>
-          <textarea
-            v-model="notesInput"
-            rows="5"
-            placeholder="Enter notes here..."
-            class="notes-textarea"
-          ></textarea>
-          <div class="notes-modal-actions">
-            <button
-              class="notes-modal-btn"
-              @click="notesModalMode === 'add' ? submitNotes() : saveNotes()"
-            >
-              {{ notesModalMode === 'add' ? 'Submit' : 'Save' }}
-            </button>
-            <button
-              class="notes-modal-btn notes-modal-cancel"
-              @click="closeNotesModal"
-            >
-              Cancel
-            </button>
+        <Pagination
+          :pageSize="pageSize"
+          :pageSizes="[10, 25, 100]"
+          :showPageDropdown="showPageDropdown"
+          :currentPage="currentPage"
+          :totalPages="totalPages"
+          :paginationPages="paginationPages"
+          @goToPage="goToPage"
+          @selectPageSize="selectPageSize"
+          @togglePageDropdown="showPageDropdown = !showPageDropdown"
+        />
+        <!-- Notes Modal -->
+        <div
+          v-if="showNotesModal"
+          class="notes-modal-overlay"
+          @click.self="closeNotesModal"
+        >
+          <div class="notes-modal">
+            <h3>{{ notesModalMode === 'add' ? 'Add Notes' : 'Notes' }}</h3>
+            <textarea
+              v-model="notesInput"
+              rows="5"
+              placeholder="Enter notes here..."
+              class="notes-textarea"
+            ></textarea>
+            <div class="notes-modal-actions">
+              <button
+                class="notes-modal-btn"
+                @click="notesModalMode === 'add' ? submitNotes() : saveNotes()"
+              >
+                {{ notesModalMode === 'add' ? 'Submit' : 'Save' }}
+              </button>
+              <button
+                class="notes-modal-btn notes-modal-cancel"
+                @click="closeNotesModal"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -205,9 +164,10 @@
 <script>
 import MainLayout from '@/components/layout/MainLayout.vue';
 import Pagination from '@/components/layout/Pagination.vue';
+import TableHeader from '@/components/Common/Common_UI/TableHeader.vue';
 export default {
   name: 'Leads',
-  components: { MainLayout, Pagination },
+  components: { MainLayout, Pagination, TableHeader },
   data() {
     return {
       menuOpen: null,
@@ -333,6 +293,8 @@ export default {
       notesInput: '',
       currentLead: null,
       currentLeadIdx: null,
+      sortKey: '',
+      sortAsc: true,
     };
   },
   computed: {
@@ -340,8 +302,18 @@ export default {
       return Math.ceil(this.leads.length / this.pageSize) || 1;
     },
     paginatedLeads() {
+      let leads = [...this.leads];
+      if (this.sortKey) {
+        leads.sort((a, b) => {
+          const aVal = a[this.sortKey] || '';
+          const bVal = b[this.sortKey] || '';
+          if (aVal < bVal) return this.sortAsc ? -1 : 1;
+          if (aVal > bVal) return this.sortAsc ? 1 : -1;
+          return 0;
+        });
+      }
       const start = (this.currentPage - 1) * this.pageSize;
-      return this.leads.slice(start, start + this.pageSize);
+      return leads.slice(start, start + this.pageSize);
     },
     paginationPages() {
       // Show 1, 2, 3, ..., 8, 9, 10 (with ellipsis in the middle)
@@ -365,31 +337,6 @@ export default {
     },
   },
   methods: {
-    toggleMenu(idx) {
-      this.menuOpen = this.menuOpen === idx ? null : idx;
-      this.$nextTick(() => {
-        if (this.menuOpen !== null) {
-          const btns = document.querySelectorAll('.leads-menu-btn');
-          const btn = btns[idx];
-          const menus = document.querySelectorAll(
-            '.leads-menu.custom-leads-menu'
-          );
-          const menu = Array.from(menus).find((m) => m.offsetParent !== null);
-          if (btn && menu) {
-            const rect = btn.getBoundingClientRect();
-            const scrollY = window.scrollY || window.pageYOffset;
-            const left = rect.left;
-            const top = rect.bottom + scrollY + 4;
-            menu.style.position = 'fixed';
-            menu.style.left = `${left}px`;
-            menu.style.top = `${top}px`;
-            menu.style.right = '';
-            menu.style.minWidth = '240px';
-            menu.style.maxWidth = '320px';
-          }
-        }
-      });
-    },
     selectCustomAction(idx, option) {
       this.menuOpen = null;
       const lead = this.leads[idx];
@@ -479,6 +426,40 @@ export default {
       this.currentLead = null;
       this.currentLeadIdx = null;
     },
+    sortBy(key) {
+      if (this.sortKey === key) {
+        this.sortAsc = !this.sortAsc;
+      } else {
+        this.sortKey = key;
+        this.sortAsc = true;
+      }
+    },
+    toggleMenu(idx) {
+      this.menuOpen = this.menuOpen === idx ? null : idx;
+    },
+    getMenuPosition(event, idx) {
+      // Find the button and menu DOM nodes
+      const btn = event?.target?.closest('.leads-menu-btn');
+      if (!btn) return {};
+      const rect = btn.getBoundingClientRect();
+      const menuWidth = 200; // Approximate width of menu
+      const padding = 8;
+      const viewportWidth = window.innerWidth;
+      let left = rect.left;
+      let right = 'auto';
+      // If menu would overflow right, align right
+      if (rect.left + menuWidth + padding > viewportWidth) {
+        left = 'auto';
+        right = 0;
+      }
+      return {
+        left: left !== 'auto' ? `${left}px` : 'auto',
+        right: right !== 'auto' ? `${right}px` : 'auto',
+        top: `${rect.bottom + window.scrollY}px`,
+        minWidth: menuWidth + 'px',
+        zIndex: 2000,
+      };
+    },
   },
   mounted() {
     document.addEventListener('click', this.handleGlobalClick);
@@ -515,7 +496,7 @@ export default {
 }
 
 .leads-table-header-bar {
-  padding: 24px 46px 0 24px;
+  padding: 24px 24px 24px 24px;
   background: #fff;
   border-top-left-radius: 24px;
   border-top-right-radius: 24px;
@@ -590,7 +571,7 @@ export default {
 }
 
 .leads-table td:first-child {
-  padding-left: 32px !important;
+  padding-left: 20px !important;
 }
 
 /* --- Responsive: shrink margin and font on small screens --- */
@@ -604,7 +585,7 @@ export default {
     max-width: 100%;
   }
   .leads-table-header-bar {
-    padding: 8px 8px 0 8px;
+    padding: 12px 8px 12px 8px;
     border-top-left-radius: 14px;
     border-top-right-radius: 14px;
   }
@@ -632,7 +613,7 @@ export default {
     border-bottom-right-radius: 14px;
   }
   .leads-table td:first-child {
-    padding-left: 16px !important;
+    padding-left: 20px !important;
   }
 }
 
@@ -645,7 +626,7 @@ export default {
     border-radius: 10px;
   }
   .leads-table-header-bar {
-    padding: 8px 4px 0 4px;
+    padding: 12px 8px 12px 8px;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
   }
@@ -667,13 +648,14 @@ export default {
   .rounded-th-left {
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
+    padding-left: 20px !important;
   }
   .rounded-th-right {
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
   }
   .leads-table td:first-child {
-    padding-left: 8px !important;
+    padding-left: 20px !important;
   }
 }
 
@@ -702,21 +684,38 @@ export default {
   padding: 2px;
   border-radius: 50%;
   transition: background 0.2s;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .leads-menu-btn:hover {
   background: #f0f0f0;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.08);
+}
+.leads-menu-icon {
+  width: 20px;
+  height: 20px;
+  display: block;
 }
 .leads-menu.custom-leads-menu {
-  position: fixed;
+  position: absolute;
   background: #fff;
   border: 1px solid #e0e0e0;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(33, 150, 243, 0.08);
   min-width: 180px;
-  z-index: 2000;
+  z-index: 4000;
   display: flex;
   flex-direction: column;
   padding: 4px 0;
+  right: 0;
+  left: auto;
+  top: 44px;
+  max-width: 90vw;
+  overflow-x: visible;
 }
 .leads-menu-item {
   padding: 8px 12px;
@@ -728,32 +727,7 @@ export default {
 .leads-menu-item:hover {
   background: #f0f8ff;
 }
-.leads-add-btn {
-  border-radius: 29.01px;
-  background: #0164a5;
-  color: #fff;
-  font-family: 'Helvetica Neue LT Std', Helvetica, Arial, sans-serif;
-  font-weight: 500;
-  font-size: 15px;
-  padding: 8px 24px 8px 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-right: 0;
-  margin-top: 0;
-  box-shadow: none;
-  border: none;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-  white-space: nowrap;
-  min-width: 0;
-  max-width: none;
-  overflow: visible;
-}
-.leads-add-btn:hover {
-  background: #005fa3;
-  color: #fff;
-}
+
 .leads-add-btn-icon {
   width: 18px;
   height: 18px;
@@ -825,5 +799,10 @@ export default {
 .lead-contact-link {
   cursor: pointer;
   font-weight: 500;
+}
+
+.btn-view {
+  min-width: 80px;
+  justify-content: center;
 }
 </style>

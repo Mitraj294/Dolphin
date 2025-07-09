@@ -3,7 +3,7 @@
     <div class="page">
       <div class="notifications-table-outer">
         <div class="notifications-table-card">
-          <div class="notifications-table-header">
+          <div class="notifications-table-header-bar">
             <button
               class="btn btn-primary"
               @click="showSendModal = true"
@@ -16,16 +16,16 @@
               Send Notification
             </button>
           </div>
-          <div class="notifications-table-header-spacer"></div>
           <div class="notifications-table-container">
             <table class="notifications-table">
-              <thead>
-                <tr>
-                  <th class="rounded-th-left">Notification Title</th>
-                  <th>Date &amp; Time</th>
-                  <th class="rounded-th-right">Action</th>
-                </tr>
-              </thead>
+              <TableHeader
+                :columns="[
+                  { label: 'Notification Title', key: 'title' },
+                  { label: 'Date & Time', key: 'date' },
+                  { label: 'Action', key: 'action' },
+                ]"
+                @sort="sortBy"
+              />
               <tbody>
                 <tr
                   v-for="(item, idx) in paginatedNotifications"
@@ -34,11 +34,11 @@
                   <td>{{ item.title }}</td>
                   <td>{{ item.date }}</td>
                   <td>
-                    <button class="view-detail-btn">
+                    <button class="btn-view">
                       <img
                         src="@/assets/images/Detail.svg"
-                        alt="Detail"
-                        class="view-detail-icon"
+                        alt="View"
+                        class="btn-view-icon"
                       />
                       View Detail
                     </button>
@@ -124,9 +124,7 @@
                 </div>
               </div>
             </div>
-            <button class="btn btn-primary modal-send-btn">
-              Send Notification
-            </button>
+            <button class="btn btn-primary">Send Notification</button>
           </div>
         </div>
       </div>
@@ -137,16 +135,18 @@
 <script>
 import MainLayout from '../../layout/MainLayout.vue';
 import Pagination from '../../layout/Pagination.vue';
-
+import TableHeader from '@/components/Common/Common_UI/TableHeader.vue';
 export default {
   name: 'Notifications',
-  components: { MainLayout, Pagination },
+  components: { MainLayout, Pagination, TableHeader },
   data() {
     return {
       showPageDropdown: false,
       showSendModal: false,
       pageSize: 10,
       currentPage: 1,
+      sortKey: '',
+      sortAsc: true,
       notifications: [
         { title: 'Lorem Ipsum is simply', date: 'Jan 22, 2025 at 02:00 PM' },
         {
@@ -175,8 +175,18 @@ export default {
       return Math.ceil(this.notifications.length / this.pageSize) || 1;
     },
     paginatedNotifications() {
+      let notifications = [...this.notifications];
+      if (this.sortKey) {
+        notifications.sort((a, b) => {
+          const aVal = a[this.sortKey] || '';
+          const bVal = b[this.sortKey] || '';
+          if (aVal < bVal) return this.sortAsc ? -1 : 1;
+          if (aVal > bVal) return this.sortAsc ? 1 : -1;
+          return 0;
+        });
+      }
       const start = (this.currentPage - 1) * this.pageSize;
-      return this.notifications.slice(start, start + this.pageSize);
+      return notifications.slice(start, start + this.pageSize);
     },
     paginationPages() {
       const total = this.totalPages;
@@ -208,6 +218,14 @@ export default {
       this.currentPage = 1;
       this.showPageDropdown = false;
     },
+    sortBy(key) {
+      if (this.sortKey === key) {
+        this.sortAsc = !this.sortAsc;
+      } else {
+        this.sortKey = key;
+        this.sortAsc = true;
+      }
+    },
   },
 };
 </script>
@@ -222,7 +240,7 @@ export default {
   flex-direction: column;
   align-items: center;
   box-sizing: border-box;
-  padding: 0 16px; /* Add horizontal padding to match OrganizationTable layout */
+  padding: 0 16px;
 }
 .notifications-table-card {
   width: 100%;
@@ -234,23 +252,29 @@ export default {
   margin: 0 auto;
   box-sizing: border-box;
 }
-.notifications-table-header {
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  padding: 24px 46px 0 24px;
+.notifications-table-header-bar {
+  padding: 24px 24px 24px 24px;
   background: #fff;
   border-top-left-radius: 24px;
   border-top-right-radius: 24px;
-  min-height: 64px;
-  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
 }
-.notifications-table-header-spacer {
-  height: 18px;
-  width: 100%;
-  background: transparent;
-  display: block;
+@media (max-width: 1400px) {
+  .notifications-table-header-bar {
+    padding: 12px 8px 12px 8px;
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+  }
+}
+@media (max-width: 900px) {
+  .notifications-table-header-bar {
+    padding: 12px 8px 12px 8px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  }
 }
 .notifications-table-container {
   width: 100%;
@@ -304,10 +328,10 @@ export default {
   border-bottom-left-radius: 24px;
   overflow: hidden;
   background: #f8f8f8;
-  padding-left: 32px !important;
+  padding-left: 20px !important;
 }
 .notifications-table td:first-child {
-  padding-left: 32px !important;
+  padding-left: 20px !important;
 }
 .notifications-table th.rounded-th-right {
   border-top-right-radius: 24px;
@@ -319,266 +343,11 @@ export default {
   color: #222;
   background: #fff;
 }
-.view-detail-btn {
-  background: #fff;
-  border: 1.5px solid #e0e0e0;
-  border-radius: 24px;
-  padding: 4px 12px;
-  font-size: 14px;
-  color: #222;
-  cursor: pointer;
-  transition: border 0.2s;
-  font-weight: 500;
-  gap: 4px;
-  display: flex;
-  align-items: center;
-}
-.view-detail-btn:hover {
-  border: 1.5px solid #0074c2;
-}
-.view-detail-icon {
-  width: 16px;
-  height: 16px;
-  display: inline-block;
-  vertical-align: middle;
-  margin-right: 4px;
-}
 .no-data {
   text-align: center;
   color: #888;
   font-size: 16px;
   padding: 32px 0;
-}
-.notifications-add-btn {
-  border-radius: 29.01px;
-  background: #0164a5;
-  color: #fff;
-  font-family: 'Helvetica Neue LT Std', Helvetica, Arial, sans-serif;
-  font-weight: 500;
-  font-size: 15px;
-  padding: 8px 24px 8px 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-right: 0;
-  margin-top: 0;
-  box-shadow: none;
-  border: none;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-  white-space: nowrap;
-  min-width: 0;
-  max-width: none;
-  overflow: visible;
-}
-.notifications-add-btn:hover {
-  background: #005fa3;
-  color: #fff;
-}
-.notifications-add-btn-icon {
-  width: 18px;
-  height: 18px;
-  margin-right: 6px;
-  display: inline-block;
-  vertical-align: middle;
-}
-/* Responsive styles to match base pages */
-@media (max-width: 1400px) {
-  .notifications-table-outer {
-    margin: 12px;
-    max-width: 100%;
-    padding: 0 4px; /* Match responsive horizontal padding */
-  }
-  .notifications-table-card {
-    border-radius: 14px;
-  }
-  .notifications-table-header {
-    padding: 8px 8px 0 8px;
-    border-top-left-radius: 14px;
-    border-top-right-radius: 14px;
-  }
-  .notifications-table-container {
-    padding: 0 8px 8px 8px;
-    border-bottom-left-radius: 14px;
-    border-bottom-right-radius: 14px;
-  }
-  .notifications-table th,
-  .notifications-table td {
-    font-size: 12px;
-    padding: 8px 4px;
-  }
-  .notifications-table th.rounded-th-left {
-    border-top-left-radius: 14px;
-    border-bottom-left-radius: 14px;
-    padding-left: 18px !important;
-  }
-  .notifications-table td:first-child {
-    padding-left: 18px !important;
-  }
-  .notifications-table th.rounded-th-right {
-    border-top-right-radius: 14px;
-    border-bottom-right-radius: 14px;
-  }
-}
-@media (max-width: 900px) {
-  .notifications-table-outer {
-    margin: 4px;
-    max-width: 100%;
-    padding: 0 2px; /* Even smaller horizontal padding on small screens */
-  }
-  .notifications-table-card {
-    border-radius: 10px;
-  }
-  .notifications-table-header {
-    padding: 8px 4px 0 4px;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-  }
-  .notifications-table-container {
-    padding: 0 4px 4px 4px;
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
-  }
-  .notifications-table th,
-  .notifications-table td {
-    font-size: 11px;
-    padding: 6px 2px;
-  }
-  .notifications-table th.rounded-th-left {
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
-    padding-left: 10px !important;
-  }
-  .notifications-table td:first-child {
-    padding-left: 10px !important;
-  }
-  .notifications-table th.rounded-th-right {
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
-  }
-}
-/* --- Modal Styles (unchanged, but keep for completeness) --- */
-.send-notification-modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.12);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.send-notification-modal {
-  background: #fff;
-  border-radius: 20px;
-  box-shadow: 0 8px 32px 0 rgba(33, 150, 243, 0.1);
-  padding: 32px 36px 28px 36px;
-  min-width: 340px;
-  max-width: 540px;
-  width: 100%;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-.modal-close-btn {
-  position: absolute;
-  top: 18px;
-  right: 18px;
-  background: none;
-  border: none;
-  font-size: 2rem;
-  color: #888;
-  cursor: pointer;
-  z-index: 1;
-}
-.modal-title {
-  font-size: 1.35rem;
-  font-weight: 600;
-  margin-bottom: 0;
-  color: #222;
-}
-.modal-desc {
-  font-size: 1rem;
-  color: #444;
-  margin-bottom: 0;
-}
-.modal-textarea {
-  width: 100%;
-  min-height: 80px;
-  border-radius: 8px;
-  border: 1.5px solid #e0e0e0;
-  padding: 12px;
-  font-size: 1rem;
-  resize: vertical;
-  margin-bottom: 0;
-}
-.modal-row {
-  display: flex;
-  gap: 18px;
-  margin-bottom: 0;
-}
-.modal-field {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.modal-field label {
-  font-size: 0.98rem;
-  color: #222;
-  margin-bottom: 2px;
-}
-.modal-field select,
-.modal-date-input,
-.modal-time-input {
-  width: 100%;
-  border-radius: 8px;
-  border: 1.5px solid #e0e0e0;
-  padding: 8px 12px;
-  font-size: 1rem;
-  background: #fff;
-  color: #222;
-}
-.modal-field-schedule .modal-schedule-fields {
-  display: flex;
-  gap: 8px;
-}
-.modal-send-btn {
-  margin-top: 10px;
-  align-self: flex-end;
-  background: #0164a5;
-  color: #fff;
-  border: none;
-  border-radius: 999px;
-  padding: 10px 32px;
-  font-size: 1.08rem;
-  font-weight: 500;
-  cursor: pointer;
-  box-shadow: none;
-  transition: background 0.18s;
-}
-.modal-send-btn:hover {
-  background: #005b8e;
-}
-@media (max-width: 700px) {
-  .send-notification-modal {
-    padding: 18px 8px 16px 8px;
-    min-width: 0;
-    max-width: 98vw;
-    border-radius: 12px;
-  }
-  .modal-row {
-    flex-direction: column;
-    gap: 8px;
-  }
-  .modal-send-btn {
-    width: 100%;
-    align-self: stretch;
-    padding: 10px 0;
-  }
 }
 
 .page {
@@ -588,7 +357,6 @@ export default {
   justify-content: center;
   box-sizing: border-box;
 }
-
 @media (max-width: 1400px) {
   .page {
     padding: 16px;
@@ -598,5 +366,13 @@ export default {
   .page {
     padding: 4px;
   }
+}
+
+.notifications-add-btn-icon {
+  width: 18px;
+  height: 18px;
+  margin-right: 6px;
+  display: inline-block;
+  vertical-align: middle;
 }
 </style>

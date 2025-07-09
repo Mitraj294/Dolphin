@@ -20,7 +20,7 @@
                 <input
                   type="email"
                   v-model="to"
-                  placeholder="aaliyah@dolphin.org"
+                  placeholder="meet@gmail.com"
                 />
               </div>
               <div class="send-assessment-field">
@@ -83,7 +83,7 @@
               <div class="send-assessment-actions">
                 <button
                   type="submit"
-                  class="send-assessment-btn"
+                  class="btn btn-primary"
                 >
                   Send Assessment
                 </button>
@@ -286,20 +286,7 @@ export default {
   align-items: center;
   justify-content: flex-end;
 }
-.send-assessment-btn {
-  background: #0074c2;
-  color: #fff;
-  border: none;
-  border-radius: 24px;
-  padding: 12px 32px;
-  font-size: 16px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.send-assessment-btn:hover {
-  background: #005fa3;
-}
+
 /* Responsive styles to match other pages */
 @media (max-width: 1400px) {
   .send-assessment-table-outer {
@@ -343,24 +330,6 @@ export default {
   .send-assessment-actions {
     margin-left: 0;
     justify-content: flex-end;
-  }
-}
-.page {
-  padding: 0 32px 32px 32px;
-  display: flex;
-  background-color: #fff;
-  justify-content: center;
-  box-sizing: border-box;
-}
-
-@media (max-width: 1400px) {
-  .page {
-    padding: 16px;
-  }
-}
-@media (max-width: 900px) {
-  .page {
-    padding: 4px;
   }
 }
 </style>

@@ -1,157 +1,66 @@
 <template>
-  <div class="member-table-outer">
-    <div class="member-table-card">
-      <div class="member-table-header">
-        <h2 class="member-table-title">Members</h2>
-        <!-- Add button or actions if needed -->
-      </div>
-      <div class="member-table-header-spacer"></div>
-      <div class="member-table-container">
-        <table class="member-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="(member, idx) in paginatedMembers"
-              :key="member.id"
+  <div class="my-org-table-container">
+    <table class="my-org-table">
+      <thead>
+        <tr>
+          <th class="rounded-th-left group-name-th">Group Name</th>
+          <th class="actions-th">Actions</th>
+          <th class="rounded-th-right empty-th"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          v-for="group in groups"
+          :key="group.id"
+        >
+          <td class="group-name-td">{{ group.name }}</td>
+          <td>
+            <button
+              class="icon-btn view-btn"
+              @click="viewGroup(group)"
             >
-              <td>{{ member.name }}</td>
-              <td>{{ member.email }}</td>
-              <td>{{ member.role }}</td>
-              <td>{{ member.status }}</td>
-              <td>
-                <!-- Example action button -->
-                <button
-                  class="member-action-btn"
-                  @click="viewMember(member)"
-                >
-                  View
-                </button>
-              </td>
-            </tr>
-            <tr v-if="paginatedMembers.length === 0">
-              <td
-                colspan="5"
-                class="no-data"
-              >
-                No members found.
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <Pagination
-        :pageSize="pageSize"
-        :pageSizes="[10, 25, 100]"
-        :showPageDropdown="showPageDropdown"
-        :currentPage="currentPage"
-        :totalPages="totalPages"
-        @goToPage="goToPage"
-        @selectPageSize="selectPageSize"
-        @togglePageDropdown="showPageDropdown = !showPageDropdown"
-      />
-    </div>
+              <img
+                src="@/assets/images/Notes.svg"
+                alt="View"
+                class="view-icon"
+              />
+              <span class="view-label">View</span>
+            </button>
+          </td>
+          <td></td>
+        </tr>
+        <tr v-if="groups.length === 0">
+          <td
+            colspan="3"
+            class="empty-row"
+          >
+            No groups found.
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </template>
 
 <script>
-// import Pagination from '@/components/layout/Pagination.vue'
-// import MemberListing from '@/components/Common/MemberListing.vue'
 export default {
-  // name: 'MemberTable',
-  // components: { Pagination, MemberListing },
+  name: 'MemberTable',
   props: {
-    members: {
+    groups: {
       type: Array,
       default: () => [],
     },
   },
-  data() {
-    return {
-      currentPage: 1,
-      pageSize: 10,
-      showPageDropdown: false,
-    };
-  },
-  computed: {
-    totalPages() {
-      return Math.ceil(this.members.length / this.pageSize) || 1;
-    },
-    paginatedMembers() {
-      const start = (this.currentPage - 1) * this.pageSize;
-      return this.members.slice(start, start + this.pageSize);
-    },
-  },
   methods: {
-    goToPage(page) {
-      this.currentPage = page;
-    },
-    selectPageSize(size) {
-      this.pageSize = size;
-      this.currentPage = 1;
-    },
-    viewMember(member) {
-      // Implement view logic
-      this.$emit('view-member', member);
+    viewGroup(group) {
+      this.$emit('view-group', group);
     },
   },
 };
 </script>
 
 <style scoped>
-.member-table-outer {
-  width: 100%;
-  max-width: 1400px;
-  margin: 64px auto 64px auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-sizing: border-box;
-}
-.member-table-card {
-  width: 100%;
-  background: #fff;
-  border-radius: 24px;
-  border: 1px solid #ebebeb;
-  box-shadow: 0 2px 16px 0 rgba(33, 150, 243, 0.04);
-  margin: 0 auto;
-  box-sizing: border-box;
-  overflow: visible;
-  min-width: 0;
-  max-width: 1400px;
-}
-.member-table-header {
-  width: 100%;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  padding: 24px 46px 0 24px;
-  background: #fff;
-  border-top-left-radius: 24px;
-  border-top-right-radius: 24px;
-  min-height: 64px;
-  box-sizing: border-box;
-}
-.member-table-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #222;
-  margin: 0;
-}
-.member-table-header-spacer {
-  height: 18px;
-  width: 100%;
-  background: transparent;
-  display: block;
-}
-.member-table-container {
+.my-org-table-container {
   width: 100%;
   overflow-x: auto;
   box-sizing: border-box;
@@ -162,11 +71,10 @@ export default {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
-.member-table-container::-webkit-scrollbar {
+.my-org-table-container::-webkit-scrollbar {
   display: none;
 }
-.member-table {
-  min-width: 800px;
+.my-org-table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
@@ -174,29 +82,241 @@ export default {
   background: transparent;
   margin-left: 0;
   margin-right: 0;
-  table-layout: auto;
+  table-layout: fixed;
   border: none;
   margin-top: 0;
+  min-width: 700px; /* 340+340+20 */
 }
-.member-table th,
-.member-table td {
-  padding: 18px 12px;
+.my-org-table th,
+.my-org-table td {
+  padding: 12px 8px;
   text-align: left;
-  font-size: 15px;
-  border-bottom: 1.5px solid #f0f0f0;
+  font-size: 14px;
+  border-bottom: 1px solid #f0f0f0;
   background: #fff;
   font-family: 'Inter', Arial, sans-serif;
   font-weight: 400;
-  line-height: 22px;
+  line-height: 18px;
+  letter-spacing: 0.01em;
 }
-.member-table th {
+.my-org-table th.group-name-th,
+.my-org-table td.group-name-td {
+  width: 340px;
+  min-width: 340px;
+  max-width: 340px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-left: 20px;
+}
+.my-org-table th.actions-th,
+.my-org-table td:nth-child(2) {
+  width: 340px;
+  min-width: 340px;
+  max-width: 340px;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.my-org-table th.empty-th,
+.my-org-table td:nth-child(3) {
+  width: auto;
+  min-width: 20px;
+  max-width: 9999px;
+  padding: 0;
+}
+.my-org-table th.group-name-th {
+  padding-left: 20px;
+}
+.my-org-table td.group-name-td {
+  padding-left: 20px;
+}
+.my-org-table th.empty-th {
+  border-top-right-radius: 24px;
+  border-bottom-right-radius: 24px;
   background: #f8f8f8;
-  font-weight: 600;
+}
+.my-org-table td {
+  color: #222;
+  background: #fff;
+}
+.my-org-table .empty-row {
+  text-align: center;
   color: #888;
-  position: relative;
+  font-style: italic;
+  background: #fff;
+}
+.icon-btn.view-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-size: 15px;
+  color: #222;
+}
+.icon-btn.view-btn:hover .view-label {
+  text-decoration: underline;
+}
+.view-icon {
+  width: 18px;
+  height: 18px;
+  display: inline-block;
   vertical-align: middle;
-  min-width: 100px;
-  border-bottom: 1.5px solid #ebebeb;
+}
+.view-label {
+  color: #222;
+  text-decoration: underline;
+  font-weight: 500;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+/* Responsive: shrink empty-th first, then shrink fixed columns equally */
+@media (max-width: 800px) {
+  .my-org-table {
+    min-width: 700px;
+  }
+  .my-org-table th.empty-th,
+  .my-org-table td:nth-child(3) {
+    min-width: 20px;
+    width: 20px;
+    max-width: 20px;
+  }
+}
+@media (max-width: 700px) {
+  .my-org-table {
+    min-width: 640px;
+  }
+  .my-org-table th.group-name-th,
+  .my-org-table td.group-name-td,
+  .my-org-table th.actions-th,
+  .my-org-table td:nth-child(2) {
+    width: 320px;
+    min-width: 320px;
+    max-width: 320px;
+  }
+}
+@media (max-width: 640px) {
+  .my-org-table {
+    min-width: 600px;
+  }
+  .my-org-table th.group-name-th,
+  .my-org-table td.group-name-td,
+  .my-org-table th.actions-th,
+  .my-org-table td:nth-child(2) {
+    width: 300px;
+    min-width: 300px;
+    max-width: 300px;
+  }
+}
+@media (max-width: 600px) {
+  .my-org-table {
+    min-width: 540px;
+  }
+  .my-org-table th.group-name-th,
+  .my-org-table td.group-name-td,
+  .my-org-table th.actions-th,
+  .my-org-table td:nth-child(2) {
+    width: 260px;
+    min-width: 260px;
+    max-width: 260px;
+  }
+}
+@media (max-width: 540px) {
+  .my-org-table {
+    min-width: 480px;
+  }
+  .my-org-table th.group-name-th,
+  .my-org-table td.group-name-td,
+  .my-org-table th.actions-th,
+  .my-org-table td:nth-child(2) {
+    width: 220px;
+    min-width: 220px;
+    max-width: 220px;
+  }
+}
+@media (max-width: 480px) {
+  .my-org-table {
+    min-width: 420px;
+  }
+  .my-org-table th.group-name-th,
+  .my-org-table td.group-name-td,
+  .my-org-table th.actions-th,
+  .my-org-table td:nth-child(2) {
+    width: 180px;
+    min-width: 180px;
+    max-width: 180px;
+  }
+}
+@media (max-width: 420px) {
+  .my-org-table {
+    min-width: 340px;
+  }
+  .my-org-table th.group-name-th,
+  .my-org-table td.group-name-td,
+  .my-org-table th.actions-th,
+  .my-org-table td:nth-child(2) {
+    width: 160px;
+    min-width: 160px;
+    max-width: 160px;
+  }
+}
+@media (max-width: 340px) {
+  .my-org-table {
+    min-width: 200px;
+  }
+  .my-org-table th.group-name-th,
+  .my-org-table td.group-name-td,
+  .my-org-table th.actions-th,
+  .my-org-table td:nth-child(2) {
+    width: 90px;
+    min-width: 90px;
+    max-width: 90px;
+  }
+}
+@media (max-width: 1400px) {
+  .my-org-table-container {
+    padding: 0 8px 8px 8px;
+    border-bottom-left-radius: 14px;
+    border-bottom-right-radius: 14px;
+  }
+  .my-org-table th,
+  .my-org-table td {
+    font-size: 12px;
+    padding: 8px 4px;
+  }
+  .my-org-table th.empty-th {
+    border-top-right-radius: 14px;
+    border-bottom-right-radius: 14px;
+  }
+  .my-org-table th.group-name-th,
+  .my-org-table td.group-name-td {
+    padding-left: 16px;
+  }
+}
+@media (max-width: 900px) {
+  .my-org-table-container {
+    padding: 0 4px 4px 4px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+  }
+  .my-org-table th,
+  .my-org-table td {
+    font-size: 11px;
+    padding: 6px 2px;
+  }
+  .my-org-table th.empty-th {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+  }
+  .my-org-table th.group-name-th,
+  .my-org-table td.group-name-td {
+    padding-left: 8px;
+  }
 }
 .rounded-th-left {
   border-top-left-radius: 24px;
@@ -204,106 +324,19 @@ export default {
   overflow: hidden;
   background: #f8f8f8;
 }
+.my-org-table th {
+  background: #f8f8f8;
+  font-weight: 600;
+  color: #888;
+  position: relative;
+  vertical-align: middle;
+  min-width: auto;
+  border-bottom: 1.5px solid #ebebeb;
+}
 .rounded-th-right {
   border-top-right-radius: 24px;
   border-bottom-right-radius: 24px;
   overflow: hidden;
   background: #f8f8f8;
-}
-.member-table td {
-  color: #222;
-  background: #fff;
-}
-.member-table td:first-child {
-  padding-left: 32px !important;
-}
-.member-action-btn {
-  background: #fff;
-  border: 1.5px solid #e0e0e0;
-  border-radius: 24px;
-  padding: 4px 12px;
-  font-size: 14px;
-  color: #222;
-  cursor: pointer;
-  transition: border 0.2s;
-  font-weight: 500;
-  gap: 4px;
-  display: flex;
-  align-items: center;
-}
-.member-action-btn:hover {
-  border: 1.5px solid #0074c2;
-}
-.no-data {
-  text-align: center;
-  color: #888;
-  font-size: 16px;
-  padding: 32px 0;
-}
-/* Responsive styles to match OrganizationTable.vue */
-@media (max-width: 1400px) {
-  .member-table-outer {
-    margin: 12px;
-    max-width: 100%;
-  }
-  .member-table-card {
-    border-radius: 14px;
-    max-width: 100%;
-  }
-  .member-table-header {
-    padding: 8px 8px 0 8px;
-    border-top-left-radius: 14px;
-    border-top-right-radius: 14px;
-  }
-  .member-table-container {
-    padding: 0 8px 8px 8px;
-    border-bottom-left-radius: 14px;
-    border-bottom-right-radius: 14px;
-  }
-  .member-table th,
-  .member-table td {
-    font-size: 12px;
-    padding: 8px 4px;
-  }
-  .rounded-th-left {
-    border-top-left-radius: 14px;
-    border-bottom-left-radius: 14px;
-  }
-  .rounded-th-right {
-    border-top-right-radius: 14px;
-    border-bottom-right-radius: 14px;
-  }
-}
-@media (max-width: 900px) {
-  .member-table-outer {
-    margin: 4px;
-    max-width: 100%;
-  }
-  .member-table-card {
-    border-radius: 10px;
-  }
-  .member-table-header {
-    padding: 8px 4px 0 4px;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-  }
-  .member-table-container {
-    padding: 0 4px 4px 4px;
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
-  }
-  .member-table th,
-  .member-table td {
-    font-size: 11px;
-    padding: 6px 2px;
-  }
-  .rounded-th-left {
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
-  }
-  .rounded-th-right {
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
-  }
 }
 </style>

@@ -20,19 +20,16 @@
           <div class="assessment-table-header-spacer"></div>
           <div class="assessment-table-container">
             <table class="assessment-table">
-              <thead>
-                <tr>
-                  <th class="rounded-th-left">Member Name</th>
-                  <th>Result</th>
-                  <th class="rounded-th-right">Actions</th>
-                </tr>
-              </thead>
+              <TableHeader
+                :columns="tableColumns"
+                @sort="sortBy"
+              />
               <tbody>
                 <tr
                   v-for="row in paginatedRows"
                   :key="row.name"
                 >
-                  <td>{{ row.name }}</td>
+                  <td class="member-name-td">{{ row.name }}</td>
                   <td>
                     <span
                       v-if="row.result === 'Submitted'"
@@ -69,12 +66,13 @@
                   </td>
                   <td>
                     <button
-                      class="btn view-btn"
+                      class="btn-view"
                       @click="openModal(row)"
                     >
                       <img
                         src="@/assets/images/Notes.svg"
                         alt="View"
+                        class="btn-view-icon"
                         width="18"
                         height="18"
                       />
@@ -111,13 +109,15 @@
           @click.self="closeModal"
         >
           <div class="assessment-modal-content">
-            <button
-              class="btn modal-close-btn"
-              @click="closeModal"
-            >
-              &times;
-            </button>
-            <h2>{{ selectedMember.name }}’s Assessments</h2>
+            <div class="assessment-modal-header-row">
+              <h2>{{ selectedMember.name }}’s Assessments</h2>
+              <button
+                class="btn modal-close-btn"
+                @click="closeModal"
+              >
+                &times;
+              </button>
+            </div>
             <div
               v-for="(q, idx) in selectedMember.assessment || []"
               :key="idx"
@@ -138,12 +138,13 @@
 <script>
 import MainLayout from '@/components/layout/MainLayout.vue';
 import Pagination from '@/components/layout/Pagination.vue';
+import TableHeader from '@/components/Common/Common_UI/TableHeader.vue';
 import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 
 export default {
   name: 'AssessmentSummaryPage',
-  components: { MainLayout, Pagination },
+  components: { MainLayout, Pagination, TableHeader },
   setup() {
     const route = useRoute();
     const assessmentId = route.params.assessmentId;
@@ -196,8 +197,15 @@ export default {
       { name: 'Ava Richardson', result: 'Submitted', assessment: [] },
     ];
 
+    // Table columns for TableHeader
+    const tableColumns = [
+      { label: 'Member Name', key: 'name' },
+      { label: 'Result', key: 'result' },
+      { label: 'Actions', key: 'actions' },
+    ];
+
     // Pagination state
-    const pageSizes = [10, 20, 50];
+    const pageSizes = [10, 25, 100];
     const pageSize = ref(10);
     const currentPage = ref(1);
     const showPageDropdown = ref(false);
@@ -237,6 +245,11 @@ export default {
       showPageDropdown.value = !showPageDropdown.value;
     }
 
+    // Sorting logic (optional, for TableHeader compatibility)
+    function sortBy() {
+      // No-op: implement if you want sorting
+    }
+
     return {
       assessmentId,
       rows,
@@ -253,6 +266,8 @@ export default {
       selectedMember,
       openModal,
       closeModal,
+      tableColumns,
+      sortBy,
     };
   },
 };
@@ -359,6 +374,9 @@ export default {
   border-bottom: 1px solid #f0f0f0;
   background: #fff;
 }
+.assessment-table th:first-child {
+  padding-left: 20px !important;
+}
 .assessment-table th {
   background: #f8f8f8;
   font-weight: 600;
@@ -373,6 +391,7 @@ export default {
   border-bottom-left-radius: 24px;
   overflow: hidden;
   background: #f8f8f8;
+  padding-left: 20px !important;
 }
 .rounded-th-right {
   border-top-right-radius: 24px;
@@ -429,13 +448,37 @@ export default {
   max-height: 65vh;
   overflow-y: auto;
 }
-.assessment-modal-content h2 {
+.assessment-modal-header-row {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+.assessment-modal-header-row h2 {
   font-size: 1.45rem;
   font-weight: 700;
-  margin-bottom: 32px;
-  text-align: left;
   letter-spacing: 0.01em;
   color: #222;
+  margin: 0;
+  padding: 0;
+  flex: 1 1 0;
+  text-align: left;
+}
+.assessment-modal-header-row .modal-close-btn {
+  margin-left: 16px;
+  margin-top: 0;
+  font-size: 2rem;
+  line-height: 1;
+  padding: 0 8px;
+  height: 32px;
+  width: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .assessment-question-block {
   margin-bottom: 24px;
@@ -535,7 +578,7 @@ export default {
     max-width: 98vw;
     border-radius: 12px;
   }
-  .assessment-modal-content h2 {
+  .assessment-modal-header-row h2 {
     font-size: 1rem;
   }
   .assessment-summary-cards {
@@ -550,22 +593,7 @@ export default {
     font-size: 0.95rem;
   }
 }
-.page {
-  padding: 0 32px 32px 32px;
-  display: flex;
-  background-color: #fff;
-  justify-content: center;
-  box-sizing: border-box;
-}
-
-@media (max-width: 1400px) {
-  .page {
-    padding: 16px;
-  }
-}
-@media (max-width: 900px) {
-  .page {
-    padding: 4px;
-  }
+.member-name-td {
+  padding-left: 20px !important;
 }
 </style>

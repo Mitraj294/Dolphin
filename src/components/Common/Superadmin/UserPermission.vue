@@ -3,8 +3,8 @@
     <div class="page">
       <div class="user-permission-table-outer">
         <div class="user-permission-table-card">
-          <div class="user-permission-table-header">
-            <button class="user-permission-add-btn">
+          <div class="user-permission-table-header-bar">
+            <button class="btn btn-primary">
               <img
                 src="@/assets/images/Add.svg"
                 alt="Add"
@@ -13,17 +13,17 @@
               Add New
             </button>
           </div>
-          <div class="user-permission-table-header-spacer"></div>
           <div class="user-permission-table-container">
             <table class="user-permission-table">
-              <thead>
-                <tr>
-                  <th class="rounded-th-left">Name</th>
-                  <th>Email</th>
-                  <th>Roles</th>
-                  <th class="rounded-th-right">Actions</th>
-                </tr>
-              </thead>
+              <TableHeader
+                :columns="[
+                  { label: 'Name', key: 'name' },
+                  { label: 'Email', key: 'email' },
+                  { label: 'Roles', key: 'role' },
+                  { label: 'Actions', key: 'actions' },
+                ]"
+                @sort="sortBy"
+              />
               <tbody>
                 <tr
                   v-for="user in paginatedUsers"
@@ -83,9 +83,10 @@
 <script>
 import MainLayout from '../../layout/MainLayout.vue';
 import Pagination from '../../layout/Pagination.vue';
+import TableHeader from '@/components/Common/Common_UI/TableHeader.vue';
 export default {
   name: 'UserPermission',
-  components: { MainLayout, Pagination },
+  components: { MainLayout, Pagination, TableHeader },
   data() {
     return {
       users: [
@@ -112,6 +113,8 @@ export default {
       pageSize: 10,
       pageSizes: [10, 25, 100],
       showPageDropdown: false,
+      sortKey: '',
+      sortAsc: true,
     };
   },
   computed: {
@@ -119,8 +122,18 @@ export default {
       return Math.ceil(this.users.length / this.pageSize) || 1;
     },
     paginatedUsers() {
+      let users = [...this.users];
+      if (this.sortKey) {
+        users.sort((a, b) => {
+          const aVal = a[this.sortKey] || '';
+          const bVal = b[this.sortKey] || '';
+          if (aVal < bVal) return this.sortAsc ? -1 : 1;
+          if (aVal > bVal) return this.sortAsc ? 1 : -1;
+          return 0;
+        });
+      }
       const start = (this.currentPage - 1) * this.pageSize;
-      return this.users.slice(start, start + this.pageSize);
+      return users.slice(start, start + this.pageSize);
     },
   },
   methods: {
@@ -133,15 +146,23 @@ export default {
       this.currentPage = 1;
       this.showPageDropdown = false;
     },
+    sortBy(key) {
+      if (this.sortKey === key) {
+        this.sortAsc = !this.sortAsc;
+      } else {
+        this.sortKey = key;
+        this.sortAsc = true;
+      }
+    },
   },
 };
 </script>
 
 <style scoped>
+/* --- Layout and spacing to match Leads.vue/OrganizationTable.vue --- */
 .user-permission-table-outer {
   width: 100%;
   max-width: 1400px;
-  min-width: 0;
   margin: 64px auto 64px auto;
   display: flex;
   flex-direction: column;
@@ -160,23 +181,29 @@ export default {
   min-width: 0;
   max-width: 1400px;
 }
-.user-permission-table-header {
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  padding: 24px 46px 0 24px;
+.user-permission-table-header-bar {
+  padding: 24px 24px 24px 24px;
   background: #fff;
   border-top-left-radius: 24px;
   border-top-right-radius: 24px;
-  min-height: 64px;
-  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
 }
-.user-permission-table-header-spacer {
-  height: 18px;
-  width: 100%;
-  background: transparent;
-  display: block;
+@media (max-width: 1400px) {
+  .user-permission-table-header-bar {
+    padding: 12px 8px 12px 8px;
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
+  }
+}
+@media (max-width: 900px) {
+  .user-permission-table-header-bar {
+    padding: 12px 8px 12px 8px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  }
 }
 .user-permission-table-container {
   width: 100%;
@@ -207,36 +234,26 @@ export default {
 }
 .user-permission-table th,
 .user-permission-table td {
-  padding: 12px 8px;
+  padding: 18px 12px;
   text-align: left;
-  font-size: 14px;
-  border-bottom: 1px solid #f0f0f0;
+  font-size: 15px;
+  border-bottom: 1.5px solid #f0f0f0;
   background: #fff;
+  font-family: 'Inter', Arial, sans-serif;
+  font-weight: 400;
+  line-height: 22px;
+}
+.user-permission-table td:first-child {
+  padding-left: 20px !important;
 }
 .user-permission-table th {
   background: #f8f8f8;
-  font-family: 'Inter', Arial, sans-serif;
-  font-size: 14px;
   font-weight: 600;
   color: #888;
   position: relative;
   vertical-align: middle;
   min-width: 100px;
   border-bottom: 1.5px solid #ebebeb;
-  height: 44px;
-  line-height: 44px;
-  padding: 0 8px;
-  letter-spacing: 0.01em;
-}
-.user-permission-table td {
-  font-family: 'Inter', Arial, sans-serif;
-  font-size: 13px;
-  font-weight: 400;
-  line-height: 18px;
-  letter-spacing: 0.01em;
-  color: #222;
-  padding-left: 0;
-  background: #fff;
 }
 .rounded-th-left {
   border-top-left-radius: 24px;
@@ -255,8 +272,6 @@ export default {
   align-items: center;
   gap: 8px;
 }
-
-/* Action buttons and impersonate button - base (desktop) */
 .icon-btn {
   background: none;
   border: none;
@@ -277,7 +292,6 @@ export default {
 .icon-btn:focus {
   background: #f0f0f0;
 }
-
 .impersonate-btn {
   background: #f5f5f5;
   border: none;
@@ -305,89 +319,6 @@ export default {
   margin-right: 4px;
   display: block;
 }
-
-/* --- Responsive styles: shrink everything together --- */
-@media (max-width: 1400px) {
-  .actions {
-    gap: 6px;
-  }
-  .icon-btn {
-    padding: 3px;
-    margin-right: 6px;
-  }
-  .icon-btn img {
-    width: 15px;
-    height: 15px;
-  }
-  .impersonate-btn {
-    font-size: 0.98rem;
-    padding: 8px 18px 8px 10px;
-    gap: 8px;
-  }
-  .impersonate-icon {
-    width: 15px;
-    height: 15px;
-    margin-right: 3px;
-  }
-}
-
-@media (max-width: 900px) {
-  .actions {
-    gap: 4px;
-  }
-  .icon-btn {
-    padding: 2px;
-    margin-right: 4px;
-  }
-  .icon-btn img {
-    width: 13px;
-    height: 13px;
-  }
-  .impersonate-btn {
-    font-size: 0.89rem;
-    padding: 6px 12px 6px 7px;
-    gap: 6px;
-  }
-  .impersonate-icon {
-    width: 13px;
-    height: 13px;
-    margin-right: 2px;
-  }
-}
-.user-permission-add-btn {
-  border-radius: 29.01px;
-  background: #0164a5;
-  color: #fff;
-  font-family: 'Helvetica Neue LT Std', Helvetica, Arial, sans-serif;
-  font-weight: 500;
-  font-size: 15px;
-  padding: 8px 24px 8px 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-right: 0;
-  margin-top: 0;
-  box-shadow: none;
-  border: none;
-  cursor: pointer;
-  transition: background 0.2s, color 0.2s;
-  white-space: nowrap;
-  min-width: 0;
-  max-width: none;
-  overflow: visible;
-}
-.user-permission-add-btn:hover {
-  background: #005fa3;
-  color: #fff;
-}
-.user-permission-add-btn-icon {
-  width: 18px;
-  height: 18px;
-  margin-right: 6px;
-  display: inline-block;
-  vertical-align: middle;
-}
-/* Responsive styles */
 @media (max-width: 1400px) {
   .user-permission-table-outer {
     margin: 12px;
@@ -397,8 +328,8 @@ export default {
     border-radius: 14px;
     max-width: 100%;
   }
-  .user-permission-table-header {
-    padding: 8px 8px 0 8px;
+  .user-permission-table-header-bar {
+    padding: 12px 8px 12px 8px;
     border-top-left-radius: 14px;
     border-top-right-radius: 14px;
   }
@@ -410,13 +341,12 @@ export default {
   .user-permission-table th,
   .user-permission-table td {
     font-size: 12px;
+    padding: 8px 4px;
+  }
+  .user-permission-table th {
     height: 40px;
     line-height: 40px;
     padding: 0 4px;
-  }
-  .user-permission-table th {
-    padding-top: 0;
-    padding-bottom: 0;
   }
   .rounded-th-left {
     border-top-left-radius: 14px;
@@ -435,8 +365,8 @@ export default {
   .user-permission-table-card {
     border-radius: 10px;
   }
-  .user-permission-table-header {
-    padding: 8px 4px 0 4px;
+  .user-permission-table-header-bar {
+    padding: 12px 8px 12px 8px;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
   }
@@ -448,13 +378,12 @@ export default {
   .user-permission-table th,
   .user-permission-table td {
     font-size: 11px;
+    padding: 6px 2px;
+  }
+  .user-permission-table th {
     height: 36px;
     line-height: 36px;
     padding: 0 2px;
-  }
-  .user-permission-table th {
-    padding-top: 0;
-    padding-bottom: 0;
   }
   .rounded-th-left {
     border-top-left-radius: 10px;
@@ -466,6 +395,13 @@ export default {
   }
 }
 
+.user-permission-add-btn-icon {
+  width: 18px;
+  height: 18px;
+  margin-right: 6px;
+  display: inline-block;
+  vertical-align: middle;
+}
 .page {
   padding: 0 32px 32px 32px;
   display: flex;
@@ -473,7 +409,6 @@ export default {
   justify-content: center;
   box-sizing: border-box;
 }
-
 @media (max-width: 1400px) {
   .page {
     padding: 16px;

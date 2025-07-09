@@ -182,23 +182,4 @@ export default {
     /* Removed padding and font-size, use only global .btn classes for button appearance. */
   }
 }
-
-.page {
-  padding: 0 32px 32px 32px;
-  display: flex;
-  background-color: #fff;
-  justify-content: center;
-  box-sizing: border-box;
-}
-
-@media (max-width: 1400px) {
-  .page {
-    padding: 16px;
-  }
-}
-@media (max-width: 900px) {
-  .page {
-    padding: 4px;
-  }
-}
 </style>

@@ -9,7 +9,19 @@
         >
           Sent Assessments
         </button>
-        <button class="create-assessment-btn">+ Create Assessments</button>
+        <button class="btn btn-primary">
+          <img
+            src="@/assets/images/Add.svg"
+            alt="Add"
+            style="
+              width: 18px;
+              height: 18px;
+              vertical-align: middle;
+              margin-right: 8px;
+            "
+          />
+          Create Assessments
+        </button>
       </div>
     </div>
     <div class="assessments-table-container">
@@ -253,20 +265,7 @@ export default {
 .sent-assessments-btn:hover {
   background: #e6f0fa;
 }
-.create-assessment-btn {
-  background: #0074c2;
-  color: #fff;
-  border: none;
-  border-radius: 999px;
-  padding: 10px 32px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.18s;
-}
-.create-assessment-btn:hover {
-  background: #005fa3;
-}
+
 .assessments-table-container {
   padding: 0 24px 24px 24px;
   margin-top: 0; /* Remove top margin */

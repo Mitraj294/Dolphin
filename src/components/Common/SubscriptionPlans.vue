@@ -505,7 +505,7 @@ export default {
   display: flex;
   flex-direction: row;
   justify-content: center;
-  align-items: flex-start;
+  align-items: stretch;
   padding: 64px 24px 24px 24px;
   width: 100%;
   box-sizing: border-box;
@@ -514,29 +514,26 @@ export default {
 .purchase-modal-left,
 .purchase-modal-right {
   flex: 1 1 0;
-  min-width: 340px;
-  max-width: 420px;
+  min-width: 0;
+  max-width: none;
   background: #fff;
   border-radius: 18px;
   box-sizing: border-box;
-  margin: 0 12px;
+  margin: 0 18px;
   display: flex;
   flex-direction: column;
+  padding: 18px 24px;
+  /* Make both sides visually equal */
 }
 .purchase-modal-left {
-  padding: 18px 18px 18px 18px;
   align-items: flex-start;
   gap: 12px;
   background: #fff;
 }
-
 .purchase-modal-right {
-  padding: 18px 18px 18px 18px;
   background: #fafbfb;
   gap: 0;
   justify-content: flex-start;
-  border-radius: 18px;
-  box-sizing: border-box;
 }
 @media (max-width: 900px) {
   .purchase-modal-content {
@@ -565,15 +562,6 @@ export default {
     padding: 12px 2vw;
     border-radius: 10px;
   }
-}
-.purchase-modal-left {
-  flex: 1.1;
-  padding-right: 32px;
-  /* border-right: 1px solid #eee; */ /* Remove left side border */
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  align-items: flex-start;
 }
 .purchase-modal-title,
 .purchase-modal-section-label {
@@ -669,20 +657,6 @@ export default {
 .input-group:last-child .input-icon {
   margin-left: 8px;
   margin-right: 0;
-}
-.purchase-modal-right {
-  flex: 1;
-  padding: 18px 18px 18px 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  justify-content: flex-start;
-  background: #fafbfb;
-  border-radius: 18px;
-  min-width: 260px;
-  max-width: 320px;
-  margin: 12px 0 12px 0;
-  box-sizing: border-box;
 }
 .plan-info-header {
   display: flex;
@@ -912,24 +886,6 @@ input:checked + .switch-slider:before {
   .plan-card-btn--current {
     font-size: 1rem;
     padding: 8px 0;
-  }
-}
-.page {
-  padding: 0 32px 32px 32px;
-  display: flex;
-  background-color: #fff;
-  justify-content: center;
-  box-sizing: border-box;
-}
-
-@media (max-width: 1400px) {
-  .page {
-    padding: 16px;
-  }
-}
-@media (max-width: 900px) {
-  .page {
-    padding: 4px;
   }
 }
 </style>

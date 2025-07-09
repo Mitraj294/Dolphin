@@ -58,7 +58,7 @@ export default {
   border-radius: 0 0 18px 18px;
   box-sizing: border-box;
   padding: 0;
-  margin: 32px auto 32px auto; /* Add margin-top for spacing above footer */
+  margin: 8px auto 24px auto;
   position: relative;
   min-height: 64px;
   /* border-top: 1px solid #f0f0f0; */ /* Removed top border/line */
