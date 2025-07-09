@@ -1,111 +1,174 @@
 <template>
   <MainLayout>
-    <div class="org-edit-outer">
-      <div class="org-edit-card">
-        <h2 class="org-edit-title">Edit Details</h2>
-        <form class="org-edit-form" @submit.prevent="updateDetails">
-          <!-- First row: Org Name, Size, Source -->
-          <div class="org-edit-grid org-edit-grid-3">
-            <div class="org-edit-field">
-              <label>Organization Name</label>
-              <input type="text" v-model="form.orgName" />
+    <div class="page">
+      <div class="org-edit-outer">
+        <div class="org-edit-card">
+          <h2 class="org-edit-title">Edit Details</h2>
+          <form
+            class="org-edit-form"
+            @submit.prevent="updateDetails"
+          >
+            <!-- First row: Org Name, Size, Source -->
+            <div class="org-edit-grid org-edit-grid-3">
+              <div class="org-edit-field">
+                <label>Organization Name</label>
+                <input
+                  type="text"
+                  v-model="form.orgName"
+                />
+              </div>
+              <div class="org-edit-field">
+                <label>Organization Size</label>
+                <select v-model="form.orgSize">
+                  <option>250+ Employees (Large)</option>
+                  <option>100-249 Employees (Medium)</option>
+                  <option>1-99 Employees (Small)</option>
+                </select>
+              </div>
+              <div class="org-edit-field">
+                <label>Source</label>
+                <input
+                  type="text"
+                  v-model="form.source"
+                />
+              </div>
             </div>
-            <div class="org-edit-field">
-              <label>Organization Size</label>
-              <select v-model="form.orgSize">
-                <option>250+ Employees (Large)</option>
-                <option>100-249 Employees (Medium)</option>
-                <option>1-99 Employees (Small)</option>
-              </select>
+            <!-- Address section: first row -->
+            <div class="org-edit-grid org-edit-grid-3">
+              <div class="org-edit-field">
+                <label>Address</label>
+                <input
+                  type="text"
+                  v-model="form.address1"
+                />
+              </div>
+              <div class="org-edit-field">
+                <label>&nbsp;</label>
+                <input
+                  type="text"
+                  v-model="form.address2"
+                />
+              </div>
+              <div class="org-edit-field">
+                <label>&nbsp;</label>
+                <input
+                  type="text"
+                  v-model="form.city"
+                />
+              </div>
             </div>
-            <div class="org-edit-field">
-              <label>Source</label>
-              <input type="text" v-model="form.source" />
+            <!-- Address section: second row -->
+            <div class="org-edit-grid org-edit-grid-3">
+              <div class="org-edit-field">
+                <label>&nbsp;</label>
+                <select v-model="form.state">
+                  <option>Arkansas(AR)</option>
+                  <option>California(CA)</option>
+                  <option>New York(NY)</option>
+                </select>
+              </div>
+              <div class="org-edit-field">
+                <label>&nbsp;</label>
+                <input
+                  type="text"
+                  v-model="form.zip"
+                />
+              </div>
+              <div class="org-edit-field">
+                <label>&nbsp;</label>
+                <select v-model="form.country">
+                  <option>United States</option>
+                  <option>Canada</option>
+                </select>
+              </div>
             </div>
-          </div>
-          <!-- Address section: first row -->
-          <div class="org-edit-grid org-edit-grid-3">
-            <div class="org-edit-field">
-              <label>Address</label>
-              <input type="text" v-model="form.address1" />
+            <!-- Contract dates row: use 3 columns, last is empty -->
+            <div class="org-edit-grid org-edit-grid-3">
+              <div class="org-edit-field">
+                <label>Contract Start</label>
+                <input
+                  type="text"
+                  v-model="form.contractStart"
+                  disabled
+                />
+              </div>
+              <div class="org-edit-field">
+                <label>Contract End</label>
+                <input
+                  type="text"
+                  v-model="form.contractEnd"
+                  disabled
+                />
+              </div>
+              <div class="org-edit-field"><label>&nbsp;</label></div>
             </div>
-            <div class="org-edit-field">
-              <label>&nbsp;</label>
-              <input type="text" v-model="form.address2" />
+            <!-- Divider line -->
+            <div class="org-edit-divider"></div>
+            <!-- Admin/contact section: 2 rows of 3 fields -->
+            <div class="org-edit-grid org-edit-grid-3">
+              <div class="org-edit-field">
+                <label>Main Contact</label>
+                <input
+                  type="text"
+                  v-model="form.mainContact"
+                />
+              </div>
+              <div class="org-edit-field">
+                <label>Admin Email</label>
+                <input
+                  type="email"
+                  v-model="form.adminEmail"
+                  disabled
+                />
+              </div>
+              <div class="org-edit-field">
+                <label>Admin Phone#</label>
+                <input
+                  type="text"
+                  v-model="form.adminPhone"
+                  disabled
+                />
+              </div>
+              <div class="org-edit-field">
+                <label>Sales Person</label>
+                <input
+                  type="text"
+                  v-model="form.salesPerson"
+                />
+              </div>
+              <div class="org-edit-field">
+                <label>Last Contacted</label>
+                <input
+                  type="text"
+                  v-model="form.lastContacted"
+                  disabled
+                />
+              </div>
+              <div class="org-edit-field">
+                <label>Certified Staff</label>
+                <input
+                  type="number"
+                  v-model="form.certifiedStaff"
+                />
+              </div>
             </div>
-            <div class="org-edit-field">
-              <label>&nbsp;</label>
-              <input type="text" v-model="form.city" />
+            <div class="org-edit-actions">
+              <button
+                type="button"
+                class="org-edit-cancel"
+                @click="cancelEdit"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                class="org-edit-update"
+              >
+                Update Details
+              </button>
             </div>
-          </div>
-          <!-- Address section: second row -->
-          <div class="org-edit-grid org-edit-grid-3">
-            <div class="org-edit-field">
-              <label>&nbsp;</label>
-              <select v-model="form.state">
-                <option>Arkansas(AR)</option>
-                <option>California(CA)</option>
-                <option>New York(NY)</option>
-              </select>
-            </div>
-            <div class="org-edit-field">
-              <label>&nbsp;</label>
-              <input type="text" v-model="form.zip" />
-            </div>
-            <div class="org-edit-field">
-              <label>&nbsp;</label>
-              <select v-model="form.country">
-                <option>United States</option>
-                <option>Canada</option>
-              </select>
-            </div>
-          </div>
-          <!-- Contract dates row: use 3 columns, last is empty -->
-          <div class="org-edit-grid org-edit-grid-3">
-            <div class="org-edit-field">
-              <label>Contract Start</label>
-              <input type="text" v-model="form.contractStart" disabled />
-            </div>
-            <div class="org-edit-field">
-              <label>Contract End</label>
-              <input type="text" v-model="form.contractEnd" disabled />
-            </div>
-            <div class="org-edit-field"><label>&nbsp;</label></div>
-          </div>
-          <!-- Divider line -->
-          <div class="org-edit-divider"></div>
-          <!-- Admin/contact section: 2 rows of 3 fields -->
-          <div class="org-edit-grid org-edit-grid-3">
-            <div class="org-edit-field">
-              <label>Main Contact</label>
-              <input type="text" v-model="form.mainContact" />
-            </div>
-            <div class="org-edit-field">
-              <label>Admin Email</label>
-              <input type="email" v-model="form.adminEmail" disabled />
-            </div>
-            <div class="org-edit-field">
-              <label>Admin Phone#</label>
-              <input type="text" v-model="form.adminPhone" disabled />
-            </div>
-            <div class="org-edit-field">
-              <label>Sales Person</label>
-              <input type="text" v-model="form.salesPerson" />
-            </div>
-            <div class="org-edit-field">
-              <label>Last Contacted</label>
-              <input type="text" v-model="form.lastContacted" disabled />
-            </div>
-            <div class="org-edit-field">
-              <label>Certified Staff</label>
-              <input type="number" v-model="form.certifiedStaff" />
-            </div>
-          </div>
-          <div class="org-edit-actions">
-            <button type="button" class="org-edit-cancel" @click="cancelEdit">Cancel</button>
-            <button type="submit" class="org-edit-update">Update Details</button>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   </MainLayout>
@@ -136,9 +199,9 @@ export default {
         adminPhone: '313-586-7462',
         salesPerson: 'John',
         lastContacted: 'Dec 15, 2024',
-        certifiedStaff: 2
-      }
-    }
+        certifiedStaff: 2,
+      },
+    };
   },
   methods: {
     cancelEdit() {
@@ -146,9 +209,9 @@ export default {
     },
     updateDetails() {
       this.$router.push(`/organizations/${this.form.orgName}`);
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -172,7 +235,7 @@ export default {
   min-width: 0;
   background: #fff;
   border-radius: 24px;
-  border: 1px solid #EBEBEB;
+  border: 1px solid #ebebeb;
   box-shadow: 0 2px 16px 0 rgba(33, 150, 243, 0.04);
   margin: 0 auto;
   box-sizing: border-box;
@@ -240,12 +303,14 @@ export default {
 
 .org-edit-field select {
   appearance: none;
-  background: #fff url('data:image/svg+xml;utf8,<svg fill="%23888" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7.293 7.293a1 1 0 011.414 0L10 8.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414z"/></svg>') no-repeat right 10px center/18px 18px;
+  background: #fff
+    url('data:image/svg+xml;utf8,<svg fill="%23888" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7.293 7.293a1 1 0 011.414 0L10 8.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414z"/></svg>')
+    no-repeat right 10px center/18px 18px;
 }
 
 .org-edit-divider {
   width: 100%;
-  border-bottom: 1.5px solid #E0E0E0;
+  border-bottom: 1.5px solid #e0e0e0;
   margin: 24px 0 24px 0;
 }
 
@@ -323,6 +388,25 @@ export default {
   }
   .org-edit-divider {
     margin: 12px 0 12px 0;
+  }
+}
+
+.page {
+  padding: 0 32px 32px 32px;
+  display: flex;
+  background-color: #fff;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1400px) {
+  .page {
+    padding: 16px;
+  }
+}
+@media (max-width: 900px) {
+  .page {
+    padding: 4px;
   }
 }
 </style>

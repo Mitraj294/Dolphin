@@ -1,56 +1,103 @@
 <template>
   <MainLayout>
-    <div class="send-assessment-table-outer">
-      <div class="send-assessment-table-card">
-        <div class="send-assessment-table-header">
-          <div class="send-assessment-title">Send Assessment</div>
+    <div class="page">
+      <div class="send-assessment-table-outer">
+        <div class="send-assessment-table-card">
+          <div class="send-assessment-table-header">
+            <div class="send-assessment-title">Send Assessment</div>
+          </div>
+          <div
+            class="send-assessment-desc"
+            style="margin-bottom: 18px"
+          >
+            Lorem Ipsum is simply dummy text of the printing and typesetting
+            industry.
+          </div>
+          <form class="send-assessment-form">
+            <div class="send-assessment-row">
+              <div class="send-assessment-field">
+                <label>To</label>
+                <input
+                  type="email"
+                  v-model="to"
+                  placeholder="aaliyah@dolphin.org"
+                />
+              </div>
+              <div class="send-assessment-field">
+                <label>Subject</label>
+                <input
+                  type="text"
+                  placeholder="Type here"
+                />
+              </div>
+              <div class="send-assessment-field">
+                <label>Template</label>
+                <select>
+                  <option>Select Template</option>
+                </select>
+              </div>
+            </div>
+            <div class="send-assessment-label">Editable Template</div>
+            <div class="send-assessment-template-box">
+              <ul>
+                <li>
+                  Lorem Ipsum is simply dummy text of the printing and
+                  typesetting industry. Lorem Ipsum has been the industry's
+                  standard dummy text ever since the 1500s, when an unknown
+                  printer took a galley of type and scrambled it to make a type
+                  specimen book.
+                </li>
+                <li>
+                  It has survived not only five centuries, but also the leap
+                  into electronic typesetting, remaining essentially unchanged.
+                  It was popularised in the 1960s with the release of Letraset
+                  sheets containing Lorem Ipsum passages, and more recently with
+                  desktop publishing software like Aldus PageMaker including
+                  versions of Lorem Ipsum.
+                </li>
+                <li>
+                  Contrary to popular belief, Lorem Ipsum is not simply random
+                  text. It has roots in a piece of classical Latin literature
+                  from 45 BC, making it over 2000 years old.
+                </li>
+                <li>
+                  Richard McClintock, a Latin professor at Hampden-Sydney
+                  College in Virginia, looked up one of the more obscure Latin
+                  words, consectetur, from a Lorem Ipsum passage, and going
+                  through the cites of the word in classical literature,
+                  discovered the undoubtable source. Lorem Ipsum comes from
+                  sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et
+                  Malorum" (The Extremes of Good and Evil) by Cicero,
+                </li>
+              </ul>
+            </div>
+            <div class="send-assessment-label">Assessment Link</div>
+            <div class="send-assessment-link-actions-row">
+              <div class="send-assessment-link-box">
+                <a
+                  href="#"
+                  class="send-assessment-link"
+                  >Lorem Ipsum is simply dummy</a
+                >
+              </div>
+              <div class="send-assessment-actions">
+                <button
+                  type="submit"
+                  class="send-assessment-btn"
+                >
+                  Send Assessment
+                </button>
+              </div>
+            </div>
+          </form>
         </div>
-        <div class="send-assessment-desc" style="margin-bottom:18px;">
-          Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-        </div>
-        <form class="send-assessment-form">
-          <div class="send-assessment-row">
-            <div class="send-assessment-field">
-              <label>To</label>
-              <input type="email" v-model="to" placeholder="aaliyah@dolphin.org" />
-            </div>
-            <div class="send-assessment-field">
-              <label>Subject</label>
-              <input type="text" placeholder="Type here" />
-            </div>
-            <div class="send-assessment-field">
-              <label>Template</label>
-              <select>
-                <option>Select Template</option>
-              </select>
-            </div>
-          </div>
-          <div class="send-assessment-label">Editable Template</div>
-          <div class="send-assessment-template-box">
-            <ul>
-              <li>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</li>
-              <li>It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</li>
-              <li>Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.</li>
-              <li>Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et Malorum" (The Extremes of Good and Evil) by Cicero,</li>
-            </ul>
-          </div>
-          <div class="send-assessment-label">Assessment Link</div>
-          <div class="send-assessment-link-actions-row">
-            <div class="send-assessment-link-box">
-              <a href="#" class="send-assessment-link">Lorem Ipsum is simply dummy</a>
-            </div>
-            <div class="send-assessment-actions">
-              <button type="submit" class="send-assessment-btn">Send Assessment</button>
-            </div>
-          </div>
-        </form>
       </div>
     </div>
   </MainLayout>
 </template>
 
 <script>
-import MainLayout from '@/components/layout/MainLayout.vue'
+import MainLayout from '@/components/layout/MainLayout.vue';
 export default {
   name: 'SendAssessment',
   components: { MainLayout },
@@ -63,8 +110,8 @@ export default {
       organization: '',
       size: '',
       source: '',
-      status: ''
-    }
+      status: '',
+    };
   },
   mounted() {
     // Pre-fill from query params
@@ -76,8 +123,8 @@ export default {
     this.size = this.$route.query.size || '';
     this.source = this.$route.query.source || '';
     this.status = this.$route.query.status || '';
-  }
-}
+  },
+};
 </script>
 
 <style scoped>
@@ -99,7 +146,7 @@ export default {
   min-width: 0;
   background: #fff;
   border-radius: 24px;
-  border: 1px solid #EBEBEB;
+  border: 1px solid #ebebeb;
   box-shadow: 0 2px 16px 0 rgba(33, 150, 243, 0.04);
   margin: 0 auto;
   box-sizing: border-box;
@@ -298,5 +345,22 @@ export default {
     justify-content: flex-end;
   }
 }
+.page {
+  padding: 0 32px 32px 32px;
+  display: flex;
+  background-color: #fff;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1400px) {
+  .page {
+    padding: 16px;
+  }
+}
+@media (max-width: 900px) {
+  .page {
+    padding: 4px;
+  }
+}
 </style>
- 

@@ -1,23 +1,18 @@
 <template>
   <div class="org-admin-graphs-outer">
     <div class="org-admin-graphs-card">
-      <div class="org-admin-graphs-header">
-        <span class="org-admin-graphs-title">Hidden Culture</span>
-        <span class="org-admin-graphs-title">Current State Graph</span>
-      </div>
       <div class="org-admin-graphs-content">
         <div class="graph-section">
+          <div class="org-admin-graphs-title">Hidden Culture</div>
           <div class="graph-controls">
             <Dropdown
-              mode="radio"
               :options="orgTypeOptions"
               v-model="orgType"
               style="margin-right: 18px"
             />
             <Dropdown
-              mode="quarter"
-              v-model:quarter="orgQuarter"
-              v-model:year="orgYear"
+              :options="quarterOptions"
+              v-model="orgQuarter"
             />
           </div>
           <Bar
@@ -26,17 +21,16 @@
           />
         </div>
         <div class="graph-section">
+          <div class="org-admin-graphs-title">Current State Graph</div>
           <div class="graph-controls">
             <Dropdown
-              mode="radio"
               :options="deptTypeOptions"
               v-model="deptType"
               style="margin-right: 18px"
             />
             <Dropdown
-              mode="quarter"
-              v-model:quarter="deptQuarter"
-              v-model:year="deptYear"
+              :options="quarterOptions"
+              v-model="deptQuarter"
             />
           </div>
           <Bar
@@ -59,17 +53,15 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import { ref, h } from 'vue';
-import Dropdown from '@/assets/Dropdown.vue';
+import { ref, h, computed } from 'vue';
+import Dropdown from '@/components/Common/Common_UI/Dropdown.vue';
 
 Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 const orgType = ref('Entire Organization');
 const orgQuarter = ref('Q4-2024');
-const orgYear = ref(2024);
 const deptType = ref('Single Department');
 const deptQuarter = ref('Q2-2024');
-const deptYear = ref(2024);
 
 const orgTypeOptions = [
   { label: 'Entire Organization', value: 'Entire Organization' },
@@ -78,6 +70,13 @@ const orgTypeOptions = [
 const deptTypeOptions = [
   { label: 'Single Department', value: 'Single Department' },
   { label: 'Entire Organization', value: 'Entire Organization' },
+];
+
+const quarterOptions = [
+  { label: 'Q1-2025', value: 'Q1-2025' },
+  { label: 'Q2-2025', value: 'Q2-2025' },
+  { label: 'Q3-2025', value: 'Q3-2025' },
+  { label: 'Q4-2025', value: 'Q4-2025' },
 ];
 
 const hiddenCultureData = [60, 100, 40, 40, 20, 60];
@@ -129,13 +128,13 @@ const chartOptions = {
 .org-admin-graphs-outer {
   width: 100%;
   max-width: 1400px;
-  min-width: 0;
   margin: 64px auto 64px auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   box-sizing: border-box;
 }
+
 .org-admin-graphs-card {
   width: 100%;
   background: #fff;
@@ -146,11 +145,36 @@ const chartOptions = {
   box-sizing: border-box;
   min-width: 0;
   max-width: 1400px;
-  padding: 32px 32px 24px 32px;
+  padding: 32px 32px 32px;
   display: flex;
   flex-direction: column;
   position: relative;
 }
+
+/* Responsive: shrink margin and padding on small screens */
+@media (max-width: 1400px) {
+  .org-admin-graphs-outer {
+    margin: 12px;
+    max-width: 100%;
+  }
+  .org-admin-graphs-card {
+    border-radius: 14px;
+    max-width: 100%;
+    padding: 12px 12px 12px 12px;
+  }
+}
+
+@media (max-width: 900px) {
+  .org-admin-graphs-outer {
+    margin: 4px;
+    max-width: 100%;
+  }
+  .org-admin-graphs-card {
+    border-radius: 10px;
+    padding: 4px 4px 4px 4px;
+  }
+}
+
 .org-admin-graphs-header {
   display: flex;
   flex-direction: row;
@@ -164,6 +188,7 @@ const chartOptions = {
   font-weight: 600;
   flex: 1 1 0;
   text-align: left;
+  margin-bottom: 12px;
 }
 .org-admin-graphs-content {
   display: flex;
@@ -221,11 +246,6 @@ const chartOptions = {
   }
 }
 @media (max-width: 1400px) {
-  .org-admin-graphs-card {
-    border-radius: 14px;
-    max-width: 100%;
-    padding: 18px 8px 12px 8px;
-  }
   .org-admin-graphs-content {
     gap: 18px;
   }
@@ -236,10 +256,6 @@ const chartOptions = {
   }
 }
 @media (max-width: 900px) {
-  .org-admin-graphs-card {
-    border-radius: 10px;
-    padding: 8px 2vw 8px 2vw;
-  }
   .org-admin-graphs-header {
     flex-direction: column;
     gap: 8px;

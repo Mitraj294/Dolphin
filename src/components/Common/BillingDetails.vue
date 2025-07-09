@@ -1,178 +1,180 @@
 <template>
   <MainLayout>
-    <div class="billing-table-outer">
-      <div class="billing-table-card">
-        <div class="billing-table-header">
-          <div class="billing-title">
-            Billing Details (Current Subscription)
+    <div class="page">
+      <div class="billing-table-outer">
+        <div class="billing-table-card">
+          <div class="billing-table-header">
+            <div class="billing-title">
+              Billing Details (Current Subscription)
+            </div>
           </div>
-        </div>
-        <div class="billing-plan-box">
-          <div>
-            <div class="plan-name">Standard</div>
-            <div class="plan-price">$2500/annual</div>
+          <div class="billing-plan-box">
+            <div>
+              <div class="plan-name">Standard</div>
+              <div class="plan-price">$2500/annual</div>
+            </div>
+            <div class="plan-meta">
+              <div>Subscription Start : <b>March 18, 2025</b></div>
+              <div>Subscription End : <b>March 18, 2026</b></div>
+              <div class="plan-next">(Next bill on March 19, 2026)</div>
+            </div>
           </div>
-          <div class="plan-meta">
-            <div>Subscription Start : <b>March 18, 2025</b></div>
-            <div>Subscription End : <b>March 18, 2026</b></div>
-            <div class="plan-next">(Next bill on March 19, 2026)</div>
+          <div class="billing-history-title">Billing History</div>
+          <div class="billing-history-table-container">
+            <table class="billing-history-table">
+              <thead>
+                <tr>
+                  <th>Payment Method</th>
+                  <th>Payment Date</th>
+                  <th>Subscription End</th>
+                  <th>Amount</th>
+                  <th>PDF</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Paypal<br />jack@test.com</td>
+                  <td>Mar 4, 2025</td>
+                  <td>Mar 4, 2026</td>
+                  <td>$2500.00</td>
+                  <td>
+                    <a
+                      href="#"
+                      class="receipt-link"
+                      ><svg
+                        width="16"
+                        height="16"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        style="vertical-align: middle; margin-right: 4px"
+                      >
+                        <rect
+                          x="3"
+                          y="3"
+                          width="18"
+                          height="18"
+                          rx="2"
+                          stroke="#0074c2"
+                          stroke-width="2"
+                        />
+                        <path
+                          d="M7 7h10M7 11h10M7 15h6"
+                          stroke="#0074c2"
+                          stroke-width="2"
+                        />
+                      </svg>
+                      View Receipt</a
+                    >
+                  </td>
+                </tr>
+                <tr>
+                  <td>Credit Card<br />4580..........</td>
+                  <td>Feb 26, 2025</td>
+                  <td>Feb 26, 2026</td>
+                  <td>$2500.00</td>
+                  <td>
+                    <a
+                      href="#"
+                      class="receipt-link"
+                      ><svg
+                        width="16"
+                        height="16"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        style="vertical-align: middle; margin-right: 4px"
+                      >
+                        <rect
+                          x="3"
+                          y="3"
+                          width="18"
+                          height="18"
+                          rx="2"
+                          stroke="#0074c2"
+                          stroke-width="2"
+                        />
+                        <path
+                          d="M7 7h10M7 11h10M7 15h6"
+                          stroke="#0074c2"
+                          stroke-width="2"
+                        />
+                      </svg>
+                      View Receipt</a
+                    >
+                  </td>
+                </tr>
+                <tr>
+                  <td>Paypal<br />jack@test.com</td>
+                  <td>Feb 22, 2025</td>
+                  <td>Feb 22, 2026</td>
+                  <td>$2500.00</td>
+                  <td>
+                    <a
+                      href="#"
+                      class="receipt-link"
+                      ><svg
+                        width="16"
+                        height="16"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        style="vertical-align: middle; margin-right: 4px"
+                      >
+                        <rect
+                          x="3"
+                          y="3"
+                          width="18"
+                          height="18"
+                          rx="2"
+                          stroke="#0074c2"
+                          stroke-width="2"
+                        />
+                        <path
+                          d="M7 7h10M7 11h10M7 15h6"
+                          stroke="#0074c2"
+                          stroke-width="2"
+                        />
+                      </svg>
+                      View Receipt</a
+                    >
+                  </td>
+                </tr>
+                <tr>
+                  <td>Paypal<br />jack@test.com</td>
+                  <td>Jan 4, 2025</td>
+                  <td>Jan 4, 2026</td>
+                  <td>$2500.00</td>
+                  <td>
+                    <a
+                      href="#"
+                      class="receipt-link"
+                      ><svg
+                        width="16"
+                        height="16"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        style="vertical-align: middle; margin-right: 4px"
+                      >
+                        <rect
+                          x="3"
+                          y="3"
+                          width="18"
+                          height="18"
+                          rx="2"
+                          stroke="#0074c2"
+                          stroke-width="2"
+                        />
+                        <path
+                          d="M7 7h10M7 11h10M7 15h6"
+                          stroke="#0074c2"
+                          stroke-width="2"
+                        />
+                      </svg>
+                      View Receipt</a
+                    >
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-        </div>
-        <div class="billing-history-title">Billing History</div>
-        <div class="billing-history-table-container">
-          <table class="billing-history-table">
-            <thead>
-              <tr>
-                <th>Payment Method</th>
-                <th>Payment Date</th>
-                <th>Subscription End</th>
-                <th>Amount</th>
-                <th>PDF</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Paypal<br />jack@test.com</td>
-                <td>Mar 4, 2025</td>
-                <td>Mar 4, 2026</td>
-                <td>$2500.00</td>
-                <td>
-                  <a
-                    href="#"
-                    class="receipt-link"
-                    ><svg
-                      width="16"
-                      height="16"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      style="vertical-align: middle; margin-right: 4px"
-                    >
-                      <rect
-                        x="3"
-                        y="3"
-                        width="18"
-                        height="18"
-                        rx="2"
-                        stroke="#0074c2"
-                        stroke-width="2"
-                      />
-                      <path
-                        d="M7 7h10M7 11h10M7 15h6"
-                        stroke="#0074c2"
-                        stroke-width="2"
-                      />
-                    </svg>
-                    View Receipt</a
-                  >
-                </td>
-              </tr>
-              <tr>
-                <td>Credit Card<br />4580..........</td>
-                <td>Feb 26, 2025</td>
-                <td>Feb 26, 2026</td>
-                <td>$2500.00</td>
-                <td>
-                  <a
-                    href="#"
-                    class="receipt-link"
-                    ><svg
-                      width="16"
-                      height="16"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      style="vertical-align: middle; margin-right: 4px"
-                    >
-                      <rect
-                        x="3"
-                        y="3"
-                        width="18"
-                        height="18"
-                        rx="2"
-                        stroke="#0074c2"
-                        stroke-width="2"
-                      />
-                      <path
-                        d="M7 7h10M7 11h10M7 15h6"
-                        stroke="#0074c2"
-                        stroke-width="2"
-                      />
-                    </svg>
-                    View Receipt</a
-                  >
-                </td>
-              </tr>
-              <tr>
-                <td>Paypal<br />jack@test.com</td>
-                <td>Feb 22, 2025</td>
-                <td>Feb 22, 2026</td>
-                <td>$2500.00</td>
-                <td>
-                  <a
-                    href="#"
-                    class="receipt-link"
-                    ><svg
-                      width="16"
-                      height="16"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      style="vertical-align: middle; margin-right: 4px"
-                    >
-                      <rect
-                        x="3"
-                        y="3"
-                        width="18"
-                        height="18"
-                        rx="2"
-                        stroke="#0074c2"
-                        stroke-width="2"
-                      />
-                      <path
-                        d="M7 7h10M7 11h10M7 15h6"
-                        stroke="#0074c2"
-                        stroke-width="2"
-                      />
-                    </svg>
-                    View Receipt</a
-                  >
-                </td>
-              </tr>
-              <tr>
-                <td>Paypal<br />jack@test.com</td>
-                <td>Jan 4, 2025</td>
-                <td>Jan 4, 2026</td>
-                <td>$2500.00</td>
-                <td>
-                  <a
-                    href="#"
-                    class="receipt-link"
-                    ><svg
-                      width="16"
-                      height="16"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      style="vertical-align: middle; margin-right: 4px"
-                    >
-                      <rect
-                        x="3"
-                        y="3"
-                        width="18"
-                        height="18"
-                        rx="2"
-                        stroke="#0074c2"
-                        stroke-width="2"
-                      />
-                      <path
-                        d="M7 7h10M7 11h10M7 15h6"
-                        stroke="#0074c2"
-                        stroke-width="2"
-                      />
-                    </svg>
-                    View Receipt</a
-                  >
-                </td>
-              </tr>
-            </tbody>
-          </table>
         </div>
       </div>
     </div>
@@ -405,6 +407,22 @@ export default {
     padding-bottom: 0;
   }
 }
+.page {
+  padding: 0 32px 32px 32px;
+  display: flex;
+  background-color: #fff;
+  justify-content: center;
+  box-sizing: border-box;
+}
 
-/* No button styles here. All button styles should come from global.css only. */
+@media (max-width: 1400px) {
+  .page {
+    padding: 16px;
+  }
+}
+@media (max-width: 900px) {
+  .page {
+    padding: 4px;
+  }
+}
 </style>

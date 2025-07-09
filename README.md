@@ -61,3 +61,23 @@ Contributions are welcome! Please open an issue or submit a pull request for sug
 
 ## License
 This project is licensed under the MIT License.
+
+
+////////////
+
+
+/home/digilab/Dolphin/src/components/Common/Organizations/OrganizationTable.vue
+this is perfect look att this file we need our all the files like this we need
+this type of perfect
+page contet
+for our this file make this 
+
+leads
+
+ file just like perefcty like this
+
+also look how just its only table part is scorable all other fiexed and resonsive make good responsive percet file like that
+
+
+so basic stucture and all things fix  like this
+it's data and conenet will just as it is we need to fix stuctute cause we need same type of pages across app

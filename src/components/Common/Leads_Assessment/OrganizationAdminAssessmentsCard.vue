@@ -3,7 +3,12 @@
     <div class="assessments-header-row">
       <div></div>
       <div class="assessments-header-actions">
-        <button class="sent-assessments-btn" @click="goToSendAssessment">Sent Assessments</button>
+        <button
+          class="sent-assessments-btn"
+          @click="goToSendAssessment"
+        >
+          Sent Assessments
+        </button>
         <button class="create-assessment-btn">+ Create Assessments</button>
       </div>
     </div>
@@ -16,13 +21,34 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="item in assessments" :key="item.id">
+          <tr
+            v-for="item in paginatedAssessments"
+            :key="item.id"
+          >
             <td class="assessment-name-cell">
-              <button class="assessment-link" @click="goToSummary(item)">{{ item.name }}</button>
+              <button
+                class="assessment-link"
+                @click="goToSummary(item)"
+              >
+                {{ item.name }}
+              </button>
             </td>
             <td>
-              <button class="schedule-btn" @click="openScheduleModal(item)">
-                <img src="@/assets/images/Schedule.svg" alt="Schedule" style="margin-right:6px; width:18px; height:18px; vertical-align:middle; display:inline-block;" />
+              <button
+                class="schedule-btn"
+                @click="openScheduleModal(item)"
+              >
+                <img
+                  src="@/assets/images/Schedule.svg"
+                  alt="Schedule"
+                  style="
+                    margin-right: 6px;
+                    width: 18px;
+                    height: 18px;
+                    vertical-align: middle;
+                    display: inline-block;
+                  "
+                />
                 Schedule
               </button>
             </td>
@@ -31,41 +57,118 @@
       </table>
     </div>
     <!-- Schedule Modal -->
-    <div v-if="showScheduleModal" class="modal-overlay">
-      <div class="modal-content">
-        <button class="modal-close" @click="closeScheduleModal">&times;</button>
+    <div
+      v-if="showScheduleModal"
+      class="modal-overlay"
+    >
+      <div class="modal-card">
+        <button
+          class="modal-close"
+          @click="closeScheduleModal"
+        >
+          &times;
+        </button>
         <h2 class="modal-title">
           Schedule {{ selectedAssessment && selectedAssessment.name }}
         </h2>
-        <div class="modal-form-row">
-          <input class="modal-input" placeholder="MM/DD/YYYY" type="text" />
-          <input class="modal-input" placeholder="00:00" type="text" />
-        </div>
-        <div class="modal-form-row">
-          <select class="modal-input">
-            <option>Groups</option>
-          </select>
-          <select class="modal-input">
-            <option>Members</option>
-          </select>
-        </div>
-        <div class="modal-actions">
-          <button class="modal-schedule-btn">Schedule</button>
-        </div>
+        <form
+          class="modal-form"
+          @submit.prevent
+        >
+          <div class="modal-form-row">
+            <div class="modal-form-group">
+              <input
+                class="modal-input"
+                placeholder="MM/DD/YYYY"
+                type="text"
+              />
+            </div>
+            <div class="modal-form-group">
+              <input
+                class="modal-input"
+                placeholder="00:00"
+                type="text"
+              />
+            </div>
+          </div>
+          <div class="modal-form-row">
+            <div class="modal-form-group custom-dropdown">
+              <span class="modal-icon"><i class="fas fa-users"></i></span>
+              <div
+                class="custom-dropdown-input"
+                @click="showGroupsDropdown = !showGroupsDropdown"
+              >
+                <span style="color: #888">Groups</span>
+                <i class="fas fa-chevron-down"></i>
+              </div>
+              <!-- Dropdown list could go here if needed -->
+            </div>
+            <div class="modal-form-group custom-dropdown">
+              <span class="modal-icon"><i class="fas fa-user"></i></span>
+              <div
+                class="custom-dropdown-input"
+                @click="showMembersDropdown = !showMembersDropdown"
+              >
+                <span style="color: #888">Members</span>
+                <i class="fas fa-chevron-down"></i>
+              </div>
+              <!-- Dropdown list could go here if needed -->
+            </div>
+          </div>
+          <div class="modal-form-actions">
+            <button
+              class="modal-save-btn"
+              type="submit"
+            >
+              Schedule
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
+  <Pagination
+    :pageSize="pageSize"
+    :pageSizes="[10, 25, 100]"
+    :showPageDropdown="showPageDropdown"
+    :currentPage="currentPage"
+    :totalPages="totalPages"
+    @togglePageDropdown="showPageDropdown = !showPageDropdown"
+    @selectPageSize="selectPageSize"
+    @goToPage="goToPage"
+  />
 </template>
 
 <script>
+import Pagination from '@/components/layout/Pagination.vue';
 export default {
   name: 'OrganizationAdminAssessmentsCard',
+  components: { Pagination },
   data() {
     return {
-      assessments: Array.from({ length: 10 }, (_, i) => ({ id: i + 1, name: `Assessment ${i + 1}` })),
+      assessments: Array.from({ length: 10 }, (_, i) => ({
+        id: i + 1,
+        name: `Assessment ${i + 1}`,
+      })),
       showScheduleModal: false,
-      selectedAssessment: null
-    }
+      selectedAssessment: null,
+      // Pagination state
+      pageSize: 10,
+      currentPage: 1,
+      showPageDropdown: false,
+      // Dropdown state for modal
+      showGroupsDropdown: false,
+      showMembersDropdown: false,
+    };
+  },
+  computed: {
+    paginatedAssessments() {
+      const start = (this.currentPage - 1) * this.pageSize;
+      return this.assessments.slice(start, start + this.pageSize);
+    },
+    totalPages() {
+      return Math.ceil(this.assessments.length / this.pageSize) || 1;
+    },
   },
   methods: {
     openScheduleModal(item) {
@@ -75,16 +178,30 @@ export default {
     closeScheduleModal() {
       this.showScheduleModal = false;
       this.selectedAssessment = null;
+      this.showGroupsDropdown = false;
+      this.showMembersDropdown = false;
     },
     goToSummary(item) {
-      this.$router.push({ name: 'AssessmentSummary', params: { assessmentId: item.id } });
+      this.$router.push({
+        name: 'AssessmentSummary',
+        params: { assessmentId: item.id },
+      });
     },
     goToSendAssessment() {
-      // Open the SendAssessment page ("/assessments/send-assessment")
       this.$router.push({ name: 'SendAssessment' });
-    }
-  }
-}
+    },
+    goToPage(page) {
+      if (page >= 1 && page <= this.totalPages) {
+        this.currentPage = page;
+      }
+    },
+    selectPageSize(size) {
+      this.pageSize = size;
+      this.currentPage = 1;
+      this.showPageDropdown = false;
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -94,7 +211,7 @@ export default {
   min-width: 0;
   background: #fff;
   border-radius: 24px;
-  border: 1px solid #EBEBEB;
+  border: 1px solid #ebebeb;
   box-shadow: 0 2px 16px 0 rgba(33, 150, 243, 0.04);
   margin: 64px auto 0 auto;
   padding: 0;
@@ -180,7 +297,7 @@ export default {
 }
 .assessments-table th:last-child {
   border-top-right-radius: 99px;
-  border-bottom-right-radius: 99px; 
+  border-bottom-right-radius: 99px;
 }
 .assessments-table td {
   background: #fff;
@@ -209,68 +326,98 @@ export default {
 }
 .modal-overlay {
   position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.12);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.13);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 2000;
 }
-.modal-content {
+.modal-card {
   background: #fff;
-  border-radius: 18px;
-  box-shadow: 0 4px 32px rgba(0,0,0,0.08);
-  padding: 40px 40px 32px 40px;
-  min-width: 420px;
-  max-width: 520px;
+  border-radius: 22px;
+  box-shadow: 0 4px 32px 0 rgba(33, 150, 243, 0.1);
+  padding: 40px 48px 32px 48px;
+  min-width: 400px;
+  max-width: 700px;
   width: 100%;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 .modal-close {
   position: absolute;
-  top: 18px;
-  right: 22px;
+  top: 24px;
+  right: 32px;
   background: none;
   border: none;
-  font-size: 2rem;
-  color: #bbb;
+  font-size: 32px;
+  color: #888;
   cursor: pointer;
+  z-index: 10;
 }
 .modal-title {
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 600;
   margin-bottom: 32px;
+  color: #222;
+}
+.modal-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 .modal-form-row {
   display: flex;
-  gap: 18px;
-  margin-bottom: 18px;
+  gap: 24px;
+  width: 100%;
+}
+.modal-form-group {
+  flex: 1 1 0;
+  min-width: 0;
+  background: #f6f6f6;
+  border-radius: 9px;
+  padding: 0 16px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 0;
+  box-sizing: border-box;
 }
 .modal-input {
-  flex: 1;
-  padding: 16px 18px;
-  border: 1px solid #e0e0e0;
-  border-radius: 7px;
+  border: none;
+  background: transparent;
+  outline: none;
   font-size: 16px;
-  background: #fafafa;
+  color: #222;
+  width: 100%;
+  height: 44px;
+  padding: 0;
+  font-family: inherit;
 }
-.modal-actions {
+.modal-form-actions {
+  width: 100%;
   display: flex;
   justify-content: flex-end;
   margin-top: 18px;
 }
-.modal-schedule-btn {
-  background: #0074c2;
+.modal-save-btn {
+  border-radius: 22px;
+  background: #0164a5;
   color: #fff;
-  border: none;
-  border-radius: 999px;
-  padding: 12px 40px;
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 500;
+  padding: 10px 32px;
+  border: none;
   cursor: pointer;
-  transition: background 0.18s;
+  transition: background 0.2s;
 }
-.modal-schedule-btn:hover {
+.modal-save-btn:hover {
   background: #005fa3;
 }
 .assessment-link {
@@ -287,6 +434,57 @@ export default {
 .assessment-link:hover {
   color: #005fa3;
   text-decoration: underline;
+}
+.modal-form-group.custom-dropdown {
+  flex-direction: row;
+  align-items: center;
+  gap: 0;
+  min-height: 48px;
+  width: 100%;
+  position: relative;
+}
+.modal-icon {
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+}
+.custom-dropdown-input {
+  width: 100%;
+  background: #f6f6f6;
+  border: none;
+  border-radius: 9px;
+  height: 48px;
+  padding: 0;
+  font-size: 16px;
+  color: #222;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  box-shadow: none;
+  margin-bottom: 0;
+  font-family: inherit;
+  font-weight: 500;
+}
+.custom-dropdown-input .fas {
+  color: #222;
+  font-size: 18px;
+  margin-right: 1px;
+  position: static;
+  left: unset;
+  top: unset;
+  transform: none;
+}
+.custom-dropdown-input .fas.fa-chevron-down {
+  margin-left: auto;
+  color: #888;
+}
+.custom-dropdown-input span[style] {
+  color: #888 !important;
+  font-size: 16px;
+  font-weight: 500;
+  font-family: inherit;
+  margin-left: 2px;
 }
 @media (max-width: 1400px) {
   .assessments-card {
@@ -319,6 +517,14 @@ export default {
     padding: 0 4px 4px 4px;
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
+  }
+}
+@media (max-width: 600px) {
+  .modal-card {
+    min-width: 0;
+    max-width: 99vw;
+    padding: 8px 2vw 8px 2vw;
+    border-radius: 10px;
   }
 }
 </style>

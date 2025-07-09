@@ -2,7 +2,7 @@
   <MainLayout>
     <div class="leads-table-outer">
       <div class="leads-table-card">
-        <div class="leads-table-header">
+        <div class="leads-table-header-bar">
           <button
             class="leads-add-btn"
             @click="$router.push('/leads/lead-capture')"
@@ -15,7 +15,6 @@
             Add New
           </button>
         </div>
-        <div class="leads-table-header-spacer"></div>
         <div class="leads-table-container">
           <table class="leads-table">
             <thead>
@@ -495,7 +494,6 @@ export default {
 .leads-table-outer {
   width: 100%;
   max-width: 1400px;
-  min-width: 0;
   margin: 64px auto 64px auto;
   display: flex;
   flex-direction: column;
@@ -506,7 +504,7 @@ export default {
 .leads-table-card {
   width: 100%;
   background: #fff;
-  border-radius: 24px; /* was 18px */
+  border-radius: 24px;
   border: 1px solid #ebebeb;
   box-shadow: 0 2px 16px 0 rgba(33, 150, 243, 0.04);
   overflow: visible;
@@ -516,24 +514,15 @@ export default {
   max-width: 1400px;
 }
 
-.leads-table-header {
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
+.leads-table-header-bar {
   padding: 24px 46px 0 24px;
   background: #fff;
-  border-top-left-radius: 24px; /* was 18px */
-  border-top-right-radius: 24px; /* was 18px */
-  min-height: 64px;
-  box-sizing: border-box;
-}
-
-.leads-table-header-spacer {
-  height: 18px;
-  width: 100%;
-  background: transparent;
-  display: block;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .leads-table-container {
@@ -542,8 +531,8 @@ export default {
   box-sizing: border-box;
   padding: 0 24px 24px 24px;
   background: #fff;
-  border-bottom-left-radius: 24px; /* was 18px */
-  border-bottom-right-radius: 24px; /* was 18px */
+  border-bottom-left-radius: 24px;
+  border-bottom-right-radius: 24px;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
@@ -567,27 +556,24 @@ export default {
 
 .leads-table th,
 .leads-table td {
-  padding: 12px 8px;
+  padding: 18px 12px;
   text-align: left;
-  font-size: 14px;
-  border-bottom: 1px solid #f0f0f0;
+  font-size: 15px;
+  border-bottom: 1.5px solid #f0f0f0;
   background: #fff;
+  font-family: 'Inter', Arial, sans-serif;
+  font-weight: 400;
+  line-height: 22px;
 }
 
 .leads-table th {
   background: #f8f8f8;
-  font-family: 'Inter', Arial, sans-serif;
-  font-size: 14px;
   font-weight: 600;
   color: #888;
   position: relative;
   vertical-align: middle;
   min-width: 100px;
   border-bottom: 1.5px solid #ebebeb;
-  height: 44px;
-  line-height: 44px;
-  padding: 0 8px;
-  letter-spacing: 0.01em;
 }
 
 .rounded-th-left {
@@ -603,6 +589,10 @@ export default {
   background: #f8f8f8;
 }
 
+.leads-table td:first-child {
+  padding-left: 32px !important;
+}
+
 /* --- Responsive: shrink margin and font on small screens --- */
 @media (max-width: 1400px) {
   .leads-table-outer {
@@ -610,18 +600,18 @@ export default {
     max-width: 100%;
   }
   .leads-table-card {
-    border-radius: 14px; /* was 10px */
+    border-radius: 14px;
     max-width: 100%;
   }
-  .leads-table-header {
+  .leads-table-header-bar {
     padding: 8px 8px 0 8px;
-    border-top-left-radius: 14px; /* was 10px */
-    border-top-right-radius: 14px; /* was 10px */
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
   }
   .leads-table-container {
     padding: 0 8px 8px 8px;
-    border-bottom-left-radius: 14px; /* was 10px */
-    border-bottom-right-radius: 14px; /* was 10px */
+    border-bottom-left-radius: 14px;
+    border-bottom-right-radius: 14px;
   }
   .leads-table th,
   .leads-table td {
@@ -641,6 +631,9 @@ export default {
     border-top-right-radius: 14px;
     border-bottom-right-radius: 14px;
   }
+  .leads-table td:first-child {
+    padding-left: 16px !important;
+  }
 }
 
 @media (max-width: 900px) {
@@ -649,17 +642,17 @@ export default {
     max-width: 100%;
   }
   .leads-table-card {
-    border-radius: 10px; /* was 6px */
+    border-radius: 10px;
   }
-  .leads-table-header {
+  .leads-table-header-bar {
     padding: 8px 4px 0 4px;
-    border-top-left-radius: 10px; /* was 6px */
-    border-top-right-radius: 10px; /* was 6px */
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
   }
   .leads-table-container {
     padding: 0 4px 4px 4px;
-    border-bottom-left-radius: 10px; /* was 6px */
-    border-bottom-right-radius: 10px; /* was 6px */
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
   }
   .leads-table th,
   .leads-table td {
@@ -679,9 +672,12 @@ export default {
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
   }
+  .leads-table td:first-child {
+    padding-left: 8px !important;
+  }
 }
 
-/* --- Other styles (unchanged) --- */
+/* --- Other styles (unchanged, but moved for clarity) --- */
 .leads-notes-btn {
   background: #fff;
   border: 1.5px solid #e0e0e0;
@@ -696,11 +692,9 @@ export default {
   font-weight: 500;
   gap: 4px;
 }
-
 .leads-notes-btn:hover {
   border: 1.5px solid #0074c2;
 }
-
 .leads-menu-btn {
   background: none;
   border: none;
@@ -709,11 +703,9 @@ export default {
   border-radius: 50%;
   transition: background 0.2s;
 }
-
 .leads-menu-btn:hover {
   background: #f0f0f0;
 }
-
 .leads-menu.custom-leads-menu {
   position: fixed;
   background: #fff;
@@ -726,7 +718,6 @@ export default {
   flex-direction: column;
   padding: 4px 0;
 }
-
 .leads-menu-item {
   padding: 8px 12px;
   font-size: 14px;
@@ -734,11 +725,9 @@ export default {
   cursor: pointer;
   transition: background 0.2s;
 }
-
 .leads-menu-item:hover {
   background: #f0f8ff;
 }
-
 .leads-add-btn {
   border-radius: 29.01px;
   background: #0164a5;
@@ -761,12 +750,10 @@ export default {
   max-width: none;
   overflow: visible;
 }
-
 .leads-add-btn:hover {
   background: #005fa3;
   color: #fff;
 }
-
 .leads-add-btn-icon {
   width: 18px;
   height: 18px;
@@ -774,8 +761,6 @@ export default {
   display: inline-block;
   vertical-align: middle;
 }
-
-/* --- Notes Modal (unchanged) --- */
 .notes-modal-overlay {
   position: fixed;
   top: 0;
@@ -791,13 +776,13 @@ export default {
 .notes-modal {
   background: #fff;
   border-radius: 12px;
-  padding: 32px 32px 24px 32px; /* Equal padding on all sides */
-  min-width: 480px; /* Increased from 340px */
-  max-width: 600px; /* Set a reasonable max width */
+  padding: 32px 32px 24px 32px;
+  min-width: 480px;
+  max-width: 600px;
   box-shadow: 0 4px 32px rgba(0, 0, 0, 0.12);
   display: flex;
   flex-direction: column;
-  align-items: stretch; /* changed from center to stretch for full width */
+  align-items: stretch;
 }
 .notes-modal h3 {
   margin-top: 0;
@@ -817,7 +802,6 @@ export default {
   margin-bottom: 18px;
   resize: vertical;
   display: block;
-  /* Remove min-width/max-width for full modal width */
 }
 .notes-modal-actions {
   display: flex;
@@ -833,30 +817,10 @@ export default {
   padding: 8px 20px;
   font-size: 15px;
   font-weight: 500;
-
   transition: background 0.2s;
 }
 .notes-modal-btn:hover {
   background: #005fa3;
-}
-.notes-view-content {
-  padding: 12px;
-  background: #f8f8f8;
-  border-radius: 8px;
-  font-size: 15px;
-  color: #222;
-  margin-bottom: 12px;
-  min-width: 200px;
-}
-.notes-view-empty {
-  color: #888;
-  font-size: 15px;
-  padding: 12px;
-  background: #f8f8f8;
-  border-radius: 8px;
-  margin-bottom: 12px;
-  min-width: 200px;
-  text-align: center;
 }
 .lead-contact-link {
   cursor: pointer;

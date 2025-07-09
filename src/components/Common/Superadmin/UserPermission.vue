@@ -1,79 +1,81 @@
 <template>
   <MainLayout>
-    <div class="user-permission-table-outer">
-      <div class="user-permission-table-card">
-        <div class="user-permission-table-header">
-          <button class="user-permission-add-btn">
-            <img
-              src="@/assets/images/Add.svg"
-              alt="Add"
-              class="user-permission-add-btn-icon"
-            />
-            Add New
-          </button>
+    <div class="page">
+      <div class="user-permission-table-outer">
+        <div class="user-permission-table-card">
+          <div class="user-permission-table-header">
+            <button class="user-permission-add-btn">
+              <img
+                src="@/assets/images/Add.svg"
+                alt="Add"
+                class="user-permission-add-btn-icon"
+              />
+              Add New
+            </button>
+          </div>
+          <div class="user-permission-table-header-spacer"></div>
+          <div class="user-permission-table-container">
+            <table class="user-permission-table">
+              <thead>
+                <tr>
+                  <th class="rounded-th-left">Name</th>
+                  <th>Email</th>
+                  <th>Roles</th>
+                  <th class="rounded-th-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="user in paginatedUsers"
+                  :key="user.email"
+                >
+                  <td>{{ user.name }}</td>
+                  <td>{{ user.email }}</td>
+                  <td>{{ user.role }}</td>
+                  <td class="actions">
+                    <button
+                      class="icon-btn"
+                      title="Edit"
+                    >
+                      <img
+                        src="@/assets/images/EditBlack.svg"
+                        alt="Edit"
+                      />
+                    </button>
+                    <button
+                      class="icon-btn"
+                      title="Delete"
+                    >
+                      <img
+                        src="@/assets/images/Delete icon.svg"
+                        alt="Delete"
+                      />
+                    </button>
+                    <button class="impersonate-btn">
+                      <img
+                        src="@/assets/images/Impersonate.svg"
+                        alt="Impersonate"
+                        class="impersonate-icon"
+                      />
+                      Impersonate
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div class="user-permission-table-header-spacer"></div>
-        <div class="user-permission-table-container">
-          <table class="user-permission-table">
-            <thead>
-              <tr>
-                <th class="rounded-th-left">Name</th>
-                <th>Email</th>
-                <th>Roles</th>
-                <th class="rounded-th-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="user in paginatedUsers"
-                :key="user.email"
-              >
-                <td>{{ user.name }}</td>
-                <td>{{ user.email }}</td>
-                <td>{{ user.role }}</td>
-                <td class="actions">
-                  <button
-                    class="icon-btn"
-                    title="Edit"
-                  >
-                    <img
-                      src="@/assets/images/EDIT.svg"
-                      alt="Edit"
-                    />
-                  </button>
-                  <button
-                    class="icon-btn"
-                    title="Delete"
-                  >
-                    <img
-                      src="@/assets/images/Delete icon.svg"
-                      alt="Delete"
-                    />
-                  </button>
-                  <button class="impersonate-btn">
-                    <img
-                      src="@/assets/images/Impersonate.svg"
-                      alt="Impersonate"
-                      class="impersonate-icon"
-                    />
-                    Impersonate
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <Pagination
+          :pageSize="pageSize"
+          :pageSizes="pageSizes"
+          :showPageDropdown="showPageDropdown"
+          :currentPage="currentPage"
+          :totalPages="totalPages"
+          @togglePageDropdown="showPageDropdown = !showPageDropdown"
+          @selectPageSize="selectPageSize"
+          @goToPage="goToPage"
+        />
       </div>
-      <Pagination
-        :pageSize="pageSize"
-        :pageSizes="pageSizes"
-        :showPageDropdown="showPageDropdown"
-        :currentPage="currentPage"
-        :totalPages="totalPages"
-        @togglePageDropdown="showPageDropdown = !showPageDropdown"
-        @selectPageSize="selectPageSize"
-        @goToPage="goToPage"
-      />
     </div>
   </MainLayout>
 </template>
@@ -461,6 +463,25 @@ export default {
   .rounded-th-right {
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
+  }
+}
+
+.page {
+  padding: 0 32px 32px 32px;
+  display: flex;
+  background-color: #fff;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1400px) {
+  .page {
+    padding: 16px;
+  }
+}
+@media (max-width: 900px) {
+  .page {
+    padding: 4px;
   }
 }
 </style>

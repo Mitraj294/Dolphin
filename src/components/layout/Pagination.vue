@@ -2,11 +2,21 @@
   <footer class="footer-box">
     <div class="footer-controls split-footer-controls">
       <div class="notifications-page-size-dropdown">
-        <button class="notifications-page-size-btn" @click="$emit('togglePageDropdown')">
+        <button
+          class="notifications-page-size-btn"
+          @click="$emit('togglePageDropdown')"
+        >
           {{ pageSize }}/page
-          <img src="@/assets/images/VectorDown.svg" class="notifications-page-size-arrow" alt="Dropdown" />
+          <img
+            src="@/assets/images/VectorDown.svg"
+            class="notifications-page-size-arrow"
+            alt="Dropdown"
+          />
         </button>
-        <div v-if="showPageDropdown" class="notifications-page-size-menu">
+        <div
+          v-if="showPageDropdown"
+          class="notifications-page-size-menu"
+        >
           <div
             v-for="size in pageSizes"
             :key="size"
@@ -24,24 +34,39 @@
           :disabled="currentPage === 1"
           @click="$emit('goToPage', currentPage - 1)"
         >
-          <img src="@/assets/images/VectorLeft.svg" alt="Previous" />
+          <img
+            src="@/assets/images/VectorLeft.svg"
+            alt="Previous"
+          />
           Previous
         </button>
         <button
           v-for="page in computedPaginationPages"
           :key="page + '-page'"
           v-if="page !== '...'"
-          :class="['notifications-pagination-page', { selected: page === currentPage }]"
+          :class="[
+            'notifications-pagination-page',
+            { selected: page === currentPage },
+          ]"
           @click="$emit('goToPage', page)"
-        >{{ page }}</button>
-        <span v-else class="notifications-pagination-page">...</span>
+        >
+          {{ page }}
+        </button>
+        <span
+          v-else
+          class="notifications-pagination-page"
+          >...</span
+        >
         <button
           class="notifications-pagination-btn next"
           :disabled="currentPage === totalPages"
           @click="$emit('goToPage', currentPage + 1)"
         >
           Next
-          <img src="@/assets/images/VectorRight.svg" alt="Next" />
+          <img
+            src="@/assets/images/VectorRight.svg"
+            alt="Next"
+          />
         </button>
       </div>
     </div>
@@ -49,13 +74,13 @@
 </template>
 
 <script>
-import '@/assets/global.css'
+import '@/assets/global.css';
 export default {
   name: 'Pagination',
   props: {
     withPagination: {
       type: Boolean,
-      default: false
+      default: false,
     },
     pageSize: Number,
     pageSizes: Array,
@@ -63,9 +88,9 @@ export default {
     currentPage: Number,
     totalPages: {
       type: Number,
-      default: 10
+      default: 10,
     },
-    paginationPages: Array
+    paginationPages: Array,
   },
   computed: {
     computedPaginationPages() {
@@ -87,7 +112,9 @@ export default {
         return [1, 5, 6, 7, '...', total - 1, total];
       }
       if (current === 7) {
-        return [1, 2, '...', 6, 7, 8, total, total - 1].filter((v, i, arr) => arr.indexOf(v) === i);
+        return [1, 2, '...', 6, 7, 8, total, total - 1].filter(
+          (v, i, arr) => arr.indexOf(v) === i
+        );
       }
       if (current === total - 2) {
         return [1, 2, '...', total - 3, total - 2, total - 1, total];
@@ -98,10 +125,20 @@ export default {
       if (current === total) {
         return [1, 2, '...', total - 2, total - 1, total];
       }
-      return [1, 2, '...', current - 1, current, current + 1, '...', total - 1, total].filter((v, i, arr) => arr.indexOf(v) === i);
-    }
-  }
-}
+      return [
+        1,
+        2,
+        '...',
+        current - 1,
+        current,
+        current + 1,
+        '...',
+        total - 1,
+        total,
+      ].filter((v, i, arr) => arr.indexOf(v) === i);
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -139,7 +176,7 @@ export default {
 }
 .notifications-page-size-dropdown {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   position: relative;
 }
 .notifications-page-size-btn {
@@ -158,6 +195,8 @@ export default {
   height: 32px;
   min-width: 70px;
   box-sizing: border-box;
+  position: relative;
+  z-index: 2;
 }
 .notifications-page-size-arrow {
   width: 13px;
@@ -167,16 +206,17 @@ export default {
 .notifications-page-size-menu {
   position: absolute;
   left: 0;
-  top: 36px;
-  min-width: 80px;
+  top: 100%;
+  min-width: 100%;
   background: #fff;
   border: 1px solid #e0e0e0;
   border-radius: 10px;
   box-shadow: 0 2px 8px rgba(33, 150, 243, 0.08);
-  z-index: 100;
+  z-index: 3;
   display: flex;
   flex-direction: column;
   padding: 4px 0;
+  margin-top: 4px;
 }
 .notifications-page-size-option {
   padding: 7px 14px;
@@ -292,7 +332,7 @@ export default {
 }
 @media (max-width: 900px) {
   .footer-box {
-    margin: 0;
+    margin: 12px;
     overflow: visible !important;
   }
   .footer-controls,

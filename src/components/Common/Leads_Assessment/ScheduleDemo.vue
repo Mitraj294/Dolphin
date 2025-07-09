@@ -1,58 +1,83 @@
 <template>
   <MainLayout>
-    <div class="schedule-demo-outer">
-      <div class="schedule-demo-card">
-        <h2 class="schedule-demo-title">Schedule Demo</h2>
-        <div class="schedule-demo-desc">
-          Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-        </div>
-        <form class="schedule-demo-form">
-          <div class="schedule-demo-row">
-            <div class="schedule-demo-field">
-              <label>Select Organization</label>
-              <select><option>Select</option></select>
-            </div>
-            <div class="schedule-demo-field">
-              <label>Select Admin</label>
-              <select><option>Select</option></select>
-            </div>
-            <div class="schedule-demo-field">
-              <label>Select User</label>
-              <select><option>Select</option></select>
-            </div>
+    <div class="page">
+      <div class="schedule-demo-outer">
+        <div class="schedule-demo-card">
+          <h2 class="schedule-demo-title">Schedule Demo</h2>
+          <div class="schedule-demo-desc">
+            Lorem Ipsum is simply dummy text of the printing and typesetting
+            industry.
           </div>
-          <div class="schedule-demo-row">
-            <div class="schedule-demo-field">
-              <label>Subject</label>
-              <input type="text" placeholder="Type here" />
-            </div>
-            <div class="schedule-demo-field">
-              <label>Select Method</label>
-              <select><option>Select</option></select>
-            </div>
-            <div class="schedule-demo-field schedule-demo-schedule-field">
-              <label>Schedule</label>
-              <div class="schedule-demo-schedule-inputs">
-                <input type="date" placeholder="MM/DD/YYYY" />
-                <input type="time" placeholder="00:00" />
+          <form class="schedule-demo-form">
+            <div class="schedule-demo-row">
+              <div class="schedule-demo-field">
+                <label>Select Organization</label>
+                <select>
+                  <option>Select</option>
+                </select>
+              </div>
+              <div class="schedule-demo-field">
+                <label>Select Admin</label>
+                <select>
+                  <option>Select</option>
+                </select>
+              </div>
+              <div class="schedule-demo-field">
+                <label>Select User</label>
+                <select>
+                  <option>Select</option>
+                </select>
               </div>
             </div>
-          </div>
-          <div class="schedule-demo-actions">
-            <button type="submit" class="schedule-demo-btn">Schedule Demo</button>
-          </div>
-        </form>
+            <div class="schedule-demo-row">
+              <div class="schedule-demo-field">
+                <label>Subject</label>
+                <input
+                  type="text"
+                  placeholder="Type here"
+                />
+              </div>
+              <div class="schedule-demo-field">
+                <label>Select Method</label>
+                <select>
+                  <option>Select</option>
+                </select>
+              </div>
+              <div class="schedule-demo-field schedule-demo-schedule-field">
+                <label>Schedule</label>
+                <div class="schedule-demo-schedule-inputs">
+                  <input
+                    type="date"
+                    placeholder="MM/DD/YYYY"
+                  />
+                  <input
+                    type="time"
+                    placeholder="00:00"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="schedule-demo-actions">
+              <button
+                type="submit"
+                class="schedule-demo-btn"
+              >
+                Schedule Demo
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </MainLayout>
 </template>
 
 <script>
-import MainLayout from '@/components/layout/MainLayout.vue'
+import MainLayout from '@/components/layout/MainLayout.vue';
 export default {
   name: 'ScheduleDemo',
-  components: { MainLayout }
-}
+  components: { MainLayout },
+};
 </script>
 
 <style scoped>
@@ -74,7 +99,7 @@ export default {
   min-width: 0;
   background: #fff;
   border-radius: 24px;
-  border: 1px solid #EBEBEB;
+  border: 1px solid #ebebeb;
   box-shadow: 0 2px 16px 0 rgba(33, 150, 243, 0.04);
   margin: 0 auto;
   box-sizing: border-box;
@@ -137,8 +162,8 @@ export default {
   gap: 18px;
   width: 100%;
 }
-.schedule-demo-schedule-inputs input[type="date"],
-.schedule-demo-schedule-inputs input[type="time"] {
+.schedule-demo-schedule-inputs input[type='date'],
+.schedule-demo-schedule-inputs input[type='time'] {
   flex: 1 1 0;
   min-width: 0;
   background: #fafafa;
@@ -151,8 +176,8 @@ export default {
   transition: border 0.2s;
   box-sizing: border-box;
 }
-.schedule-demo-schedule-inputs input[type="date"]::placeholder,
-.schedule-demo-schedule-inputs input[type="time"]::placeholder {
+.schedule-demo-schedule-inputs input[type='date']::placeholder,
+.schedule-demo-schedule-inputs input[type='time']::placeholder {
   color: #888;
   opacity: 1;
 }
@@ -202,6 +227,24 @@ export default {
   .schedule-demo-row {
     flex-direction: column !important;
     gap: 12px;
+  }
+}
+.page {
+  padding: 0 32px 32px 32px;
+  display: flex;
+  background-color: #fff;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1400px) {
+  .page {
+    padding: 16px;
+  }
+}
+@media (max-width: 900px) {
+  .page {
+    padding: 4px;
   }
 }
 </style>

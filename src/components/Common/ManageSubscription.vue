@@ -1,26 +1,28 @@
 <template>
   <MainLayout>
-    <div class="manage-subscription-outer">
-      <div class="manage-subscription-card">
-        <div class="manage-subscription-header">
-          <!-- Reserved for future actions, keep for layout consistency -->
-        </div>
-        <div class="manage-subscription-header-spacer"></div>
-        <div class="manage-subscription-container">
-          <img
-            src="@/assets/images/Group 14.svg"
-            alt="No Plans"
-            class="manage-subscription-img"
-          />
-          <div class="manage-subscription-msg">
-            You have not selected any plans yet.
+    <div class="page">
+      <div class="manage-subscription-outer">
+        <div class="manage-subscription-card">
+          <div class="manage-subscription-header">
+            <!-- Reserved for future actions, keep for layout consistency -->
           </div>
-          <button
-            class="btn btn-primary"
-            @click="explorePlans"
-          >
-            Explore Subscriptions
-          </button>
+          <div class="manage-subscription-header-spacer"></div>
+          <div class="manage-subscription-container">
+            <img
+              src="@/assets/images/Group 14.svg"
+              alt="No Plans"
+              class="manage-subscription-img"
+            />
+            <div class="manage-subscription-msg">
+              You have not selected any plans yet.
+            </div>
+            <button
+              class="btn btn-primary"
+              @click="explorePlans"
+            >
+              Explore Subscriptions
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -165,6 +167,25 @@ export default {
   .manage-subscription-msg {
     font-size: 15px;
     margin-bottom: 18px;
+  }
+}
+
+.page {
+  padding: 0 32px 32px 32px;
+  display: flex;
+  background-color: #fff;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1400px) {
+  .page {
+    padding: 16px;
+  }
+}
+@media (max-width: 900px) {
+  .page {
+    padding: 4px;
   }
 }
 </style>

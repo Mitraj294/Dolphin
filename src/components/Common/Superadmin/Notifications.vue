@@ -1,58 +1,60 @@
 <template>
   <MainLayout>
-    <div class="notifications-table-outer">
-      <div class="notifications-table-card">
-        <div class="notifications-table-header">
-          <button
-            class="btn btn-primary"
-            @click="showSendModal = true"
-          >
-            <img
-              src="@/assets/images/SendNotification.svg"
-              alt="Send"
-              class="notifications-add-btn-icon"
-            />
-            Send Notification
-          </button>
-        </div>
-        <div class="notifications-table-header-spacer"></div>
-        <div class="notifications-table-container">
-          <table class="notifications-table">
-            <thead>
-              <tr>
-                <th class="rounded-th-left">Notification Title</th>
-                <th>Date &amp; Time</th>
-                <th class="rounded-th-right">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="(item, idx) in paginatedNotifications"
-                :key="idx"
-              >
-                <td>{{ item.title }}</td>
-                <td>{{ item.date }}</td>
-                <td>
-                  <button class="view-detail-btn">
-                    <img
-                      src="@/assets/images/Detail.svg"
-                      alt="Detail"
-                      class="view-detail-icon"
-                    />
-                    View Detail
-                  </button>
-                </td>
-              </tr>
-              <tr v-if="paginatedNotifications.length === 0">
-                <td
-                  colspan="3"
-                  class="no-data"
+    <div class="page">
+      <div class="notifications-table-outer">
+        <div class="notifications-table-card">
+          <div class="notifications-table-header">
+            <button
+              class="btn btn-primary"
+              @click="showSendModal = true"
+            >
+              <img
+                src="@/assets/images/SendNotification.svg"
+                alt="Send"
+                class="notifications-add-btn-icon"
+              />
+              Send Notification
+            </button>
+          </div>
+          <div class="notifications-table-header-spacer"></div>
+          <div class="notifications-table-container">
+            <table class="notifications-table">
+              <thead>
+                <tr>
+                  <th class="rounded-th-left">Notification Title</th>
+                  <th>Date &amp; Time</th>
+                  <th class="rounded-th-right">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="(item, idx) in paginatedNotifications"
+                  :key="idx"
                 >
-                  No notifications found.
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                  <td>{{ item.title }}</td>
+                  <td>{{ item.date }}</td>
+                  <td>
+                    <button class="view-detail-btn">
+                      <img
+                        src="@/assets/images/Detail.svg"
+                        alt="Detail"
+                        class="view-detail-icon"
+                      />
+                      View Detail
+                    </button>
+                  </td>
+                </tr>
+                <tr v-if="paginatedNotifications.length === 0">
+                  <td
+                    colspan="3"
+                    class="no-data"
+                  >
+                    No notifications found.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
         <Pagination
           :pageSize="pageSize"
@@ -65,68 +67,67 @@
           @selectPageSize="selectPageSize"
           @togglePageDropdown="showPageDropdown = !showPageDropdown"
         />
-      </div>
-      <!-- Modal -->
-      <div
-        v-if="showSendModal"
-        class="send-notification-modal-overlay"
-        @click.self="showSendModal = false"
-      >
-        <div class="send-notification-modal">
-          <button
-            class="modal-close-btn"
-            @click="showSendModal = false"
-          >
-            &times;
-          </button>
-          <div class="modal-title">Send Notifications</div>
-          <div class="modal-desc">
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry.
-          </div>
-          <textarea
-            class="modal-textarea"
-            placeholder="Type here"
-          ></textarea>
-          <div class="modal-row">
-            <div class="modal-field">
-              <label>Select Organizations</label>
-              <select>
-                <option>Select</option>
-              </select>
+        <div
+          v-if="showSendModal"
+          class="send-notification-modal-overlay"
+          @click.self="showSendModal = false"
+        >
+          <div class="send-notification-modal">
+            <button
+              class="modal-close-btn"
+              @click="showSendModal = false"
+            >
+              &times;
+            </button>
+            <div class="modal-title">Send Notifications</div>
+            <div class="modal-desc">
+              Lorem Ipsum is simply dummy text of the printing and typesetting
+              industry.
             </div>
-            <div class="modal-field">
-              <label>Select Admin</label>
-              <select>
-                <option>Select</option>
-              </select>
-            </div>
-          </div>
-          <div class="modal-row">
-            <div class="modal-field">
-              <label>Select Group</label>
-              <select>
-                <option>Select</option>
-              </select>
-            </div>
-            <div class="modal-field modal-field-schedule">
-              <label>Schedule</label>
-              <div class="modal-schedule-fields">
-                <input
-                  type="text"
-                  placeholder="MM/DD/YYYY"
-                  class="modal-date-input"
-                />
-                <input
-                  type="time"
-                  class="modal-time-input"
-                />
+            <textarea
+              class="modal-textarea"
+              placeholder="Type here"
+            ></textarea>
+            <div class="modal-row">
+              <div class="modal-field">
+                <label>Select Organizations</label>
+                <select>
+                  <option>Select</option>
+                </select>
+              </div>
+              <div class="modal-field">
+                <label>Select Admin</label>
+                <select>
+                  <option>Select</option>
+                </select>
               </div>
             </div>
+            <div class="modal-row">
+              <div class="modal-field">
+                <label>Select Group</label>
+                <select>
+                  <option>Select</option>
+                </select>
+              </div>
+              <div class="modal-field modal-field-schedule">
+                <label>Schedule</label>
+                <div class="modal-schedule-fields">
+                  <input
+                    type="text"
+                    placeholder="MM/DD/YYYY"
+                    class="modal-date-input"
+                  />
+                  <input
+                    type="time"
+                    class="modal-time-input"
+                  />
+                </div>
+              </div>
+            </div>
+            <button class="btn btn-primary modal-send-btn">
+              Send Notification
+            </button>
           </div>
-          <button class="btn btn-primary modal-send-btn">
-            Send Notification
-          </button>
         </div>
       </div>
     </div>
@@ -216,12 +217,12 @@ export default {
 .notifications-table-outer {
   width: 100%;
   max-width: 1400px;
-  min-width: 0;
   margin: 64px auto 64px auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   box-sizing: border-box;
+  padding: 0 16px; /* Add horizontal padding to match OrganizationTable layout */
 }
 .notifications-table-card {
   width: 100%;
@@ -232,12 +233,6 @@ export default {
   overflow: visible;
   margin: 0 auto;
   box-sizing: border-box;
-  min-width: 0;
-  max-width: 1400px;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  position: relative;
 }
 .notifications-table-header {
   width: 100%;
@@ -286,11 +281,14 @@ export default {
 }
 .notifications-table th,
 .notifications-table td {
-  padding: 12px 8px;
+  padding: 18px 12px;
   text-align: left;
-  font-size: 14px;
-  border-bottom: 1px solid #f0f0f0;
+  font-size: 15px;
+  border-bottom: 1.5px solid #f0f0f0;
   background: #fff;
+  font-family: 'Inter', Arial, sans-serif;
+  font-weight: 400;
+  line-height: 22px;
 }
 .notifications-table th {
   background: #f8f8f8;
@@ -301,13 +299,17 @@ export default {
   min-width: 100px;
   border-bottom: 1.5px solid #ebebeb;
 }
-.rounded-th-left {
+.notifications-table th.rounded-th-left {
   border-top-left-radius: 24px;
   border-bottom-left-radius: 24px;
   overflow: hidden;
   background: #f8f8f8;
+  padding-left: 32px !important;
 }
-.rounded-th-right {
+.notifications-table td:first-child {
+  padding-left: 32px !important;
+}
+.notifications-table th.rounded-th-right {
   border-top-right-radius: 24px;
   border-bottom-right-radius: 24px;
   overflow: hidden;
@@ -385,10 +387,10 @@ export default {
   .notifications-table-outer {
     margin: 12px;
     max-width: 100%;
+    padding: 0 4px; /* Match responsive horizontal padding */
   }
   .notifications-table-card {
     border-radius: 14px;
-    max-width: 100%;
   }
   .notifications-table-header {
     padding: 8px 8px 0 8px;
@@ -405,11 +407,15 @@ export default {
     font-size: 12px;
     padding: 8px 4px;
   }
-  .rounded-th-left {
+  .notifications-table th.rounded-th-left {
     border-top-left-radius: 14px;
     border-bottom-left-radius: 14px;
+    padding-left: 18px !important;
   }
-  .rounded-th-right {
+  .notifications-table td:first-child {
+    padding-left: 18px !important;
+  }
+  .notifications-table th.rounded-th-right {
     border-top-right-radius: 14px;
     border-bottom-right-radius: 14px;
   }
@@ -418,6 +424,7 @@ export default {
   .notifications-table-outer {
     margin: 4px;
     max-width: 100%;
+    padding: 0 2px; /* Even smaller horizontal padding on small screens */
   }
   .notifications-table-card {
     border-radius: 10px;
@@ -437,11 +444,15 @@ export default {
     font-size: 11px;
     padding: 6px 2px;
   }
-  .rounded-th-left {
+  .notifications-table th.rounded-th-left {
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
+    padding-left: 10px !important;
   }
-  .rounded-th-right {
+  .notifications-table td:first-child {
+    padding-left: 10px !important;
+  }
+  .notifications-table th.rounded-th-right {
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
   }
@@ -567,6 +578,25 @@ export default {
     width: 100%;
     align-self: stretch;
     padding: 10px 0;
+  }
+}
+
+.page {
+  padding: 0 32px 32px 32px;
+  display: flex;
+  background-color: #fff;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1400px) {
+  .page {
+    padding: 16px;
+  }
+}
+@media (max-width: 900px) {
+  .page {
+    padding: 4px;
   }
 }
 </style>

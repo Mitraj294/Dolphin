@@ -87,13 +87,13 @@
               <td class="org-td-content">{{ org.lastLogin }}</td>
               <td class="org-td-content">
                 <button
-                  class="btn-view-detail"
+                  class="btn-view"
                   @click="goToDetail(org)"
                 >
                   <img
                     src="@/assets/images/Detail.svg"
                     alt="View"
-                    class="btn-view-detail-icon"
+                    class="btn-view-icon"
                   />
                   View Detail
                 </button>
@@ -791,11 +791,14 @@ export default {
 
 .org-table th,
 .org-table td {
-  padding: 12px 8px;
+  padding: 18px 12px; /* Increased vertical and horizontal padding for more space */
   text-align: left;
-  font-size: 14px;
-  border-bottom: 1px solid #f0f0f0;
+  font-size: 15px; /* Slightly larger for readability */
+  border-bottom: 1.5px solid #f0f0f0; /* Slightly thicker, lighter line */
   background: #fff;
+  font-family: 'Inter', Arial, sans-serif;
+  font-weight: 400;
+  line-height: 22px;
 }
 
 .org-table th {
@@ -836,6 +839,11 @@ export default {
   color: #222;
   padding-left: 0;
   background: #fff;
+}
+
+/* Increase left padding for only the first column's data cells to match the header and align with your design */
+.org-table td.org-td-content:first-child {
+  padding-left: 32px !important;
 }
 
 /* --- Pagination and footer spacing --- */
@@ -922,8 +930,7 @@ export default {
 .org-th-sort-btn {
   background: none;
   border: none;
-  padding: 0 0 0 4px;
-  margin: 0;
+
   display: inline-flex;
   align-items: center;
   vertical-align: middle;
@@ -962,5 +969,9 @@ export default {
   font-size: 14px;
   font-weight: 600;
   color: #888;
+}
+
+.org-table th.rounded-th-left {
+  padding-left: 32px !important;
 }
 </style>

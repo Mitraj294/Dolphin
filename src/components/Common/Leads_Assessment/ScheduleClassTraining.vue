@@ -1,70 +1,72 @@
 <template>
   <MainLayout>
-    <div class="schedule-demo-outer">
-      <div class="schedule-demo-card">
-        <h2 class="schedule-demo-title">Schedule Classes/Training</h2>
-        <div class="schedule-demo-desc">
-          Lorem Ipsum is simply dummy text of the printing and typesetting
-          industry.
-        </div>
-        <form class="schedule-demo-form">
-          <div class="schedule-demo-row">
-            <div class="schedule-demo-field">
-              <label>Select Organization</label>
-              <select>
-                <option>Select</option>
-              </select>
-            </div>
-            <div class="schedule-demo-field">
-              <label>Select Admin</label>
-              <select>
-                <option>Select</option>
-              </select>
-            </div>
-            <div class="schedule-demo-field">
-              <label>Select User</label>
-              <select>
-                <option>Select</option>
-              </select>
-            </div>
+    <div class="class">
+      <div class="schedule-demo-outer">
+        <div class="schedule-demo-card">
+          <h2 class="schedule-demo-title">Schedule Classes/Training</h2>
+          <div class="schedule-demo-desc">
+            Lorem Ipsum is simply dummy text of the printing and typesetting
+            industry.
           </div>
-          <div class="schedule-demo-row">
-            <div class="schedule-demo-field">
-              <label>Subject</label>
-              <input
-                type="text"
-                placeholder="Type here"
-              />
-            </div>
-            <div class="schedule-demo-field">
-              <label>Select Classes/Training</label>
-              <select>
-                <option>Select</option>
-              </select>
-            </div>
-            <div class="schedule-demo-field schedule-demo-schedule-field">
-              <label>Schedule</label>
-              <div class="schedule-demo-schedule-inputs">
-                <input
-                  type="date"
-                  placeholder="MM/DD/YYYY"
-                />
-                <input
-                  type="time"
-                  placeholder="00:00"
-                />
+          <form class="schedule-demo-form">
+            <div class="schedule-demo-row">
+              <div class="schedule-demo-field">
+                <label>Select Organization</label>
+                <select>
+                  <option>Select</option>
+                </select>
+              </div>
+              <div class="schedule-demo-field">
+                <label>Select Admin</label>
+                <select>
+                  <option>Select</option>
+                </select>
+              </div>
+              <div class="schedule-demo-field">
+                <label>Select User</label>
+                <select>
+                  <option>Select</option>
+                </select>
               </div>
             </div>
-          </div>
-          <div class="schedule-demo-actions">
-            <button
-              type="submit"
-              class="schedule-demo-btn"
-            >
-              Schedule Classes/Training
-            </button>
-          </div>
-        </form>
+            <div class="schedule-demo-row">
+              <div class="schedule-demo-field">
+                <label>Subject</label>
+                <input
+                  type="text"
+                  placeholder="Type here"
+                />
+              </div>
+              <div class="schedule-demo-field">
+                <label>Select Classes/Training</label>
+                <select>
+                  <option>Select</option>
+                </select>
+              </div>
+              <div class="schedule-demo-field schedule-demo-schedule-field">
+                <label>Schedule</label>
+                <div class="schedule-demo-schedule-inputs">
+                  <input
+                    type="date"
+                    placeholder="MM/DD/YYYY"
+                  />
+                  <input
+                    type="time"
+                    placeholder="00:00"
+                  />
+                </div>
+              </div>
+            </div>
+            <div class="schedule-demo-actions">
+              <button
+                type="submit"
+                class="schedule-demo-btn"
+              >
+                Schedule Classes/Training
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </MainLayout>
@@ -224,6 +226,25 @@ export default {
   .schedule-demo-row {
     flex-direction: column !important;
     gap: 12px;
+  }
+}
+
+.page {
+  padding: 0 32px 32px 32px;
+  display: flex;
+  background-color: #fff;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1400px) {
+  .page {
+    padding: 16px;
+  }
+}
+@media (max-width: 900px) {
+  .page {
+    padding: 4px;
   }
 }
 </style>

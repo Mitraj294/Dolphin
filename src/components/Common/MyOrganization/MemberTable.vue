@@ -18,18 +18,31 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(member, idx) in paginatedMembers" :key="member.id">
+            <tr
+              v-for="(member, idx) in paginatedMembers"
+              :key="member.id"
+            >
               <td>{{ member.name }}</td>
               <td>{{ member.email }}</td>
               <td>{{ member.role }}</td>
               <td>{{ member.status }}</td>
               <td>
                 <!-- Example action button -->
-                <button class="member-action-btn" @click="viewMember(member)">View</button>
+                <button
+                  class="member-action-btn"
+                  @click="viewMember(member)"
+                >
+                  View
+                </button>
               </td>
             </tr>
             <tr v-if="paginatedMembers.length === 0">
-              <td colspan="5" class="no-data">No members found.</td>
+              <td
+                colspan="5"
+                class="no-data"
+              >
+                No members found.
+              </td>
             </tr>
           </tbody>
         </table>
@@ -57,15 +70,15 @@ export default {
   props: {
     members: {
       type: Array,
-      default: () => []
-    }
+      default: () => [],
+    },
   },
   data() {
     return {
       currentPage: 1,
       pageSize: 10,
-      showPageDropdown: false
-    }
+      showPageDropdown: false,
+    };
   },
   computed: {
     totalPages() {
@@ -74,7 +87,7 @@ export default {
     paginatedMembers() {
       const start = (this.currentPage - 1) * this.pageSize;
       return this.members.slice(start, start + this.pageSize);
-    }
+    },
   },
   methods: {
     goToPage(page) {
@@ -87,40 +100,42 @@ export default {
     viewMember(member) {
       // Implement view logic
       this.$emit('view-member', member);
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style scoped>
 .member-table-outer {
   width: 100%;
+  max-width: 1400px;
+  margin: 64px auto 64px auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 64px;
-  margin-bottom: 64px;
+  box-sizing: border-box;
 }
 .member-table-card {
   width: 100%;
-  max-width: 1400px;
   background: #fff;
-  border-radius: 18px;
-  border: 1px solid #EBEBEB;
-  box-sizing: border-box;
-  overflow: visible;
+  border-radius: 24px;
+  border: 1px solid #ebebeb;
   box-shadow: 0 2px 16px 0 rgba(33, 150, 243, 0.04);
   margin: 0 auto;
+  box-sizing: border-box;
+  overflow: visible;
+  min-width: 0;
+  max-width: 1400px;
 }
 .member-table-header {
   width: 100%;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   padding: 24px 46px 0 24px;
   background: #fff;
-  border-top-left-radius: 18px;
-  border-top-right-radius: 18px;
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
   min-height: 64px;
   box-sizing: border-box;
 }
@@ -142,8 +157,8 @@ export default {
   box-sizing: border-box;
   padding: 0 24px 24px 24px;
   background: #fff;
-  border-bottom-left-radius: 18px;
-  border-bottom-right-radius: 18px;
+  border-bottom-left-radius: 24px;
+  border-bottom-right-radius: 24px;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
@@ -163,21 +178,44 @@ export default {
   border: none;
   margin-top: 0;
 }
-.member-table th, .member-table td {
-  padding: 12px 8px;
+.member-table th,
+.member-table td {
+  padding: 18px 12px;
   text-align: left;
-  font-size: 14px;
-  border-bottom: 1px solid #f0f0f0;
+  font-size: 15px;
+  border-bottom: 1.5px solid #f0f0f0;
   background: #fff;
+  font-family: 'Inter', Arial, sans-serif;
+  font-weight: 400;
+  line-height: 22px;
 }
 .member-table th {
-  background: #F8F8F8;
+  background: #f8f8f8;
   font-weight: 600;
   color: #888;
   position: relative;
   vertical-align: middle;
   min-width: 100px;
-  border-bottom: 1.5px solid #EBEBEB;
+  border-bottom: 1.5px solid #ebebeb;
+}
+.rounded-th-left {
+  border-top-left-radius: 24px;
+  border-bottom-left-radius: 24px;
+  overflow: hidden;
+  background: #f8f8f8;
+}
+.rounded-th-right {
+  border-top-right-radius: 24px;
+  border-bottom-right-radius: 24px;
+  overflow: hidden;
+  background: #f8f8f8;
+}
+.member-table td {
+  color: #222;
+  background: #fff;
+}
+.member-table td:first-child {
+  padding-left: 32px !important;
 }
 .member-action-btn {
   background: #fff;
@@ -190,6 +228,8 @@ export default {
   transition: border 0.2s;
   font-weight: 500;
   gap: 4px;
+  display: flex;
+  align-items: center;
 }
 .member-action-btn:hover {
   border: 1.5px solid #0074c2;
@@ -200,44 +240,70 @@ export default {
   font-size: 16px;
   padding: 32px 0;
 }
+/* Responsive styles to match OrganizationTable.vue */
 @media (max-width: 1400px) {
   .member-table-outer {
     margin: 12px;
+    max-width: 100%;
   }
   .member-table-card {
+    border-radius: 14px;
     max-width: 100%;
-    border-radius: 10px;
   }
   .member-table-header {
-    padding: 8px 42px 0 8px;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
+    padding: 8px 8px 0 8px;
+    border-top-left-radius: 14px;
+    border-top-right-radius: 14px;
   }
-  .member-table th, .member-table td {
+  .member-table-container {
+    padding: 0 8px 8px 8px;
+    border-bottom-left-radius: 14px;
+    border-bottom-right-radius: 14px;
+  }
+  .member-table th,
+  .member-table td {
     font-size: 12px;
     padding: 8px 4px;
+  }
+  .rounded-th-left {
+    border-top-left-radius: 14px;
+    border-bottom-left-radius: 14px;
+  }
+  .rounded-th-right {
+    border-top-right-radius: 14px;
+    border-bottom-right-radius: 14px;
   }
 }
 @media (max-width: 900px) {
   .member-table-outer {
     margin: 4px;
+    max-width: 100%;
   }
   .member-table-card {
-    border-radius: 6px;
+    border-radius: 10px;
   }
   .member-table-header {
-    padding: 8px 40px 0 4px;
-    border-top-left-radius: 6px;
-    border-top-right-radius: 6px;
+    padding: 8px 4px 0 4px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
   }
   .member-table-container {
     padding: 0 4px 4px 4px;
-    border-bottom-left-radius: 6px;
-    border-bottom-right-radius: 6px;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
   }
-  .member-table th, .member-table td {
+  .member-table th,
+  .member-table td {
     font-size: 11px;
     padding: 6px 2px;
+  }
+  .rounded-th-left {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+  }
+  .rounded-th-right {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
   }
 }
 </style>

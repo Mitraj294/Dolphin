@@ -7,14 +7,26 @@
       <template v-if="withPagination">
         <!-- Removed notifications-page-size-dropdown and notifications-pagination -->
         <div class="footer-logo-text-vertical center-footer-logo-block">
-          <img src="@/assets/images/Logo.svg" alt="Logo" class="footer-logo-vertical responsive-footer-logo" />
-          <span class="footer-text-vertical">©2025 Dolphin | All Rights Reserved</span>
+          <img
+            src="@/assets/images/Logo.svg"
+            alt="Logo"
+            class="footer-logo-vertical responsive-footer-logo"
+          />
+          <span class="footer-text-vertical"
+            >©2025 Dolphin | All Rights Reserved</span
+          >
         </div>
       </template>
       <template v-else>
         <div class="footer-logo-text-vertical center-footer-logo-block">
-          <img src="@/assets/images/Logo.svg" alt="Logo" class="footer-logo-vertical responsive-footer-logo" />
-          <span class="footer-text-vertical">©2025 Dolphin | All Rights Reserved</span>
+          <img
+            src="@/assets/images/Logo.svg"
+            alt="Logo"
+            class="footer-logo-vertical responsive-footer-logo"
+          />
+          <span class="footer-text-vertical"
+            >©2025 Dolphin | All Rights Reserved</span
+          >
         </div>
       </template>
     </div>
@@ -22,18 +34,18 @@
 </template>
 
 <script>
-import '@/assets/global.css'
+import '@/assets/global.css';
 export default {
   name: 'Footer',
   props: {
     withPagination: {
       type: Boolean,
-      default: false
+      default: false,
     },
     // Removed pageSize, pageSizes, showPageDropdown, currentPage, totalPages, paginationPages
   },
   // Removed computedPaginationPages
-}
+};
 </script>
 
 <style scoped>
@@ -52,6 +64,7 @@ export default {
   /* border-top: 1px solid #f0f0f0; */ /* Removed top border/line */
   box-shadow: none;
   overflow: visible !important;
+  z-index: 1; /* Lower than dropdown overlay */
 }
 .footer-controls {
   width: 100%;
@@ -143,4 +156,3 @@ export default {
   }
 }
 </style>
-

@@ -50,7 +50,7 @@ import {
   Legend,
 } from 'chart.js';
 import { ref } from 'vue';
-import Dropdown from '@/assets/Dropdown.vue';
+import Dropdown from '@/components/Common/Common_UI/Dropdown.vue';
 
 Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
@@ -115,13 +115,13 @@ const adjustedSelf = ref('Adjusted Self 1');
 .user-graphs-outer {
   width: 100%;
   max-width: 1400px;
-  min-width: 0;
   margin: 64px auto 64px auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   box-sizing: border-box;
 }
+
 .user-graphs-card {
   width: 100%;
   background: #fff;
@@ -132,10 +132,34 @@ const adjustedSelf = ref('Adjusted Self 1');
   box-sizing: border-box;
   min-width: 0;
   max-width: 1400px;
+  /* padding is handled by .user-graphs-content and .user-graph-section */
   display: flex;
   flex-direction: column;
   position: relative;
 }
+
+/* Responsive: shrink margin and padding on small screens */
+@media (max-width: 1400px) {
+  .user-graphs-outer {
+    margin: 12px;
+    max-width: 100%;
+  }
+  .user-graphs-card {
+    border-radius: 14px;
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 900px) {
+  .user-graphs-outer {
+    margin: 4px;
+    max-width: 100%;
+  }
+  .user-graphs-card {
+    border-radius: 10px;
+  }
+}
+
 .user-graphs-content {
   display: flex;
   flex-direction: row;
@@ -159,8 +183,8 @@ const adjustedSelf = ref('Adjusted Self 1');
   font-size: 20px;
   font-weight: 600;
   margin-bottom: 18px;
-  margin-left: 18px; /* Add left margin for header */
-  text-align: left; /* Ensure left alignment */
+  margin-left: 18px;
+  text-align: left;
 }
 .user-graph-inner {
   background: #f8f8f8;
@@ -277,10 +301,6 @@ const adjustedSelf = ref('Adjusted Self 1');
   box-sizing: border-box;
 }
 @media (max-width: 1400px) {
-  .user-graphs-card {
-    border-radius: 14px;
-    max-width: 100%;
-  }
   .user-graphs-content {
     gap: 18px;
     padding: 18px 0;
@@ -288,6 +308,7 @@ const adjustedSelf = ref('Adjusted Self 1');
   .user-graph-section {
     border-radius: 14px;
     min-width: 0;
+    padding: 18px 8px 18px 8px;
   }
   .user-graph-inner {
     border-radius: 14px;
@@ -296,9 +317,6 @@ const adjustedSelf = ref('Adjusted Self 1');
   }
 }
 @media (max-width: 900px) {
-  .user-graphs-card {
-    border-radius: 10px;
-  }
   .user-graphs-content {
     flex-direction: column;
     gap: 12px;
@@ -307,6 +325,7 @@ const adjustedSelf = ref('Adjusted Self 1');
   .user-graph-section {
     border-radius: 10px;
     min-width: 0;
+    padding: 8px 4px 8px 4px;
   }
   .user-graph-inner {
     border-radius: 10px;

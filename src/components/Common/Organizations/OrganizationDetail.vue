@@ -3,138 +3,146 @@
     :navbarTitle="orgName"
     sidebarActive="organization"
   >
-    <div class="org-detail-outer">
-      <div class="org-detail-main-card">
-        <div class="org-detail-main-card-header">
-          <button
-            class="btn btn-primary"
-            @click="$router.push(`/organizations/${orgName}/edit`)"
-          >
-            <img
-              src="@/assets/images/Edit.svg"
-              alt="Edit"
-              class="org-edit-icon"
-            />
-            Edit Details
-          </button>
-        </div>
-        <div class="org-detail-main-cols">
-          <div class="org-detail-main-cols-group">
-            <div class="org-detail-col org-detail-col-left">
-              <h3 class="org-detail-section-title">Organization Detail</h3>
-              <div class="org-detail-list-card org-detail-list-card--box">
-                <div class="org-detail-list-row">
-                  <span>Organization Name</span><b>{{ orgName }}</b>
-                </div>
-                <div class="org-detail-list-row">
-                  <span>Organization Size</span><b>250+ Employees (Large)</b>
-                </div>
-                <div class="org-detail-list-row">
-                  <span>Contract Start</span><b>Jun 18, 2024</b>
-                </div>
-                <div class="org-detail-list-row">
-                  <span>Contract End</span><b>Jun 18, 2025</b>
-                </div>
-                <div class="org-detail-list-row">
-                  <span>Source</span><b>Google</b>
-                </div>
-                <div class="org-detail-list-row">
-                  <span>Address</span
-                  ><b>153 Maggie Loop<br />Pottsville, Arkansas(AR), 72858</b>
-                </div>
-              </div>
-            </div>
-            <div class="org-detail-col org-detail-col-right">
-              <h3 class="org-detail-section-title">Admin Detail</h3>
-              <div class="org-detail-list-card org-detail-list-card--box">
-                <div class="org-detail-list-row">
-                  <span>Main Contact</span><b>Aaliyah Moss</b>
-                </div>
-                <div class="org-detail-list-row">
-                  <span>Admin Email</span><b>aaliyah@dolphin.org</b>
-                </div>
-                <div class="org-detail-list-row">
-                  <span>Admin Phone #</span><b>313-586-7462</b>
-                </div>
-                <div class="org-detail-list-row">
-                  <span>Sales Person</span><b>John</b>
-                </div>
-                <div class="org-detail-list-row">
-                  <span>Last Contacted</span><b>Dec 15, 2024</b>
-                </div>
-                <div class="org-detail-list-row">
-                  <span>Certified Staff</span><b>2</b>
-                </div>
-              </div>
-            </div>
+    <div class="page">
+      <div class="org-detail-outer">
+        <div class="org-detail-main-card">
+          <div class="org-detail-main-card-header">
+            <button
+              class="btn btn-primary"
+              @click="$router.push(`/organizations/${orgName}/edit`)"
+            >
+              <img
+                src="@/assets/images/EditWhite.svg"
+                alt="Edit"
+                class="org-edit-icon"
+              />
+              Edit Details
+            </button>
           </div>
-          <!-- Group the two lower boxes in a row, not column -->
-          <div
-            class="org-detail-main-cols-group org-detail-main-cols-group--row"
-          >
-            <div
-              class="org-detail-box org-detail-box--half org-detail-box-flex"
-            >
-              <div class="org-detail-box-info">
-                <div class="org-detail-box-label">Org Chart Type</div>
-                <div class="org-detail-box-value">Functional/Role - Based</div>
+          <div class="org-detail-main-cols">
+            <div class="org-detail-main-cols-group">
+              <div class="org-detail-col org-detail-col-left">
+                <h3 class="org-detail-section-title">Organization Detail</h3>
+                <div class="org-detail-list-card org-detail-list-card--box">
+                  <div class="org-detail-list-row">
+                    <span>Organization Name</span><b>{{ orgName }}</b>
+                  </div>
+                  <div class="org-detail-list-row">
+                    <span>Organization Size</span><b>250+ Employees (Large)</b>
+                  </div>
+                  <div class="org-detail-list-row">
+                    <span>Contract Start</span><b>Jun 18, 2024</b>
+                  </div>
+                  <div class="org-detail-list-row">
+                    <span>Contract End</span><b>Jun 18, 2025</b>
+                  </div>
+                  <div class="org-detail-list-row">
+                    <span>Source</span><b>Google</b>
+                  </div>
+                  <div class="org-detail-list-row">
+                    <span>Address</span
+                    ><b>153 Maggie Loop<br />Pottsville, Arkansas(AR), 72858</b>
+                  </div>
+                </div>
               </div>
-              <div class="org-detail-box-action">
-                <button class="btn btn-secondary">
-                  <img
-                    src="@/assets/images/Chart.svg"
-                    alt="View Chart"
-                    class="org-view-btn-icon"
-                  />
-                  View Chart
-                </button>
-              </div>
-            </div>
-            <!-- Billing Status box: make flex like Org Chart Type -->
-            <div
-              class="org-detail-box org-detail-box--half org-detail-box-flex"
-            >
-              <div class="org-detail-box-info">
-                <div class="org-detail-box-label">Billing Status</div>
-                <div class="org-detail-box-value">Standard ($2500/Year)</div>
-              </div>
-              <div class="org-detail-box-action">
-                <button
-                  class="org-view-btn custom-view-btn"
-                  @click="
-                    $router.push({ name: 'BillingDetails', query: { orgName } })
-                  "
-                >
-                  <img
-                    src="@/assets/images/Billing Status view details.svg"
-                    alt="View Details"
-                    class="org-view-btn-icon"
-                  />
-                  View Details
-                </button>
-              </div>
-            </div>
-          </div>
-          <div
-            class="org-detail-main-cols-group org-detail-main-cols-group--row"
-          >
-            <!-- Current Algorithm box: flex row, label/value left, select/button right -->
-            <div
-              class="org-detail-box org-detail-box--half org-detail-box-algo org-detail-box-flex"
-            >
-              <div class="org-detail-box-info">
-                <div class="org-detail-box-label">Current Algorithm</div>
-              </div>
-              <div class="org-detail-box-action org-detail-box-action-algo">
-                <select class="org-algo-select">
-                  <option>Dolphin 1.0</option>
-                </select>
-                <button class="org-algo-btn custom-view-btn">Assigned</button>
+              <div class="org-detail-col org-detail-col-right">
+                <h3 class="org-detail-section-title">Admin Detail</h3>
+                <div class="org-detail-list-card org-detail-list-card--box">
+                  <div class="org-detail-list-row">
+                    <span>Main Contact</span><b>Aaliyah Moss</b>
+                  </div>
+                  <div class="org-detail-list-row">
+                    <span>Admin Email</span><b>aaliyah@dolphin.org</b>
+                  </div>
+                  <div class="org-detail-list-row">
+                    <span>Admin Phone #</span><b>313-586-7462</b>
+                  </div>
+                  <div class="org-detail-list-row">
+                    <span>Sales Person</span><b>John</b>
+                  </div>
+                  <div class="org-detail-list-row">
+                    <span>Last Contacted</span><b>Dec 15, 2024</b>
+                  </div>
+                  <div class="org-detail-list-row">
+                    <span>Certified Staff</span><b>2</b>
+                  </div>
+                </div>
               </div>
             </div>
+            <!-- Group the two lower boxes in a row, not column -->
             <div
-              class="org-detail-box org-detail-box--half org-detail-box-empty"
-            ></div>
+              class="org-detail-main-cols-group org-detail-main-cols-group--row"
+            >
+              <!-- Org Chart Type box (already flexed) -->
+              <div
+                class="org-detail-box org-detail-box--half org-detail-box-flex"
+              >
+                <div class="org-detail-box-info">
+                  <div class="org-detail-box-label">Org Chart Type</div>
+                  <div class="org-detail-box-value">
+                    Functional/Role - Based
+                  </div>
+                </div>
+                <div class="org-detail-box-action">
+                  <button class="org-view-btn custom-view-btn">
+                    <img
+                      src="@/assets/images/Chart.svg"
+                      alt="View Chart"
+                      class="org-view-btn-icon"
+                    />
+                    View Chart
+                  </button>
+                </div>
+              </div>
+              <!-- Billing Status box: make flex like Org Chart Type -->
+              <div
+                class="org-detail-box org-detail-box--half org-detail-box-flex"
+              >
+                <div class="org-detail-box-info">
+                  <div class="org-detail-box-label">Billing Status</div>
+                  <div class="org-detail-box-value">Standard ($2500/Year)</div>
+                </div>
+                <div class="org-detail-box-action">
+                  <button
+                    class="org-view-btn custom-view-btn"
+                    @click="
+                      $router.push({
+                        name: 'BillingDetails',
+                        query: { orgName },
+                      })
+                    "
+                  >
+                    <img
+                      src="@/assets/images/Billing Status view details.svg"
+                      alt="View Details"
+                      class="org-view-btn-icon"
+                    />
+                    View Details
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div
+              class="org-detail-main-cols-group org-detail-main-cols-group--row"
+            >
+              <!-- Current Algorithm box: flex row, label/value left, select/button right -->
+              <div
+                class="org-detail-box org-detail-box--half org-detail-box-algo org-detail-box-flex"
+              >
+                <div class="org-detail-box-info">
+                  <div class="org-detail-box-label">Current Algorithm</div>
+                </div>
+                <div class="org-detail-box-action org-detail-box-action-algo">
+                  <select class="org-algo-select">
+                    <option>Dolphin 1.0</option>
+                  </select>
+                  <button class="org-algo-btn custom-view-btn">Assigned</button>
+                </div>
+              </div>
+              <div
+                class="org-detail-box org-detail-box--half org-detail-box-empty"
+              ></div>
+            </div>
           </div>
         </div>
       </div>
@@ -560,6 +568,25 @@ export default {
   .org-detail-row--split {
     flex-direction: column;
     gap: 0; /* No gap needed for stacked layout */
+  }
+}
+
+.page {
+  padding: 0 32px 32px 32px;
+  display: flex;
+  background-color: #fff;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1400px) {
+  .page {
+    padding: 16px;
+  }
+}
+@media (max-width: 900px) {
+  .page {
+    padding: 4px;
   }
 }
 </style>

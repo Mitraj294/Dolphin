@@ -1,8 +1,7 @@
 <template>
   <MainLayout>
-    <div class="organizations-page">
+    <div class="page">
       <OrganizationTable />
-      <!-- Remove role check and always show the table -->
     </div>
   </MainLayout>
 </template>
@@ -16,11 +15,23 @@ export default {
 };
 </script>
 
-<style scoped>
-.organizations-page {
-  padding: 32px;
+<style>
+.page {
+  padding: 0 32px 32px 32px;
   display: flex;
   background-color: #fff;
   justify-content: center;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1400px) {
+  .page {
+    padding: 16px;
+  }
+}
+@media (max-width: 900px) {
+  .page {
+    padding: 4px;
+  }
 }
 </style>

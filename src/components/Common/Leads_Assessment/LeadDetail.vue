@@ -1,59 +1,63 @@
 <template>
   <MainLayout>
-    <div class="page-content-wrapper">
-      <div class="lead-detail-page">
-        <div class="lead-detail-card-group">
-          <button class="btn btn-primary edit-details-btn">Edit Details</button>
-          <div class="lead-detail-card left">
-            <div class="lead-detail-row">
-              <span class="label">Main Contact</span
-              ><span class="value">{{ lead.contact }}</span>
+    <div class="page">
+      <div class="page-content-wrapper">
+        <div class="lead-detail-page">
+          <div class="lead-detail-card-group">
+            <button class="btn btn-primary edit-details-btn">
+              Edit Details
+            </button>
+            <div class="lead-detail-card left">
+              <div class="lead-detail-row">
+                <span class="label">Main Contact</span
+                ><span class="value">{{ lead.contact }}</span>
+              </div>
+              <div class="lead-detail-row">
+                <span class="label">Admin Email</span
+                ><span class="value">{{ lead.email }}</span>
+              </div>
+              <div class="lead-detail-row">
+                <span class="label">Admin Phone #</span
+                ><span class="value">{{ lead.phone }}</span>
+              </div>
+              <div class="lead-detail-row">
+                <span class="label">Sales Person</span
+                ><span class="value">John</span>
+              </div>
+              <div class="lead-detail-row">
+                <span class="label">Source</span
+                ><span class="value">{{ lead.source }}</span>
+              </div>
+              <div class="lead-detail-row">
+                <span class="label">Status</span
+                ><span class="value">{{ lead.status }}</span>
+              </div>
             </div>
-            <div class="lead-detail-row">
-              <span class="label">Admin Email</span
-              ><span class="value">{{ lead.email }}</span>
-            </div>
-            <div class="lead-detail-row">
-              <span class="label">Admin Phone #</span
-              ><span class="value">{{ lead.phone }}</span>
-            </div>
-            <div class="lead-detail-row">
-              <span class="label">Sales Person</span
-              ><span class="value">John</span>
-            </div>
-            <div class="lead-detail-row">
-              <span class="label">Source</span
-              ><span class="value">{{ lead.source }}</span>
-            </div>
-            <div class="lead-detail-row">
-              <span class="label">Status</span
-              ><span class="value">{{ lead.status }}</span>
-            </div>
-          </div>
-          <div class="lead-detail-card right">
-            <div class="lead-detail-row">
-              <span class="label">Organization Name</span
-              ><span class="value">{{ lead.organization }}</span>
-            </div>
-            <div class="lead-detail-row">
-              <span class="label">Organization Size</span
-              ><span class="value">{{
-                lead.size === 'Large' ? '250+ Employees (Large)' : lead.size
-              }}</span>
-            </div>
-            <div class="lead-detail-row">
-              <span class="label">Contract Start</span
-              ><span class="value bold">Jun 18, 2024</span>
-            </div>
-            <div class="lead-detail-row">
-              <span class="label">Contract End</span
-              ><span class="value bold">Jun 18, 2025</span>
-            </div>
-            <div class="lead-detail-row address-row">
-              <span class="label">Address</span
-              ><span class="value bold"
-                >153 Maggie Loop<br />Pottsville, Arkansas(AR), 72858</span
-              >
+            <div class="lead-detail-card right">
+              <div class="lead-detail-row">
+                <span class="label">Organization Name</span
+                ><span class="value">{{ lead.organization }}</span>
+              </div>
+              <div class="lead-detail-row">
+                <span class="label">Organization Size</span
+                ><span class="value">{{
+                  lead.size === 'Large' ? '250+ Employees (Large)' : lead.size
+                }}</span>
+              </div>
+              <div class="lead-detail-row">
+                <span class="label">Contract Start</span
+                ><span class="value bold">Jun 18, 2024</span>
+              </div>
+              <div class="lead-detail-row">
+                <span class="label">Contract End</span
+                ><span class="value bold">Jun 18, 2025</span>
+              </div>
+              <div class="lead-detail-row address-row">
+                <span class="label">Address</span
+                ><span class="value bold"
+                  >153 Maggie Loop<br />Pottsville, Arkansas(AR), 72858</span
+                >
+              </div>
             </div>
           </div>
         </div>
@@ -176,6 +180,25 @@ export default {
     top: -12px;
     right: 0;
     /* Removed padding and font-size, use only global .btn classes for button appearance. */
+  }
+}
+
+.page {
+  padding: 0 32px 32px 32px;
+  display: flex;
+  background-color: #fff;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1400px) {
+  .page {
+    padding: 16px;
+  }
+}
+@media (max-width: 900px) {
+  .page {
+    padding: 4px;
   }
 }
 </style>

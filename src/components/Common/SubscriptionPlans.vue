@@ -1,226 +1,232 @@
 <template>
   <MainLayout>
-    <div class="subscription-plans-outer">
-      <div class="subscription-plans-card">
-        <div class="subscription-plans-header">
-          <!-- Reserved for future actions, keep for layout consistency -->
-        </div>
-        <div class="subscription-plans-header-spacer"></div>
-        <div class="subscription-plans-container">
-          <div class="subscription-plans-title">Subscription Plans</div>
-          <div class="subscription-plans-desc">
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry's standard dummy text
-            ever since the 1500s.
+    <div class="page">
+      <div class="subscription-plans-outer">
+        <div class="subscription-plans-card">
+          <div class="subscription-plans-header">
+            <!-- Reserved for future actions, keep for layout consistency -->
           </div>
-          <div class="subscription-plans-options">
-            <div class="plan-card">
-              <span class="plan-card-badge">Save 2 Months</span>
-              <div class="plan-card-header">
-                <span class="plan-card-name">Standard</span>
-              </div>
-              <div class="plan-card-price">
-                $2500 <span class="plan-card-period">/annual</span>
-              </div>
-              <button
-                class="btn btn-primary"
-                @click="showPurchaseModal = true"
-              >
-                Get Started
-              </button>
+          <div class="subscription-plans-header-spacer"></div>
+          <div class="subscription-plans-container">
+            <div class="subscription-plans-title">Subscription Plans</div>
+            <div class="subscription-plans-desc">
+              Lorem Ipsum is simply dummy text of the printing and typesetting
+              industry. Lorem Ipsum has been the industry's standard dummy text
+              ever since the 1500s.
             </div>
-            <div class="plan-card">
-              <div class="plan-card-header">
-                <span class="plan-card-name">Basic</span>
+            <div class="subscription-plans-options">
+              <div class="plan-card">
+                <span class="plan-card-badge">Save 2 Months</span>
+                <div class="plan-card-header">
+                  <span class="plan-card-name">Standard</span>
+                </div>
+                <div class="plan-card-price">
+                  $2500 <span class="plan-card-period">/annual</span>
+                </div>
+                <button
+                  class="btn btn-primary"
+                  @click="showPurchaseModal = true"
+                >
+                  Get Started
+                </button>
               </div>
-              <div class="plan-card-price">
-                $250 <span class="plan-card-period">/month</span>
+              <div class="plan-card">
+                <div class="plan-card-header">
+                  <span class="plan-card-name">Basic</span>
+                </div>
+                <div class="plan-card-price">
+                  $250 <span class="plan-card-period">/month</span>
+                </div>
+                <button class="btn btn-primary t">Current Plan</button>
               </div>
-              <button class="btn btn-primary t">Current Plan</button>
             </div>
-          </div>
-          <div class="subscription-plans-footer">
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry.
+            <div class="subscription-plans-footer">
+              Lorem Ipsum is simply dummy text of the printing and typesetting
+              industry.
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <!-- Purchase Modal -->
-    <div
-      v-if="showPurchaseModal"
-      class="purchase-modal-overlay"
-    >
-      <div class="purchase-modal">
-        <button
-          class="purchase-modal-close"
-          @click="showPurchaseModal = false"
-        >
-          &times;
-        </button>
-        <div class="purchase-modal-content">
-          <div class="purchase-modal-left">
-            <div class="purchase-modal-title">Get Essential</div>
-            <div class="purchase-modal-section-label">Billing Information</div>
-            <div class="purchase-modal-form">
-              <div class="input-group">
-                <span class="input-icon material-icons">mail</span>
-                <input
-                  type="email"
-                  placeholder="abcd@gmail.com"
-                />
+      <!-- Purchase Modal -->
+      <div
+        v-if="showPurchaseModal"
+        class="purchase-modal-overlay"
+      >
+        <div class="purchase-modal">
+          <button
+            class="purchase-modal-close"
+            @click="showPurchaseModal = false"
+          >
+            &times;
+          </button>
+          <div class="purchase-modal-content">
+            <div class="purchase-modal-left">
+              <div class="purchase-modal-title">Get Essential</div>
+              <div class="purchase-modal-section-label">
+                Billing Information
               </div>
-              <div class="input-row">
+              <div class="purchase-modal-form">
                 <div class="input-group">
-                  <span class="input-icon material-icons">person</span>
+                  <span class="input-icon material-icons">mail</span>
                   <input
-                    type="text"
-                    placeholder="First Name"
+                    type="email"
+                    placeholder="abcd@gmail.com"
                   />
                 </div>
-                <div class="input-group">
-                  <span class="input-icon material-icons">person</span>
-                  <input
-                    type="text"
-                    placeholder="Last Name"
-                  />
+                <div class="input-row">
+                  <div class="input-group">
+                    <span class="input-icon material-icons">person</span>
+                    <input
+                      type="text"
+                      placeholder="First Name"
+                    />
+                  </div>
+                  <div class="input-group">
+                    <span class="input-icon material-icons">person</span>
+                    <input
+                      type="text"
+                      placeholder="Last Name"
+                    />
+                  </div>
                 </div>
-              </div>
-              <div class="input-row">
-                <div class="input-group">
-                  <select>
-                    <option>Country</option>
-                  </select>
+                <div class="input-row">
+                  <div class="input-group">
+                    <select>
+                      <option>Country</option>
+                    </select>
+                  </div>
+                  <div class="input-group">
+                    <select>
+                      <option>State</option>
+                    </select>
+                  </div>
                 </div>
-                <div class="input-group">
-                  <select>
-                    <option>State</option>
-                  </select>
+                <div class="input-row">
+                  <div class="input-group">
+                    <input
+                      type="text"
+                      placeholder="City"
+                    />
+                  </div>
+                  <div class="input-group">
+                    <input
+                      type="text"
+                      placeholder="Zip code"
+                    />
+                  </div>
                 </div>
-              </div>
-              <div class="input-row">
-                <div class="input-group">
-                  <input
-                    type="text"
-                    placeholder="City"
-                  />
+                <div class="purchase-modal-section-label">Payment Method</div>
+                <div class="payment-method-row">
+                  <label class="payment-method-btn">
+                    <input
+                      type="radio"
+                      name="payment"
+                      checked
+                    />
+                    <span class="icon material-icons">credit_card</span>
+                    Card
+                  </label>
+                  <label class="payment-method-btn">
+                    <input
+                      type="radio"
+                      name="payment"
+                    />
+                    <span class="icon material-icons"
+                      >account_balance_wallet</span
+                    >
+                    Paypal
+                  </label>
                 </div>
-                <div class="input-group">
-                  <input
-                    type="text"
-                    placeholder="Zip code"
-                  />
-                </div>
-              </div>
-              <div class="purchase-modal-section-label">Payment Method</div>
-              <div class="payment-method-row">
-                <label class="payment-method-btn">
-                  <input
-                    type="radio"
-                    name="payment"
-                    checked
-                  />
-                  <span class="icon material-icons">credit_card</span>
-                  Card
-                </label>
-                <label class="payment-method-btn">
-                  <input
-                    type="radio"
-                    name="payment"
-                  />
-                  <span class="icon material-icons"
-                    >account_balance_wallet</span
-                  >
-                  Paypal
-                </label>
-              </div>
-              <div class="input-group">
-                <input
-                  type="text"
-                  placeholder="Name on Card"
-                />
-              </div>
-              <div class="input-group">
-                <input
-                  type="text"
-                  placeholder="0000 0000 0000 0000"
-                  maxlength="19"
-                />
-              </div>
-              <div class="input-row">
                 <div class="input-group">
                   <input
                     type="text"
-                    placeholder="MM/YY"
-                    maxlength="5"
+                    placeholder="Name on Card"
                   />
                 </div>
                 <div class="input-group">
                   <input
                     type="text"
-                    placeholder="CVV"
-                    maxlength="4"
+                    placeholder="0000 0000 0000 0000"
+                    maxlength="19"
                   />
-                  <span class="input-icon material-icons">help_outline</span>
+                </div>
+                <div class="input-row">
+                  <div class="input-group">
+                    <input
+                      type="text"
+                      placeholder="MM/YY"
+                      maxlength="5"
+                    />
+                  </div>
+                  <div class="input-group">
+                    <input
+                      type="text"
+                      placeholder="CVV"
+                      maxlength="4"
+                    />
+                    <span class="input-icon material-icons">help_outline</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div class="purchase-modal-right">
-            <div class="plan-info-header">
-              <span>Plan Info</span>
-              <span class="plan-info-toggle">
-                Monthly
-                <label class="switch">
-                  <input
-                    type="checkbox"
-                    v-model="isAnnually"
-                  />
-                  <span class="switch-slider"></span>
-                </label>
-                Annually
-              </span>
-            </div>
-            <div class="plan-info-benefits">
-              <div class="plan-info-benefits-title">With Essential you get</div>
-              <ul>
-                <li><span class="checkmark">&#10003;</span> Benefit no. 1</li>
-                <li><span class="checkmark">&#10003;</span> Benefit no. 2</li>
-                <li><span class="checkmark">&#10003;</span> Benefit no. 3</li>
-              </ul>
-            </div>
-            <hr class="plan-info-divider" />
-            <input
-              class="promo-input"
-              type="text"
-              placeholder="Apply Promo Code"
-            />
-            <div class="plan-info-summary">
-              <div class="summary-row">
-                <span>Subtotal</span>
-                <span>$2500.00/year</span>
+            <div class="purchase-modal-right">
+              <div class="plan-info-header">
+                <span>Plan Info</span>
+                <span class="plan-info-toggle">
+                  Monthly
+                  <label class="switch">
+                    <input
+                      type="checkbox"
+                      v-model="isAnnually"
+                    />
+                    <span class="switch-slider"></span>
+                  </label>
+                  Annually
+                </span>
               </div>
-              <div class="summary-row">
-                <span>Yearly plan discount</span>
-                <span>-$20.00</span>
+              <div class="plan-info-benefits">
+                <div class="plan-info-benefits-title">
+                  With Essential you get
+                </div>
+                <ul>
+                  <li><span class="checkmark">&#10003;</span> Benefit no. 1</li>
+                  <li><span class="checkmark">&#10003;</span> Benefit no. 2</li>
+                  <li><span class="checkmark">&#10003;</span> Benefit no. 3</li>
+                </ul>
               </div>
-              <div class="summary-row">
-                <span>Promo code discount</span>
-                <span>-$26.00</span>
+              <hr class="plan-info-divider" />
+              <input
+                class="promo-input"
+                type="text"
+                placeholder="Apply Promo Code"
+              />
+              <div class="plan-info-summary">
+                <div class="summary-row">
+                  <span>Subtotal</span>
+                  <span>$2500.00/year</span>
+                </div>
+                <div class="summary-row">
+                  <span>Yearly plan discount</span>
+                  <span>-$20.00</span>
+                </div>
+                <div class="summary-row">
+                  <span>Promo code discount</span>
+                  <span>-$26.00</span>
+                </div>
               </div>
-            </div>
-            <hr class="plan-info-divider" />
-            <div class="summary-row summary-row-total">
-              <span>Billed Now</span>
-              <span class="billed-now">-$2454.00</span>
-            </div>
-            <button class="btn btn-primary">Confirm and Pay</button>
-            <div class="plan-info-note">
-              Your subscription will renew automatically every year as Lorem
-              Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry's standard
-              <a href="#">Terms and Conditions</a>.
+              <hr class="plan-info-divider" />
+              <div class="summary-row summary-row-total">
+                <span>Billed Now</span>
+                <span class="billed-now">-$2454.00</span>
+              </div>
+              <button class="btn btn-primary">Confirm and Pay</button>
+              <div class="plan-info-note">
+                Your subscription will renew automatically every year as Lorem
+                Ipsum is simply dummy text of the printing and typesetting
+                industry. Lorem Ipsum has been the industry's standard
+                <a href="#">Terms and Conditions</a>.
+              </div>
             </div>
           </div>
         </div>
@@ -906,6 +912,24 @@ input:checked + .switch-slider:before {
   .plan-card-btn--current {
     font-size: 1rem;
     padding: 8px 0;
+  }
+}
+.page {
+  padding: 0 32px 32px 32px;
+  display: flex;
+  background-color: #fff;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1400px) {
+  .page {
+    padding: 16px;
+  }
+}
+@media (max-width: 900px) {
+  .page {
+    padding: 4px;
   }
 }
 </style>

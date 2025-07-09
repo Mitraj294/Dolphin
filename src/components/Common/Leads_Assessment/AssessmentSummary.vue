@@ -1,131 +1,133 @@
 <template>
   <MainLayout>
-    <div class="assessment-table-outer">
-      <div class="assessment-table-card">
-        <div class="assessment-summary-cards">
-          <div class="assessment-summary-card">
-            <div class="summary-label">Total Sent Assessment</div>
-            <div class="summary-value">7</div>
-          </div>
-          <div class="assessment-summary-card">
-            <div class="summary-label">Submitted Assessment</div>
-            <div class="summary-value">5</div>
-          </div>
-          <div class="assessment-summary-card">
-            <div class="summary-label">Pending</div>
-            <div class="summary-value">2</div>
-          </div>
-        </div>
-        <div class="assessment-table-header-spacer"></div>
-        <div class="assessment-table-container">
-          <table class="assessment-table">
-            <thead>
-              <tr>
-                <th class="rounded-th-left">Member Name</th>
-                <th>Result</th>
-                <th class="rounded-th-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="row in paginatedRows"
-                :key="row.name"
-              >
-                <td>{{ row.name }}</td>
-                <td>
-                  <span
-                    v-if="row.result === 'Submitted'"
-                    class="status submitted"
-                  >
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 20 20"
-                      fill="none"
-                    >
-                      <circle
-                        cx="10"
-                        cy="10"
-                        r="10"
-                        fill="#48B02C"
-                      />
-                      <path
-                        d="M6 10.5L9 13.5L14 8.5"
-                        stroke="white"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      />
-                    </svg>
-                    Submitted
-                  </span>
-                  <span
-                    v-else
-                    class="status pending"
-                  >
-                    Pending
-                  </span>
-                </td>
-                <td>
-                  <button
-                    class="btn view-btn"
-                    @click="openModal(row)"
-                  >
-                    <img
-                      src="@/assets/images/Notes.svg"
-                      alt="View"
-                      width="18"
-                      height="18"
-                    />
-                    View
-                  </button>
-                </td>
-              </tr>
-              <tr v-if="paginatedRows.length === 0">
-                <td
-                  colspan="3"
-                  class="no-data"
-                >
-                  No assessments found.
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <Pagination
-        :pageSize="pageSize"
-        :pageSizes="pageSizes"
-        :showPageDropdown="showPageDropdown"
-        :currentPage="currentPage"
-        :totalPages="totalPages"
-        @goToPage="goToPage"
-        @selectPageSize="selectPageSize"
-        @togglePageDropdown="togglePageDropdown"
-      />
-      <!-- Modal for assessment details -->
-      <div
-        v-if="showModal"
-        class="assessment-modal-overlay"
-        @click.self="closeModal"
-      >
-        <div class="assessment-modal-content">
-          <button
-            class="btn modal-close-btn"
-            @click="closeModal"
-          >
-            &times;
-          </button>
-          <h2>{{ selectedMember.name }}’s Assessments</h2>
-          <div
-            v-for="(q, idx) in selectedMember.assessment || []"
-            :key="idx"
-            class="assessment-question-block"
-          >
-            <div class="assessment-question">
-              Q.{{ idx + 1 }} {{ q.question }}
+    <div class="page">
+      <div class="assessment-table-outer">
+        <div class="assessment-table-card">
+          <div class="assessment-summary-cards">
+            <div class="assessment-summary-card">
+              <div class="summary-label">Total Sent Assessment</div>
+              <div class="summary-value">7</div>
             </div>
-            <div class="assessment-answer">{{ q.answer }}</div>
+            <div class="assessment-summary-card">
+              <div class="summary-label">Submitted Assessment</div>
+              <div class="summary-value">5</div>
+            </div>
+            <div class="assessment-summary-card">
+              <div class="summary-label">Pending</div>
+              <div class="summary-value">2</div>
+            </div>
+          </div>
+          <div class="assessment-table-header-spacer"></div>
+          <div class="assessment-table-container">
+            <table class="assessment-table">
+              <thead>
+                <tr>
+                  <th class="rounded-th-left">Member Name</th>
+                  <th>Result</th>
+                  <th class="rounded-th-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="row in paginatedRows"
+                  :key="row.name"
+                >
+                  <td>{{ row.name }}</td>
+                  <td>
+                    <span
+                      v-if="row.result === 'Submitted'"
+                      class="status submitted"
+                    >
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 20 20"
+                        fill="none"
+                      >
+                        <circle
+                          cx="10"
+                          cy="10"
+                          r="10"
+                          fill="#48B02C"
+                        />
+                        <path
+                          d="M6 10.5L9 13.5L14 8.5"
+                          stroke="white"
+                          stroke-width="2"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                      </svg>
+                      Submitted
+                    </span>
+                    <span
+                      v-else
+                      class="status pending"
+                    >
+                      Pending
+                    </span>
+                  </td>
+                  <td>
+                    <button
+                      class="btn view-btn"
+                      @click="openModal(row)"
+                    >
+                      <img
+                        src="@/assets/images/Notes.svg"
+                        alt="View"
+                        width="18"
+                        height="18"
+                      />
+                      View
+                    </button>
+                  </td>
+                </tr>
+                <tr v-if="paginatedRows.length === 0">
+                  <td
+                    colspan="3"
+                    class="no-data"
+                  >
+                    No assessments found.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <Pagination
+          :pageSize="pageSize"
+          :pageSizes="pageSizes"
+          :showPageDropdown="showPageDropdown"
+          :currentPage="currentPage"
+          :totalPages="totalPages"
+          @goToPage="goToPage"
+          @selectPageSize="selectPageSize"
+          @togglePageDropdown="togglePageDropdown"
+        />
+        <!-- Modal for assessment details -->
+        <div
+          v-if="showModal"
+          class="assessment-modal-overlay"
+          @click.self="closeModal"
+        >
+          <div class="assessment-modal-content">
+            <button
+              class="btn modal-close-btn"
+              @click="closeModal"
+            >
+              &times;
+            </button>
+            <h2>{{ selectedMember.name }}’s Assessments</h2>
+            <div
+              v-for="(q, idx) in selectedMember.assessment || []"
+              :key="idx"
+              class="assessment-question-block"
+            >
+              <div class="assessment-question">
+                Q.{{ idx + 1 }} {{ q.question }}
+              </div>
+              <div class="assessment-answer">{{ q.answer }}</div>
+            </div>
           </div>
         </div>
       </div>
@@ -546,6 +548,24 @@ export default {
     width: 100%;
     padding: 12px 6px;
     font-size: 0.95rem;
+  }
+}
+.page {
+  padding: 0 32px 32px 32px;
+  display: flex;
+  background-color: #fff;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1400px) {
+  .page {
+    padding: 16px;
+  }
+}
+@media (max-width: 900px) {
+  .page {
+    padding: 4px;
   }
 }
 </style>

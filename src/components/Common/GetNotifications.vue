@@ -1,64 +1,66 @@
 <template>
-  <div class="notifications-table-outer">
-    <div class="notifications-table-card">
-      <div class="notifications-controls">
-        <div class="notifications-date-wrapper">
-          <img
-            src="@/assets/images/Calendar.svg"
-            class="calendar-icon"
-          />
-          <input
-            type="text"
-            placeholder="Select Date"
-            class="notifications-date"
-          />
-        </div>
-        <div class="notifications-tabs">
-          <button
-            :class="['notifications-tab-btn', { active: tab === 'unread' }]"
-            @click="tab = 'unread'"
-          >
-            Unread
-          </button>
-          <button
-            :class="['notifications-tab-btn', { active: tab === 'all' }]"
-            @click="tab = 'all'"
-          >
-            All
-          </button>
-        </div>
-        <button
-          class="mark-all"
-          @click="markAllRead"
-        >
-          Mark all as read
-        </button>
-      </div>
-      <div class="notifications-list">
-        <div
-          v-for="(item, idx) in paginatedNotifications"
-          :key="idx"
-          class="notification-item"
-        >
-          <div class="notification-meta">
+  <div class="page">
+    <div class="notifications-table-outer">
+      <div class="notifications-table-card">
+        <div class="notifications-controls">
+          <div class="notifications-date-wrapper">
             <img
-              src="@/assets/images/Logo.svg"
-              class="notification-icon"
+              src="@/assets/images/Calendar.svg"
+              class="calendar-icon"
+            />
+            <input
+              type="text"
+              placeholder="Select Date"
+              class="notifications-date"
             />
           </div>
-          <div class="notification-body">
-            <span class="notification-date">{{ item.date }}</span>
-            <span class="notification-text">
-              <span class="notification-title">Dolphin.</span>
-              {{ item.text }}
-            </span>
+          <div class="notifications-tabs">
+            <button
+              :class="['notifications-tab-btn', { active: tab === 'unread' }]"
+              @click="tab = 'unread'"
+            >
+              Unread
+            </button>
+            <button
+              :class="['notifications-tab-btn', { active: tab === 'all' }]"
+              @click="tab = 'all'"
+            >
+              All
+            </button>
           </div>
+          <button
+            class="mark-all"
+            @click="markAllRead"
+          >
+            Mark all as read
+          </button>
         </div>
-        <div
-          v-if="paginatedNotifications.length === 0"
-          class="no-data"
-        >
-          No notifications found.
+        <div class="notifications-list">
+          <div
+            v-for="(item, idx) in paginatedNotifications"
+            :key="idx"
+            class="notification-item"
+          >
+            <div class="notification-meta">
+              <img
+                src="@/assets/images/Logo.svg"
+                class="notification-icon"
+              />
+            </div>
+            <div class="notification-body">
+              <span class="notification-date">{{ item.date }}</span>
+              <span class="notification-text">
+                <span class="notification-title">Dolphin.</span>
+                {{ item.text }}
+              </span>
+            </div>
+          </div>
+          <div
+            v-if="paginatedNotifications.length === 0"
+            class="no-data"
+          >
+            No notifications found.
+          </div>
         </div>
       </div>
       <Pagination
@@ -413,6 +415,24 @@ export default {
     padding: 0 4px 4px 4px;
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
+  }
+}
+.page {
+  padding: 0 32px 32px 32px;
+  display: flex;
+  background-color: #fff;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1400px) {
+  .page {
+    padding: 16px;
+  }
+}
+@media (max-width: 900px) {
+  .page {
+    padding: 4px;
   }
 }
 </style>

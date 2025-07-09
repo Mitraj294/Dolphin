@@ -1,55 +1,92 @@
 <template>
   <MainLayout>
-    <div class="member-table-outer">
-      <div class="member-table-card">
-        <div class="member-table-header">
-          <div class="member-table-search-bar">
-            <span class="member-search-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            </span>
-            <input
-              class="member-search"
-              v-model="searchQuery"
-              placeholder="Search Member..."
-              @input="onSearch"
-            />
+    <div class="page">
+      <div class="member-table-outer">
+        <div class="member-table-card">
+          <div class="member-table-header">
+            <div class="member-table-search-bar">
+              <span class="member-search-icon">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#888"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <circle
+                    cx="11"
+                    cy="11"
+                    r="8"
+                  />
+                  <line
+                    x1="21"
+                    y1="21"
+                    x2="16.65"
+                    y2="16.65"
+                  />
+                </svg>
+              </span>
+              <input
+                class="member-search"
+                v-model="searchQuery"
+                placeholder="Search Member..."
+                @input="onSearch"
+              />
+            </div>
+          </div>
+          <div class="member-table-header-spacer"></div>
+          <div class="member-table-container">
+            <table class="member-table">
+              <thead>
+                <tr>
+                  <th class="rounded-th-left">Name</th>
+                  <th>Email</th>
+                  <th>Phone Number</th>
+                  <th>Role</th>
+                  <th class="rounded-th-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="(member, idx) in paginatedMembers"
+                  :key="member.id"
+                >
+                  <td>{{ member.name }}</td>
+                  <td>{{ member.email }}</td>
+                  <td>{{ member.phone }}</td>
+                  <td>{{ member.role }}</td>
+                  <td>
+                    <button
+                      class="member-action-btn"
+                      @click="viewMember(member)"
+                    >
+                      <span style="margin-right: 4px">
+                        <img
+                          src="@/assets/images/Notes.svg"
+                          alt="View"
+                          width="16"
+                          height="16"
+                        />
+                      </span>
+                      View
+                    </button>
+                  </td>
+                </tr>
+                <tr v-if="paginatedMembers.length === 0">
+                  <td
+                    colspan="5"
+                    class="no-data"
+                  >
+                    No members found.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
-        <div class="member-table-header-spacer"></div>
-        <div class="member-table-container">
-          <table class="member-table">
-            <thead>
-              <tr>
-                <th class="rounded-th-left">Name</th>
-                <th>Email</th>
-                <th>Phone Number</th>
-                <th>Role</th>
-                <th class="rounded-th-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(member, idx) in paginatedMembers" :key="member.id">
-                <td>{{ member.name }}</td>
-                <td>{{ member.email }}</td>
-                <td>{{ member.phone }}</td>
-                <td>{{ member.role }}</td>
-                <td>
-                  <button class="member-action-btn" @click="viewMember(member)">
-                    <span style="margin-right:4px;">
-                      <img src="@/assets/images/Notes.svg" alt="View" width="16" height="16" />
-                    </span>
-                    View
-                  </button>
-                </td>
-              </tr>
-              <tr v-if="paginatedMembers.length === 0">
-                <td colspan="5" class="no-data">No members found.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      
-      </div>
         <Pagination
           :pageSize="pageSize"
           :pageSizes="[10, 25, 100]"
@@ -61,13 +98,14 @@
           @selectPageSize="selectPageSize"
           @togglePageDropdown="showPageDropdown = !showPageDropdown"
         />
+      </div>
     </div>
   </MainLayout>
 </template>
 
 <script>
-import MainLayout from '@/components/layout/MainLayout.vue'
-import Pagination from '@/components/layout/Pagination.vue'
+import MainLayout from '@/components/layout/MainLayout.vue';
+import Pagination from '@/components/layout/Pagination.vue';
 export default {
   name: 'MemberListing',
   components: { MainLayout, Pagination },
@@ -78,19 +116,89 @@ export default {
       searchQuery: '',
       showPageDropdown: false,
       members: [
-        { id: 1, name: 'Emily Carter', email: 'emily@dolphin.org', phone: '+91 98765 43210', role: 'Manager', status: 'Active' },
-        { id: 2, name: 'James Parker', email: 'james@dolphin.org', phone: '+91 91234 56789', role: 'CEO', status: 'Active' },
-        { id: 3, name: 'Sophia Mitchell', email: 'sophia@dolphin.org', phone: '+91 99887 76655', role: 'Owner', status: 'Active' },
-        { id: 4, name: 'Mason Walker', email: 'mason@dolphin.org', phone: '+91 90011 22334', role: 'Support', status: 'Active' },
-        { id: 5, name: 'Olivia Bennett', email: 'olivia@dolphin.org', phone: '+91 88990 11223', role: 'Manager', status: 'Active' },
-        { id: 6, name: 'Benjamin Hayes', email: 'benjamin@dolphin.org', phone: '+91 77665 54433', role: 'CEO', status: 'Active' },
-        { id: 7, name: 'Ava Richardson', email: 'ava@dolphin.org', phone: '+91 95555 12345', role: 'Owner', status: 'Active' },
-        { id: 8, name: 'Henry Cooper', email: 'henry@dolphin.org', phone: '+91 96666 77788', role: 'Support', status: 'Active' },
-        { id: 9, name: 'Isabella Thompson', email: 'isabella@dolphin.org', phone: '+91 98888 99900', role: 'Support', status: 'Active' },
-        { id: 10, name: 'Daniel Morgan', email: 'daniel@dolphin.org', phone: '+91 91122 33445', role: 'CEO', status: 'Active' },
+        {
+          id: 1,
+          name: 'Emily Carter',
+          email: 'emily@dolphin.org',
+          phone: '+91 98765 43210',
+          role: 'Manager',
+          status: 'Active',
+        },
+        {
+          id: 2,
+          name: 'James Parker',
+          email: 'james@dolphin.org',
+          phone: '+91 91234 56789',
+          role: 'CEO',
+          status: 'Active',
+        },
+        {
+          id: 3,
+          name: 'Sophia Mitchell',
+          email: 'sophia@dolphin.org',
+          phone: '+91 99887 76655',
+          role: 'Owner',
+          status: 'Active',
+        },
+        {
+          id: 4,
+          name: 'Mason Walker',
+          email: 'mason@dolphin.org',
+          phone: '+91 90011 22334',
+          role: 'Support',
+          status: 'Active',
+        },
+        {
+          id: 5,
+          name: 'Olivia Bennett',
+          email: 'olivia@dolphin.org',
+          phone: '+91 88990 11223',
+          role: 'Manager',
+          status: 'Active',
+        },
+        {
+          id: 6,
+          name: 'Benjamin Hayes',
+          email: 'benjamin@dolphin.org',
+          phone: '+91 77665 54433',
+          role: 'CEO',
+          status: 'Active',
+        },
+        {
+          id: 7,
+          name: 'Ava Richardson',
+          email: 'ava@dolphin.org',
+          phone: '+91 95555 12345',
+          role: 'Owner',
+          status: 'Active',
+        },
+        {
+          id: 8,
+          name: 'Henry Cooper',
+          email: 'henry@dolphin.org',
+          phone: '+91 96666 77788',
+          role: 'Support',
+          status: 'Active',
+        },
+        {
+          id: 9,
+          name: 'Isabella Thompson',
+          email: 'isabella@dolphin.org',
+          phone: '+91 98888 99900',
+          role: 'Support',
+          status: 'Active',
+        },
+        {
+          id: 10,
+          name: 'Daniel Morgan',
+          email: 'daniel@dolphin.org',
+          phone: '+91 91122 33445',
+          role: 'CEO',
+          status: 'Active',
+        },
       ],
-      filteredMembers: []
-    }
+      filteredMembers: [],
+    };
   },
   computed: {
     totalPages() {
@@ -118,7 +226,7 @@ export default {
         pages.push(total);
         return pages;
       }
-    }
+    },
   },
   methods: {
     onSearch() {
@@ -126,11 +234,12 @@ export default {
       if (!q) {
         this.filteredMembers = this.members;
       } else {
-        this.filteredMembers = this.members.filter(m =>
-          m.name.toLowerCase().includes(q) ||
-          m.email.toLowerCase().includes(q) ||
-          m.phone.replace(/\s+/g, '').includes(q.replace(/\s+/g, '')) ||
-          m.role.toLowerCase().includes(q)
+        this.filteredMembers = this.members.filter(
+          (m) =>
+            m.name.toLowerCase().includes(q) ||
+            m.email.toLowerCase().includes(q) ||
+            m.phone.replace(/\s+/g, '').includes(q.replace(/\s+/g, '')) ||
+            m.role.toLowerCase().includes(q)
         );
       }
       this.currentPage = 1;
@@ -147,12 +256,12 @@ export default {
     viewMember(member) {
       // Implement view logic
       this.$emit('view-member', member);
-    }
+    },
   },
   mounted() {
     this.filteredMembers = this.members;
-  }
-}
+  },
+};
 </script>
 
 <style scoped>
@@ -172,7 +281,7 @@ export default {
   min-width: 0;
   background: #fff;
   border-radius: 24px;
-  border: 1px solid #EBEBEB;
+  border: 1px solid #ebebeb;
   box-sizing: border-box;
   overflow: visible;
   box-shadow: 0 2px 16px 0 rgba(33, 150, 243, 0.04);
@@ -197,7 +306,7 @@ export default {
 .member-table-search-bar {
   display: flex;
   align-items: center;
-  background: #F8F8F8;
+  background: #f8f8f8;
   border-radius: 24px;
   padding: 0 16px;
   width: 260px;
@@ -263,7 +372,8 @@ export default {
   border: none;
   margin-top: 0;
 }
-.member-table th, .member-table td {
+.member-table th,
+.member-table td {
   padding: 12px 8px;
   text-align: left;
   font-size: 14px;
@@ -275,25 +385,25 @@ export default {
   letter-spacing: 0.01em;
 }
 .member-table th {
-  background: #F8F8F8;
+  background: #f8f8f8;
   font-weight: 600;
   color: #888;
   position: relative;
   vertical-align: middle;
   min-width: 100px;
-  border-bottom: 1.5px solid #EBEBEB;
+  border-bottom: 1.5px solid #ebebeb;
 }
 .rounded-th-left {
   border-top-left-radius: 24px;
   border-bottom-left-radius: 24px;
   overflow: hidden;
-  background: #F8F8F8;
+  background: #f8f8f8;
 }
 .rounded-th-right {
   border-top-right-radius: 24px;
   border-bottom-right-radius: 24px;
   overflow: hidden;
-  background: #F8F8F8;
+  background: #f8f8f8;
 }
 .member-table td {
   color: #222;
@@ -347,7 +457,8 @@ export default {
     border-bottom-left-radius: 14px;
     border-bottom-right-radius: 14px;
   }
-  .member-table th, .member-table td {
+  .member-table th,
+  .member-table td {
     font-size: 12px;
     padding: 8px 4px;
   }
@@ -387,7 +498,8 @@ export default {
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
   }
-  .member-table th, .member-table td {
+  .member-table th,
+  .member-table td {
     font-size: 11px;
     padding: 6px 2px;
   }
@@ -401,6 +513,24 @@ export default {
   }
   .member-search {
     font-size: 11px;
+  }
+}
+.page {
+  padding: 0 32px 32px 32px;
+  display: flex;
+  background-color: #fff;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1400px) {
+  .page {
+    padding: 16px;
+  }
+}
+@media (max-width: 900px) {
+  .page {
+    padding: 4px;
   }
 }
 </style>

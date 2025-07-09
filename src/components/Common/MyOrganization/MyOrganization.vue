@@ -1,316 +1,354 @@
 <template>
   <MainLayout>
-    <div class="my-org-table-outer">
-      <div class="my-org-table-card">
-        <div class="my-org-table-header">
-          <div class="my-org-action-buttons">
-            <button
-              class="my-org-secondary"
-              @click="$router.push({ name: 'MemberListing' })"
-            >
-              Members Listing
-            </button>
-            <button class="my-org-secondary">Template</button>
-            <button
-              class="my-org-primary"
-              @click="showAddGroupModal = true"
-            >
-              + Add New Group
-            </button>
-            <button
-              class="my-org-primary"
-              @click="showAddMemberModal = true"
-            >
-              + Add New Member
-            </button>
+    <div class="page">
+      <div class="my-org-table-outer">
+        <div class="my-org-table-card">
+          <div class="my-org-table-header">
+            <div class="my-org-action-buttons">
+              <button
+                class="my-org-secondary"
+                @click="$router.push({ name: 'MemberListing' })"
+              >
+                Members Listing
+              </button>
+              <button class="my-org-secondary">
+                <img
+                  src="@/assets/images/Templates.svg"
+                  alt="Template"
+                  style="
+                    width: 18px;
+                    height: 18px;
+                    margin-right: 6px;
+                    vertical-align: middle;
+                  "
+                />
+                Template
+              </button>
+              <button
+                class="my-org-primary"
+                @click="showAddGroupModal = true"
+              >
+                <img
+                  src="@/assets/images/Add.svg"
+                  alt="Add"
+                  style="
+                    width: 18px;
+                    height: 18px;
+                    margin-right: 6px;
+                    vertical-align: middle;
+                  "
+                />
+                Add New Group
+              </button>
+              <button
+                class="my-org-primary"
+                @click="showAddMemberModal = true"
+              >
+                <img
+                  src="@/assets/images/Add.svg"
+                  alt="Add"
+                  style="
+                    width: 18px;
+                    height: 18px;
+                    margin-right: 6px;
+                    vertical-align: middle;
+                  "
+                />
+                Add New Member
+              </button>
+            </div>
+          </div>
+          <div class="my-org-table-header-spacer"></div>
+          <div class="my-org-table-container">
+            <table class="my-org-table">
+              <thead>
+                <tr>
+                  <th class="rounded-th-left">Group Name</th>
+                  <th class="rounded-th-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="group in paginatedGroups"
+                  :key="group.id"
+                >
+                  <td>{{ group.name }}</td>
+                  <td>
+                    <button
+                      class="icon-btn view-btn"
+                      @click="viewGroup(group)"
+                    >
+                      <img
+                        src="@/assets/images/Notes.svg"
+                        alt="View"
+                        class="view-icon"
+                      />
+                      <span class="view-label">View</span>
+                    </button>
+                  </td>
+                </tr>
+                <tr v-if="paginatedGroups.length === 0">
+                  <td
+                    colspan="2"
+                    class="empty-row"
+                  >
+                    No groups found.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
-        <div class="my-org-table-header-spacer"></div>
-        <div class="my-org-table-container">
-          <table class="my-org-table">
-            <thead>
-              <tr>
-                <th class="rounded-th-left">Group Name</th>
-                <th class="rounded-th-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="group in paginatedGroups"
-                :key="group.id"
-              >
-                <td>{{ group.name }}</td>
-                <td>
-                  <button
-                    class="icon-btn view-btn"
-                    @click="viewGroup(group)"
+        <Pagination
+          :pageSize="pageSize"
+          :pageSizes="pageSizes"
+          :showPageDropdown="showPageDropdown"
+          :currentPage="currentPage"
+          :totalPages="totalPages"
+          @togglePageDropdown="togglePageDropdown"
+          @selectPageSize="selectPageSize"
+          @goToPage="goToPage"
+        />
+        <!-- Add New Member Modal -->
+        <div
+          v-if="showAddMemberModal"
+          class="modal-overlay"
+        >
+          <div class="modal-card">
+            <button
+              class="modal-close"
+              @click="showAddMemberModal = false"
+            >
+              &times;
+            </button>
+            <h2 class="modal-title">Add New Member</h2>
+            <form
+              class="modal-form"
+              @submit.prevent="saveMember"
+            >
+              <div class="modal-form-row">
+                <div class="modal-form-group">
+                  <span class="modal-icon"><i class="fas fa-user"></i></span>
+                  <input
+                    type="text"
+                    placeholder="First Name"
+                    v-model="newMember.firstName"
+                    required
+                  />
+                </div>
+                <div class="modal-form-group">
+                  <span class="modal-icon"><i class="fas fa-user"></i></span>
+                  <input
+                    type="text"
+                    placeholder="Last Name"
+                    v-model="newMember.lastName"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="modal-form-row">
+                <div class="modal-form-group">
+                  <span class="modal-icon"
+                    ><i class="fas fa-envelope"></i
+                  ></span>
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    v-model="newMember.email"
+                    required
+                  />
+                </div>
+                <div class="modal-form-group">
+                  <span class="modal-icon"><i class="fas fa-phone"></i></span>
+                  <input
+                    type="text"
+                    placeholder="Phone Number"
+                    v-model="newMember.phone"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="modal-form-row">
+                <div class="modal-form-group custom-dropdown">
+                  <span class="modal-icon"
+                    ><i class="fas fa-user-tag"></i
+                  ></span>
+                  <div
+                    class="custom-dropdown-input"
+                    @click="toggleRoleDropdown"
                   >
-                    <img
-                      src="@/assets/images/Notes.svg"
-                      alt="View"
-                      class="view-icon"
+                    <span
+                      v-if="!newMember.roles.length"
+                      style="color: #888"
+                      >Role</span
+                    >
+                    <span
+                      v-else
+                      class="selected-value"
+                      >{{ newMember.roles.join(', ') }}</span
+                    >
+                    <i class="fas fa-chevron-down"></i>
+                  </div>
+                  <div
+                    v-if="roleDropdownOpen"
+                    class="dropdown-list"
+                  >
+                    <input
+                      class="dropdown-search"
+                      v-model="roleSearch"
+                      placeholder="Search"
                     />
-                    <span class="view-label">View</span>
-                  </button>
-                </td>
-              </tr>
-              <tr v-if="paginatedGroups.length === 0">
-                <td
-                  colspan="2"
-                  class="empty-row"
-                >
-                  No groups found.
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <Pagination
-        :pageSize="pageSize"
-        :pageSizes="pageSizes"
-        :showPageDropdown="showPageDropdown"
-        :currentPage="currentPage"
-        :totalPages="totalPages"
-        @togglePageDropdown="togglePageDropdown"
-        @selectPageSize="selectPageSize"
-        @goToPage="goToPage"
-      />
-      <!-- Add New Member Modal -->
-      <div
-        v-if="showAddMemberModal"
-        class="modal-overlay"
-      >
-        <div class="modal-card">
-          <button
-            class="modal-close"
-            @click="showAddMemberModal = false"
-          >
-            &times;
-          </button>
-          <h2 class="modal-title">Add New Member</h2>
-          <form
-            class="modal-form"
-            @submit.prevent="saveMember"
-          >
-            <div class="modal-form-row">
-              <div class="modal-form-group">
-                <span class="modal-icon"><i class="fas fa-user"></i></span>
-                <input
-                  type="text"
-                  placeholder="First Name"
-                  v-model="newMember.firstName"
-                  required
-                />
-              </div>
-              <div class="modal-form-group">
-                <span class="modal-icon"><i class="fas fa-user"></i></span>
-                <input
-                  type="text"
-                  placeholder="Last Name"
-                  v-model="newMember.lastName"
-                  required
-                />
-              </div>
-            </div>
-            <div class="modal-form-row">
-              <div class="modal-form-group">
-                <span class="modal-icon"><i class="fas fa-envelope"></i></span>
-                <input
-                  type="email"
-                  placeholder="Email"
-                  v-model="newMember.email"
-                  required
-                />
-              </div>
-              <div class="modal-form-group">
-                <span class="modal-icon"><i class="fas fa-phone"></i></span>
-                <input
-                  type="text"
-                  placeholder="Phone Number"
-                  v-model="newMember.phone"
-                  required
-                />
-              </div>
-            </div>
-            <div class="modal-form-row">
-              <div class="modal-form-group custom-dropdown">
-                <span class="modal-icon"><i class="fas fa-user-tag"></i></span>
-                <div
-                  class="custom-dropdown-input"
-                  @click="toggleRoleDropdown"
-                >
-                  <span
-                    v-if="!newMember.roles.length"
-                    style="color: #888"
-                    >Role</span
-                  >
-                  <span
-                    v-else
-                    class="selected-value"
-                    >{{ newMember.roles.join(', ') }}</span
-                  >
-                  <i class="fas fa-chevron-down"></i>
+                    <div
+                      v-for="role in filteredRoles"
+                      :key="role"
+                      class="dropdown-item"
+                      @click="selectRole(role)"
+                    >
+                      {{ role }}
+                      <span
+                        class="dropdown-checkbox"
+                        :class="{ checked: newMember.roles.includes(role) }"
+                      ></span>
+                    </div>
+                  </div>
                 </div>
-                <div
-                  v-if="roleDropdownOpen"
-                  class="dropdown-list"
-                >
-                  <input
-                    class="dropdown-search"
-                    v-model="roleSearch"
-                    placeholder="Search"
-                  />
+                <div class="modal-form-group custom-dropdown">
+                  <span class="modal-icon"><i class="fas fa-users"></i></span>
                   <div
-                    v-for="role in filteredRoles"
-                    :key="role"
-                    class="dropdown-item"
-                    @click="selectRole(role)"
+                    class="custom-dropdown-input"
+                    @click="toggleGroupDropdown"
                   >
-                    {{ role }}
                     <span
-                      class="dropdown-checkbox"
-                      :class="{ checked: newMember.roles.includes(role) }"
-                    ></span>
-                  </div>
-                </div>
-              </div>
-              <div class="modal-form-group custom-dropdown">
-                <span class="modal-icon"><i class="fas fa-users"></i></span>
-                <div
-                  class="custom-dropdown-input"
-                  @click="toggleGroupDropdown"
-                >
-                  <span
-                    v-if="!newMember.groups.length"
-                    style="color: #888"
-                    >Groups associated with</span
-                  >
-                  <span
-                    v-else
-                    class="selected-value"
-                    >{{
-                      newMember.groups.map((g) => g.name || g).join(', ')
-                    }}</span
-                  >
-                  <i class="fas fa-chevron-down"></i>
-                </div>
-                <div
-                  v-if="groupDropdownOpen"
-                  class="dropdown-list"
-                >
-                  <input
-                    class="dropdown-search"
-                    v-model="groupSearch"
-                    placeholder="Search"
-                  />
-                  <div
-                    v-for="group in filteredGroups"
-                    :key="group.id"
-                    class="dropdown-item"
-                    @click="selectGroup(group)"
-                  >
-                    {{ group.name }}
+                      v-if="!newMember.groups.length"
+                      style="color: #888"
+                      >Groups associated with</span
+                    >
                     <span
-                      class="dropdown-checkbox"
-                      :class="{
-                        checked: newMember.groups.includes(group.name),
-                      }"
-                    ></span>
+                      v-else
+                      class="selected-value"
+                      >{{
+                        newMember.groups.map((g) => g.name || g).join(', ')
+                      }}</span
+                    >
+                    <i class="fas fa-chevron-down"></i>
                   </div>
-                </div>
-              </div>
-            </div>
-            <div class="modal-form-actions">
-              <button
-                type="submit"
-                class="modal-save-btn"
-              >
-                Save Member
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-      <!-- End Modal -->
-      <!-- Add New Group Modal -->
-      <div
-        v-if="showAddGroupModal"
-        class="modal-overlay"
-      >
-        <div class="modal-card">
-          <button
-            class="modal-close"
-            @click="showAddGroupModal = false"
-          >
-            &times;
-          </button>
-          <h2 class="modal-title">Add New Group</h2>
-          <form
-            class="modal-form"
-            @submit.prevent="saveGroup"
-          >
-            <div class="modal-form-row">
-              <div class="modal-form-group">
-                <span class="modal-icon"><i class="fas fa-users"></i></span>
-                <input
-                  type="text"
-                  placeholder="Group Name"
-                  v-model="newGroup.name"
-                  required
-                />
-              </div>
-              <div
-                class="modal-form-group custom-dropdown"
-                style="position: relative"
-              >
-                <span class="modal-icon"><i class="fas fa-user"></i></span>
-                <input
-                  type="text"
-                  placeholder="Members"
-                  v-model="newGroup.members"
-                  readonly
-                  style="
-                    background: transparent;
-                    border: none;
-                    outline: none;
-                    font-size: 16px;
-                    color: #222;
-                    width: 100%;
-                  "
-                  @click="showMembersDropdown = !showMembersDropdown"
-                />
-                <i
-                  class="fas fa-chevron-down"
-                  style="margin-left: auto; color: #888; cursor: pointer"
-                  @click="showMembersDropdown = !showMembersDropdown"
-                ></i>
-                <div
-                  v-if="showMembersDropdown"
-                  class="dropdown-list"
-                  style="left: 0; top: 54px; width: 100%"
-                >
                   <div
-                    class="dropdown-item"
-                    style="color: #888"
+                    v-if="groupDropdownOpen"
+                    class="dropdown-list"
                   >
-                    No members available
+                    <input
+                      class="dropdown-search"
+                      v-model="groupSearch"
+                      placeholder="Search"
+                    />
+                    <div
+                      v-for="group in filteredGroups"
+                      :key="group.id"
+                      class="dropdown-item"
+                      @click="selectGroup(group)"
+                    >
+                      {{ group.name }}
+                      <span
+                        class="dropdown-checkbox"
+                        :class="{
+                          checked: newMember.groups.includes(group.name),
+                        }"
+                      ></span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="modal-form-actions">
-              <button
-                type="submit"
-                class="modal-save-btn"
-              >
-                Save Group
-              </button>
-            </div>
-          </form>
+              <div class="modal-form-actions">
+                <button
+                  type="submit"
+                  class="modal-save-btn"
+                >
+                  Save Member
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
+        <!-- End Modal -->
+        <!-- Add New Group Modal -->
+        <div
+          v-if="showAddGroupModal"
+          class="modal-overlay"
+        >
+          <div class="modal-card">
+            <button
+              class="modal-close"
+              @click="showAddGroupModal = false"
+            >
+              &times;
+            </button>
+            <h2 class="modal-title">Add New Group</h2>
+            <form
+              class="modal-form"
+              @submit.prevent="saveGroup"
+            >
+              <div class="modal-form-row">
+                <div class="modal-form-group">
+                  <span class="modal-icon"><i class="fas fa-users"></i></span>
+                  <input
+                    type="text"
+                    placeholder="Group Name"
+                    v-model="newGroup.name"
+                    required
+                  />
+                </div>
+                <div
+                  class="modal-form-group custom-dropdown"
+                  style="position: relative"
+                >
+                  <span class="modal-icon"><i class="fas fa-user"></i></span>
+                  <input
+                    type="text"
+                    placeholder="Members"
+                    v-model="newGroup.members"
+                    readonly
+                    style="
+                      background: transparent;
+                      border: none;
+                      outline: none;
+                      font-size: 16px;
+                      color: #222;
+                      width: 100%;
+                    "
+                    @click="showMembersDropdown = !showMembersDropdown"
+                  />
+                  <i
+                    class="fas fa-chevron-down"
+                    style="margin-left: auto; color: #888; cursor: pointer"
+                    @click="showMembersDropdown = !showMembersDropdown"
+                  ></i>
+                  <div
+                    v-if="showMembersDropdown"
+                    class="dropdown-list"
+                    style="left: 0; top: 54px; width: 100%"
+                  >
+                    <div
+                      class="dropdown-item"
+                      style="color: #888"
+                    >
+                      No members available
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-form-actions">
+                <button
+                  type="submit"
+                  class="modal-save-btn"
+                >
+                  Save Group
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <!-- End Add New Group Modal -->
       </div>
-      <!-- End Add New Group Modal -->
     </div>
   </MainLayout>
 </template>
@@ -687,8 +725,11 @@ export default {
   gap: 24px;
   width: 100%;
 }
+
 .modal-form-group,
 .modal-form-group.custom-dropdown {
+  flex: 1 1 0;
+  min-width: 0;
   background: #f6f6f6;
   border-radius: 9px;
   padding: 0 16px;
@@ -698,6 +739,7 @@ export default {
   margin-bottom: 0;
   box-sizing: border-box;
 }
+
 .modal-form-group.custom-dropdown {
   flex-direction: row;
   align-items: center;
@@ -1006,5 +1048,22 @@ export default {
     border-bottom-right-radius: 10px;
   }
 }
-/* ...existing modal styles, keep as is... */
+.page {
+  padding: 0 32px 32px 32px;
+  display: flex;
+  background-color: #fff;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1400px) {
+  .page {
+    padding: 16px;
+  }
+}
+@media (max-width: 900px) {
+  .page {
+    padding: 4px;
+  }
+}
 </style>

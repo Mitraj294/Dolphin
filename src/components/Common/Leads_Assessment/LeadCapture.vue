@@ -1,170 +1,172 @@
 <template>
   <MainLayout>
-    <div class="lead-capture-outer">
-      <div class="lead-capture-card">
-        <h3 class="lead-capture-card-title">Enter Lead Details</h3>
-        <form class="lead-capture-form">
-          <div class="lead-capture-grid">
-            <div class="lead-capture-field">
-              <label>First Name</label>
-              <div class="input-icon-wrapper">
-                <i class="fas fa-user"></i>
-                <input
-                  type="text"
-                  placeholder="Type here"
-                />
+    <div class="page">
+      <div class="lead-capture-outer">
+        <div class="lead-capture-card">
+          <h3 class="lead-capture-card-title">Enter Lead Details</h3>
+          <form class="lead-capture-form">
+            <div class="lead-capture-grid">
+              <div class="lead-capture-field">
+                <label>First Name</label>
+                <div class="input-icon-wrapper">
+                  <i class="fas fa-user"></i>
+                  <input
+                    type="text"
+                    placeholder="Type here"
+                  />
+                </div>
+              </div>
+              <div class="lead-capture-field">
+                <label>Last Name</label>
+                <div class="input-icon-wrapper">
+                  <i class="fas fa-user"></i>
+                  <input
+                    type="text"
+                    placeholder="Type here"
+                  />
+                </div>
+              </div>
+              <div class="lead-capture-field">
+                <label>Email</label>
+                <div class="input-icon-wrapper">
+                  <i class="fas fa-envelope"></i>
+                  <input
+                    type="email"
+                    placeholder="abc@gmail.com"
+                  />
+                </div>
+              </div>
+              <div class="lead-capture-field">
+                <label>Phone</label>
+                <div class="input-icon-wrapper">
+                  <i class="fas fa-phone"></i>
+                  <input
+                    type="text"
+                    placeholder="Type here"
+                  />
+                </div>
+              </div>
+              <div class="lead-capture-field">
+                <label>Password</label>
+                <div class="input-icon-wrapper">
+                  <i class="fas fa-lock"></i>
+                  <input
+                    :type="showPassword ? 'text' : 'password'"
+                    placeholder="Type here"
+                  />
+                  <i
+                    :class="[
+                      'fas',
+                      showPassword ? 'fa-eye-slash' : 'fa-eye',
+                      'input-eye',
+                    ]"
+                    @click="togglePassword"
+                  ></i>
+                </div>
+              </div>
+              <div class="lead-capture-field">
+                <label>How did you find us?</label>
+                <div class="input-icon-wrapper">
+                  <i class="fas fa-search"></i>
+                  <select>
+                    <option>Select</option>
+                  </select>
+                  <i class="fas fa-chevron-down input-chevron"></i>
+                </div>
+              </div>
+              <div class="lead-capture-field">
+                <label>Organization Name</label>
+                <div class="input-icon-wrapper">
+                  <i class="fas fa-cog"></i>
+                  <input
+                    type="text"
+                    placeholder="Flexi-Finders"
+                  />
+                </div>
+              </div>
+              <div class="lead-capture-field">
+                <label>Organization Size</label>
+                <div class="input-icon-wrapper">
+                  <i class="fas fa-users"></i>
+                  <select>
+                    <option>250+ Employees (Large)</option>
+                  </select>
+                  <i class="fas fa-chevron-down input-chevron"></i>
+                </div>
+              </div>
+              <!-- Add empty div for grid alignment -->
+              <div
+                class="lead-capture-field"
+                style="visibility: hidden"
+              ></div>
+              <div class="lead-capture-field">
+                <label>Address Line</label>
+                <div class="input-icon-wrapper">
+                  <i class="fas fa-map-marker-alt"></i>
+                  <input
+                    type="text"
+                    placeholder="153, Maggie Loop Pottsville"
+                  />
+                </div>
+              </div>
+              <div class="lead-capture-field">
+                <label>Country</label>
+                <div class="input-icon-wrapper">
+                  <i class="fas fa-globe"></i>
+                  <select>
+                    <option>United States</option>
+                  </select>
+                  <i class="fas fa-chevron-down input-chevron"></i>
+                </div>
+              </div>
+              <div class="lead-capture-field">
+                <label>State</label>
+                <div class="input-icon-wrapper">
+                  <i class="fas fa-map-marker-alt"></i>
+                  <select>
+                    <option>Arkansas(AR)</option>
+                  </select>
+                  <i class="fas fa-chevron-down input-chevron"></i>
+                </div>
+              </div>
+              <div class="lead-capture-field">
+                <label>City</label>
+                <div class="input-icon-wrapper">
+                  <i class="fas fa-map-marker-alt"></i>
+                  <select>
+                    <option>Adona</option>
+                  </select>
+                  <i class="fas fa-chevron-down input-chevron"></i>
+                </div>
+              </div>
+              <div class="lead-capture-field">
+                <label>Zip Code</label>
+                <div class="input-icon-wrapper">
+                  <i class="fas fa-map-marker-alt"></i>
+                  <input
+                    type="text"
+                    placeholder="72858"
+                  />
+                </div>
               </div>
             </div>
-            <div class="lead-capture-field">
-              <label>Last Name</label>
-              <div class="input-icon-wrapper">
-                <i class="fas fa-user"></i>
-                <input
-                  type="text"
-                  placeholder="Type here"
-                />
-              </div>
+            <div class="lead-capture-actions">
+              <button
+                type="button"
+                class="btn btn-secondary"
+                @click="$router.push('/leads')"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                class="btn btn-primary"
+              >
+                Save Lead
+              </button>
             </div>
-            <div class="lead-capture-field">
-              <label>Email</label>
-              <div class="input-icon-wrapper">
-                <i class="fas fa-envelope"></i>
-                <input
-                  type="email"
-                  placeholder="abc@gmail.com"
-                />
-              </div>
-            </div>
-            <div class="lead-capture-field">
-              <label>Phone</label>
-              <div class="input-icon-wrapper">
-                <i class="fas fa-phone"></i>
-                <input
-                  type="text"
-                  placeholder="Type here"
-                />
-              </div>
-            </div>
-            <div class="lead-capture-field">
-              <label>Password</label>
-              <div class="input-icon-wrapper">
-                <i class="fas fa-lock"></i>
-                <input
-                  :type="showPassword ? 'text' : 'password'"
-                  placeholder="Type here"
-                />
-                <i
-                  :class="[
-                    'fas',
-                    showPassword ? 'fa-eye-slash' : 'fa-eye',
-                    'input-eye',
-                  ]"
-                  @click="togglePassword"
-                ></i>
-              </div>
-            </div>
-            <div class="lead-capture-field">
-              <label>How did you find us?</label>
-              <div class="input-icon-wrapper">
-                <i class="fas fa-search"></i>
-                <select>
-                  <option>Select</option>
-                </select>
-                <i class="fas fa-chevron-down input-chevron"></i>
-              </div>
-            </div>
-            <div class="lead-capture-field">
-              <label>Organization Name</label>
-              <div class="input-icon-wrapper">
-                <i class="fas fa-cog"></i>
-                <input
-                  type="text"
-                  placeholder="Flexi-Finders"
-                />
-              </div>
-            </div>
-            <div class="lead-capture-field">
-              <label>Organization Size</label>
-              <div class="input-icon-wrapper">
-                <i class="fas fa-users"></i>
-                <select>
-                  <option>250+ Employees (Large)</option>
-                </select>
-                <i class="fas fa-chevron-down input-chevron"></i>
-              </div>
-            </div>
-            <!-- Add empty div for grid alignment -->
-            <div
-              class="lead-capture-field"
-              style="visibility: hidden"
-            ></div>
-            <div class="lead-capture-field">
-              <label>Address Line</label>
-              <div class="input-icon-wrapper">
-                <i class="fas fa-map-marker-alt"></i>
-                <input
-                  type="text"
-                  placeholder="153, Maggie Loop Pottsville"
-                />
-              </div>
-            </div>
-            <div class="lead-capture-field">
-              <label>Country</label>
-              <div class="input-icon-wrapper">
-                <i class="fas fa-globe"></i>
-                <select>
-                  <option>United States</option>
-                </select>
-                <i class="fas fa-chevron-down input-chevron"></i>
-              </div>
-            </div>
-            <div class="lead-capture-field">
-              <label>State</label>
-              <div class="input-icon-wrapper">
-                <i class="fas fa-map-marker-alt"></i>
-                <select>
-                  <option>Arkansas(AR)</option>
-                </select>
-                <i class="fas fa-chevron-down input-chevron"></i>
-              </div>
-            </div>
-            <div class="lead-capture-field">
-              <label>City</label>
-              <div class="input-icon-wrapper">
-                <i class="fas fa-map-marker-alt"></i>
-                <select>
-                  <option>Adona</option>
-                </select>
-                <i class="fas fa-chevron-down input-chevron"></i>
-              </div>
-            </div>
-            <div class="lead-capture-field">
-              <label>Zip Code</label>
-              <div class="input-icon-wrapper">
-                <i class="fas fa-map-marker-alt"></i>
-                <input
-                  type="text"
-                  placeholder="72858"
-                />
-              </div>
-            </div>
-          </div>
-          <div class="lead-capture-actions">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              @click="$router.push('/leads')"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              class="btn btn-primary"
-            >
-              Save Lead
-            </button>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   </MainLayout>
@@ -360,6 +362,24 @@ export default {
   .lead-capture-field {
     grid-column: auto !important;
     grid-row: auto !important;
+  }
+}
+.page {
+  padding: 0 32px 32px 32px;
+  display: flex;
+  background-color: #fff;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1400px) {
+  .page {
+    padding: 16px;
+  }
+}
+@media (max-width: 900px) {
+  .page {
+    padding: 4px;
   }
 }
 </style>
