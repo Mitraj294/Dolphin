@@ -471,7 +471,6 @@ export default {
 </script>
 
 <style scoped>
-/* --- Layout and spacing to match OrganizationTable.vue --- */
 .leads-table-outer {
   width: 100%;
   max-width: 1400px;

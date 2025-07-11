@@ -20,7 +20,10 @@
             </button>
           </div>
           <div class="org-detail-main-cols">
-            <div class="org-detail-main-cols-group">
+            <!-- Main details: Organization and Admin, side by side -->
+            <div
+              class="org-detail-main-cols-group org-detail-main-cols-group--row"
+            >
               <div class="org-detail-col org-detail-col-left">
                 <h3 class="org-detail-section-title">Organization Detail</h3>
                 <div class="org-detail-list-card org-detail-list-card--box">
@@ -40,8 +43,8 @@
                     <span>Source</span><b>Google</b>
                   </div>
                   <div class="org-detail-list-row">
-                    <span>Address</span
-                    ><b>153 Maggie Loop<br />Pottsville, Arkansas(AR), 72858</b>
+                    <span>Address</span>
+                    <b>153 Maggie Loop<br />Pottsville, Arkansas(AR), 72858</b>
                   </div>
                 </div>
               </div>
@@ -69,11 +72,10 @@
                 </div>
               </div>
             </div>
-            <!-- Group the two lower boxes in a row, not column -->
+            <!-- Lower boxes: Org Chart Type and Billing Status, side by side -->
             <div
               class="org-detail-main-cols-group org-detail-main-cols-group--row"
             >
-              <!-- Org Chart Type box (already flexed) -->
               <div
                 class="org-detail-box org-detail-box--half org-detail-box-flex"
               >
@@ -94,7 +96,6 @@
                   </button>
                 </div>
               </div>
-              <!-- Billing Status box: make flex like Org Chart Type -->
               <div
                 class="org-detail-box org-detail-box--half org-detail-box-flex"
               >
@@ -122,10 +123,10 @@
                 </div>
               </div>
             </div>
+            <!-- Current Algorithm row, left aligned, right empty for symmetry -->
             <div
               class="org-detail-main-cols-group org-detail-main-cols-group--row"
             >
-              <!-- Current Algorithm box: flex row, label/value left, select/button right -->
               <div
                 class="org-detail-box org-detail-box--half org-detail-box-algo org-detail-box-flex"
               >
@@ -210,14 +211,13 @@ export default {
   margin-bottom: 0;
 }
 .org-detail-main-cols-group {
-  display: flex;
-  flex-direction: row;
-  gap: 64px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
   width: 100%;
 }
 .org-detail-main-cols-group--row {
-  flex-direction: row;
-  gap: 32px;
+  /* No need for flex-direction, handled by grid */
   margin-top: 0;
   margin-bottom: 0;
 }
@@ -285,14 +285,14 @@ export default {
 .org-detail-list-row b {
   color: #222;
   font-weight: 600;
-  text-align: right;
+  text-align: left; /* Add this */
   word-break: break-word;
   font-size: 17px; /* Increased font size */
   font-family: 'Inter', Arial, sans-serif;
   line-height: 1.7;
   letter-spacing: 0.01em;
   flex: 1 1 50%;
-  justify-content: flex-end;
+  justify-content: flex-start; /* Change from flex-end to flex-start */
   display: flex;
 }
 
@@ -498,29 +498,20 @@ export default {
     gap: 32px; /* Also increase gap for tablet */
   }
   .org-detail-main-cols-group {
-    gap: 32px;
+    grid-template-columns: 1fr;
+    gap: 18px;
   }
-  .org-detail-main-cols,
-  .org-detail_row--split {
-    gap: 0;
+  .org-detail-main-cols-group--row {
+    margin-bottom: 18px;
   }
-  .org-detail-col {
-    min-width: 0;
-    max-width: 100%;
-    margin: 0 0 18px 0;
-  }
-  .org-detail-list-card--box,
-  .org-detail-box--half,
-  .org-detail-box-algo {
-    padding: 18px 8px;
-    font-size: 15px;
-    min-height: 0;
-    min-width: 0;
-    max-width: 100%;
+  .org-detail-box--half.org-detail-box-flex,
+  .org-detail-box--half.org-detail-box-algo.org-detail-box-flex {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
     width: 100%;
-  }
-  .org-detail-row--split {
-    gap: 18px; /* Smaller gap for tablet */
+    margin-bottom: 12px;
+    padding-bottom: 8px;
   }
 }
 
@@ -540,34 +531,41 @@ export default {
   .org-detail-main-cols-group {
     flex-direction: column;
     gap: 0;
+    width: 100%;
+    margin-bottom: 18px;
   }
   .org-detail-main-cols-group--row {
     flex-direction: column;
     gap: 0;
-  }
-  .org-detail-col,
-  .org-detail-box,
-  .org-detail-box-algo,
-  .org-detail-box--half {
-    min-width: 0;
-    max-width: 100%;
     width: 100%;
-    margin: 0 0 18px 0;
+    margin-bottom: 18px;
   }
-  .org-detail-list-card--box,
-  .org-detail-box--half,
-  .org-detail-box-algo {
-    padding: 8px 4px;
-    font-size: 12px;
-    gap: 6px;
-    min-height: 0;
-    min-width: 0;
-    max-width: 100%;
-    width: 100%;
-  }
-  .org-detail-row--split {
+  .org-detail-box--half.org-detail-box-flex,
+  .org-detail-box--half.org-detail-box-algo.org-detail-box-flex {
     flex-direction: column;
-    gap: 0; /* No gap needed for stacked layout */
+    align-items: stretch;
+    gap: 8px;
+    width: 100%;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+  }
+  .org-detail_box {
+    padding: 12px 8px;
+    margin-bottom: 12px;
+  }
+  .org-detail-box-action,
+  .org-detail-box-action-algo {
+    justify-content: flex-start;
+    min-width: 0;
+    margin-top: 8px;
+  }
+  .org-detail-box-label {
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+  .org-detail-box-value {
+    font-size: 15px;
+    margin-bottom: 10px;
   }
 }
 </style>

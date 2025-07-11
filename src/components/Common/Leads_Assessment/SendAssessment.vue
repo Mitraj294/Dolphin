@@ -39,37 +39,17 @@
             </div>
             <div class="send-assessment-label">Editable Template</div>
             <div class="send-assessment-template-box">
-              <ul>
-                <li>
-                  Lorem Ipsum is simply dummy text of the printing and
-                  typesetting industry. Lorem Ipsum has been the industry's
-                  standard dummy text ever since the 1500s, when an unknown
-                  printer took a galley of type and scrambled it to make a type
-                  specimen book.
-                </li>
-                <li>
-                  It has survived not only five centuries, but also the leap
-                  into electronic typesetting, remaining essentially unchanged.
-                  It was popularised in the 1960s with the release of Letraset
-                  sheets containing Lorem Ipsum passages, and more recently with
-                  desktop publishing software like Aldus PageMaker including
-                  versions of Lorem Ipsum.
-                </li>
-                <li>
-                  Contrary to popular belief, Lorem Ipsum is not simply random
-                  text. It has roots in a piece of classical Latin literature
-                  from 45 BC, making it over 2000 years old.
-                </li>
-                <li>
-                  Richard McClintock, a Latin professor at Hampden-Sydney
-                  College in Virginia, looked up one of the more obscure Latin
-                  words, consectetur, from a Lorem Ipsum passage, and going
-                  through the cites of the word in classical literature,
-                  discovered the undoubtable source. Lorem Ipsum comes from
-                  sections 1.10.32 and 1.10.33 of "de Finibus Bonorum et
-                  Malorum" (The Extremes of Good and Evil) by Cicero,
-                </li>
-              </ul>
+              <!-- Render dummy data as HTML above the editor -->
+              <div
+                v-html="templateContent"
+                class="dummy-template-preview"
+              />
+              <!-- Editor below the preview -->
+              <quill-editor
+                v-model="templateContent"
+                :options="editorOptions"
+                class="editor-below"
+              />
             </div>
             <div class="send-assessment-label">Assessment Link</div>
             <div class="send-assessment-link-actions-row">
@@ -98,9 +78,14 @@
 
 <script>
 import MainLayout from '@/components/layout/MainLayout.vue';
+// Import Quill editor and styles
+import { QuillEditor } from '@vueup/vue-quill';
+import '@vueup/vue-quill/dist/vue-quill.snow.css';
+import Quill from 'quill';
+
 export default {
   name: 'SendAssessment',
-  components: { MainLayout },
+  components: { MainLayout, QuillEditor },
   data() {
     return {
       to: '',
@@ -111,6 +96,26 @@ export default {
       size: '',
       source: '',
       status: '',
+      templateContent: '',
+      editorOptions: {
+        theme: 'snow',
+        modules: {
+          toolbar: [
+            [{ size: ['small', false, 'large', 'huge'] }], // font size option
+            [{ color: [] }],
+            ['bold', 'italic', 'underline'],
+            [{ list: 'ordered' }, { list: 'bullet' }],
+            ['link'],
+            [
+              { align: '' }, // left
+              { align: 'center' }, // center
+              { align: 'right' }, // right
+              { align: 'justify' }, // justify
+            ],
+            ['clean'],
+          ],
+        },
+      },
     };
   },
   mounted() {
@@ -229,7 +234,19 @@ export default {
   min-height: 0;
   height: auto;
   position: relative;
+  /* Optionally, adjust .send-assessment-template-box for editor styling */
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
+.dummy-template-preview {
+  margin-bottom: 12px;
+  font-size: 15px;
+  color: #222;
+  text-align: left; /* Ensure left alignment */
+}
+
 .send-assessment-template-box ul {
   margin: 0 0 12px 0;
   padding-left: 18px;
@@ -313,19 +330,32 @@ export default {
   }
   .send-assessment-row {
     flex-direction: column;
-    gap: 12px;
+    gap: 18px; /* Increased gap for better vertical spacing */
+    margin-bottom: 18px; /* Add bottom margin for separation */
+  }
+  .send-assessment-label {
+    margin-top: 18px;
+    margin-bottom: 10px; /* Slightly more space below label */
+  }
+  .send-assessment-template-box {
+    margin-bottom: 18px;
+    padding: 18px 8px 32px 8px; /* More bottom padding for editor */
+    gap: 14px; /* More space between preview and editor */
   }
   .send-assessment-link-actions-row {
     flex-direction: column;
-    gap: 10px;
+    gap: 18px; /* More space between link and button */
     align-items: stretch;
     justify-content: flex-start;
+    margin-bottom: 0;
+    margin-top: 0;
   }
   .send-assessment-link-box {
     min-width: 0;
     max-width: 100%;
     width: 100%;
     padding: 8px 8px;
+    margin-bottom: 0;
   }
   .send-assessment-actions {
     margin-left: 0;

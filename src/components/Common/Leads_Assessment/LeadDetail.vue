@@ -1,62 +1,58 @@
 <template>
   <MainLayout>
-    <div class="page">
-      <div class="page-content-wrapper">
-        <div class="lead-detail-page">
-          <div class="lead-detail-card-group">
-            <button class="btn btn-primary edit-details-btn">
-              Edit Details
-            </button>
-            <div class="lead-detail-card left">
-              <div class="lead-detail-row">
-                <span class="label">Main Contact</span
-                ><span class="value">{{ lead.contact }}</span>
-              </div>
-              <div class="lead-detail-row">
-                <span class="label">Admin Email</span
-                ><span class="value">{{ lead.email }}</span>
-              </div>
-              <div class="lead-detail-row">
-                <span class="label">Admin Phone #</span
-                ><span class="value">{{ lead.phone }}</span>
-              </div>
-              <div class="lead-detail-row">
-                <span class="label">Sales Person</span
-                ><span class="value">John</span>
-              </div>
-              <div class="lead-detail-row">
-                <span class="label">Source</span
-                ><span class="value">{{ lead.source }}</span>
-              </div>
-              <div class="lead-detail-row">
-                <span class="label">Status</span
-                ><span class="value">{{ lead.status }}</span>
+    <div class="lead-detail-outer">
+      <div class="lead-detail-main-card">
+        <div class="lead-detail-main-card-header">
+          <button class="btn btn-primary">Edit Details</button>
+        </div>
+        <div class="lead-detail-main-cols">
+          <div
+            class="lead-detail-main-cols-group lead-detail-main-cols-group--row"
+          >
+            <div class="lead-detail-col lead-detail-col-left">
+              <h3 class="lead-detail-section-title">Lead Detail</h3>
+              <div class="lead-detail-list-card lead-detail-list-card--box">
+                <div class="lead-detail-list-row">
+                  <span>Main Contact</span><b>{{ leadData.contact }}</b>
+                </div>
+                <div class="lead-detail-list-row">
+                  <span>Admin Email</span><b>{{ leadData.email }}</b>
+                </div>
+                <div class="lead-detail-list-row">
+                  <span>Admin Phone #</span><b>{{ leadData.phone }}</b>
+                </div>
+                <div class="lead-detail-list-row">
+                  <span>Sales Person</span><b>John</b>
+                </div>
+                <div class="lead-detail-list-row">
+                  <span>Source</span><b>{{ leadData.source }}</b>
+                </div>
+                <div class="lead-detail-list-row">
+                  <span>Status</span><b>{{ leadData.status }}</b>
+                </div>
               </div>
             </div>
-            <div class="lead-detail-card right">
-              <div class="lead-detail-row">
-                <span class="label">Organization Name</span
-                ><span class="value">{{ lead.organization }}</span>
-              </div>
-              <div class="lead-detail-row">
-                <span class="label">Organization Size</span
-                ><span class="value">{{
-                  lead.size === 'Large' ? '250+ Employees (Large)' : lead.size
-                }}</span>
-              </div>
-              <div class="lead-detail-row">
-                <span class="label">Contract Start</span
-                ><span class="value bold">Jun 18, 2024</span>
-              </div>
-              <div class="lead-detail-row">
-                <span class="label">Contract End</span
-                ><span class="value bold">Jun 18, 2025</span>
-              </div>
-              <div class="lead-detail-row address-row">
-                <span class="label">Address</span
-                ><span class="value bold"
-                  >153 Maggie Loop<br />Pottsville, Arkansas(AR), 72858</span
-                >
+            <div class="lead-detail-col lead-detail-col-right">
+              <h3 class="lead-detail-section-title">Organization Detail</h3>
+              <div class="lead-detail-list-card lead-detail-list-card--box">
+                <div class="lead-detail-list-row">
+                  <span>Organization Name</span
+                  ><b>{{ leadData.organization }}</b>
+                </div>
+                <div class="lead-detail-list-row">
+                  <span>Organization Size</span>
+                  <b>{{ leadData.size }}</b>
+                </div>
+                <div class="lead-detail-list-row">
+                  <span>Contract Start</span><b>Jun 18, 2024</b>
+                </div>
+                <div class="lead-detail-list-row">
+                  <span>Contract End</span><b>Jun 18, 2025</b>
+                </div>
+                <div class="lead-detail-list-row">
+                  <span>Address</span>
+                  <b>153 Maggie Loop<br />Pottsville, Arkansas(AR), 72858</b>
+                </div>
               </div>
             </div>
           </div>
@@ -85,101 +81,272 @@ export default {
       }),
     },
   },
+  data() {
+    return {
+      localLead: { ...this.lead },
+    };
+  },
+  computed: {
+    leadData() {
+      return this.localLead;
+    },
+  },
+  created() {
+    // Only update localLead if query params exist and are not empty
+    if (
+      this.$route &&
+      this.$route.query &&
+      Object.keys(this.$route.query).length
+    ) {
+      this.localLead = {
+        contact: this.$route.query.contact || '',
+        email: this.$route.query.email || '',
+        phone: this.$route.query.phone || '',
+        source: this.$route.query.source || '',
+        status: this.$route.query.status || '',
+        organization: this.$route.query.organization || '',
+        size: this.$route.query.size || '',
+      };
+    }
+  },
+  watch: {
+    '$route.query': {
+      handler(newQuery) {
+        if (newQuery && Object.keys(newQuery).length) {
+          this.localLead = {
+            contact: newQuery.contact || '',
+            email: newQuery.email || '',
+            phone: newQuery.phone || '',
+            source: newQuery.source || '',
+            status: newQuery.status || '',
+            organization: newQuery.organization || '',
+            size: newQuery.size || '',
+          };
+        }
+      },
+      deep: true,
+    },
+    lead: {
+      handler(newLead) {
+        this.localLead = { ...newLead };
+      },
+      deep: true,
+    },
+  },
 };
 </script>
 
 <style scoped>
-.page-content-wrapper {
-  min-height: 0;
-  padding-bottom: 0;
-  margin-bottom: 0;
-  background: none;
-}
-.lead-detail-page {
-  padding: 32px;
-  position: relative;
-}
-.lead-detail-card-group {
-  display: flex;
-  gap: 32px;
-  background: #fff;
-  border-radius: 24px;
-  box-shadow: 0 1px 8px rgba(33, 150, 243, 0.08);
-  padding: 60px 32px 32px 32px;
-  justify-content: center;
-  align-items: flex-start;
-  max-width: 1100px;
-  margin: 0 auto;
-  position: relative;
-}
-.lead-detail-card {
-  background: #f7f7f7;
-  border-radius: 16px;
-  padding: 32px 36px;
-  min-width: 320px;
-  flex: 1 1 0;
-  box-sizing: border-box;
+.lead-detail-outer {
+  width: 100%;
+  max-width: 1400px;
+  min-width: 0;
+  margin: 64px auto 64px auto;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
+  background: none !important;
+  padding: 0;
+}
+
+.lead-detail-main-card {
+  width: 100%;
+  max-width: 1400px;
+  min-width: 0;
+  background: #fff;
+  border-radius: 24px;
+  border: 1px solid #ebebeb;
+  box-sizing: border-box;
+  overflow: visible;
+  box-shadow: 0 2px 16px 0 rgba(33, 150, 243, 0.04);
+  margin: 0 auto;
+  padding: 32px 32px 24px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  position: relative;
+}
+
+.lead-detail-main-card-header {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 8px;
+  min-height: 0;
+}
+
+.lead-detail-main-cols {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  width: 100%;
   justify-content: center;
-  max-width: 420px;
+  align-items: stretch;
+  margin-bottom: 0;
 }
-.lead-detail-card.left {
-  margin-right: 0;
+.lead-detail-main-cols-group {
+  display: flex;
+  flex-direction: row;
+  gap: 64px;
+  width: 100%;
 }
-.lead-detail-card.right {
-  margin-left: 0;
+.lead-detail-main-cols-group--row {
+  flex-direction: row;
+  gap: 32px;
+  margin-top: 0;
+  margin-bottom: 0;
 }
-.lead-detail-row {
+
+.lead-detail-col {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+.lead-detail-section-title {
+  font-family: 'Helvetica Neue LT Std', Helvetica, Arial, sans-serif;
+  font-weight: 600;
+  font-size: 20px;
+  color: #222;
+  margin-bottom: 18px;
+  margin-top: 0;
+  text-align: left;
+  width: 100%;
+}
+
+.lead-detail-list-card--box {
+  border-radius: 20px;
+  background: #f8f8f8;
+  padding: 24px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 18px;
+  margin: 10px;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 270px;
+  justify-content: flex-start;
+}
+
+.lead-detail-list-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 18px;
-  font-size: 17px;
+  gap: 0;
+  flex-wrap: wrap;
+  word-break: break-word;
+  padding: 2px 0;
 }
-.lead-detail-row .label {
-  color: #aaa;
+
+.lead-detail-list-row span {
+  color: #555;
   font-weight: 400;
-  min-width: 140px;
+  min-width: 160px;
   text-align: left;
+  font-size: 19px;
+  font-family: 'Inter', Arial, sans-serif;
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+  flex: 1 1 50%;
 }
-.lead-detail-row .value {
+
+.lead-detail-list-row b {
   color: #222;
   font-weight: 600;
-  text-align: right;
+  text-align: left;
   word-break: break-word;
+  font-size: 17px;
+  font-family: 'Inter', Arial, sans-serif;
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+  flex: 1 1 50%;
+  justify-content: flex-start;
+  display: flex;
 }
-.lead-detail-row .value.bold {
-  font-weight: 700;
-  color: #222;
+
+@media (max-width: 1400px) {
+  .lead-detail-outer {
+    margin: 12px;
+    max-width: 100%;
+  }
+  .lead-detail-main-card {
+    max-width: 100%;
+    border-radius: 14px;
+    padding: 18px 8px 12px 8px;
+  }
+  .lead-detail-main-cols {
+    gap: 32px;
+  }
+  .lead-detail-main-cols-group {
+    gap: 32px;
+  }
+  .lead-detail-main-cols,
+  .lead-detail_row--split {
+    gap: 0;
+  }
+  .lead-detail-col {
+    min-width: 0;
+    max-width: 100%;
+    margin: 0 0 18px 0;
+  }
+  .lead-detail-list-card--box {
+    padding: 18px 8px;
+    font-size: 15px;
+    min-height: 0;
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+  }
 }
-.address-row .value {
-  white-space: pre-line;
-  font-weight: 700;
-}
-.edit-details-btn {
-  /* Only positioning styles remain. All button appearance comes from global .btn and .btn-primary classes. */
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 2;
-}
+
 @media (max-width: 900px) {
-  .lead-detail-card-group {
+  .lead-detail-outer {
+    margin: 4px;
+    max-width: 100%;
+  }
+  .lead-detail-main-card {
+    padding: 8px 2vw 8px 2vw;
+    border-radius: 10px;
+  }
+  .lead-detail-main-cols {
     flex-direction: column;
-    gap: 18px;
-    padding: 18px 6px 12px 6px;
-    min-width: 0;
+    gap: 0;
   }
-  .lead-detail-card {
-    padding: 16px 10px;
-    min-width: 0;
-    max-width: 100vw;
+  .lead-detail-main-cols-group {
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+    margin-bottom: 18px;
   }
-  .edit-details-btn {
-    top: -12px;
-    right: 0;
-    /* Removed padding and font-size, use only global .btn classes for button appearance. */
+  .lead-detail-main-cols-group--row {
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+    margin-bottom: 18px;
+  }
+  .lead-detail-col {
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+    margin: 0 0 18px 0;
+  }
+  .lead-detail-list-card--box {
+    padding: 8px 4px;
+    font-size: 12px;
+    gap: 6px;
+    min-height: 0;
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
   }
 }
 </style>

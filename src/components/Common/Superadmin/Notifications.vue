@@ -375,4 +375,134 @@ export default {
   display: inline-block;
   vertical-align: middle;
 }
+.send-notification-modal {
+  background: #fff;
+  border-radius: 22px;
+  box-shadow: 0 4px 32px 0 rgba(33, 150, 243, 0.10);
+  padding: 40px 48px 32px 48px;
+  min-width: 320px;
+  max-width: 700px;
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.send-notification-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(34, 34, 34, 0.18);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal-close-btn {
+  position: absolute;
+  top: 24px;
+  right: 32px;
+  background: none;
+  border: none;
+  font-size: 32px;
+  color: #888;
+  cursor: pointer;
+  z-index: 10;
+}
+.modal-title {
+  font-size: 22px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #222;
+}
+.modal-desc {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 18px;
+}
+.modal-textarea {
+  width: 100%;
+  min-height: 80px;
+  border-radius: 10px;
+  border: 1.5px solid #e0e0e0;
+  padding: 12px 16px;
+  font-size: 16px;
+  color: #222;
+  margin-bottom: 18px;
+  resize: vertical;
+  background: #fafafa;
+  outline: none;
+  font-family: inherit;
+}
+.modal-row {
+  display: flex;
+  gap: 18px;
+  width: 100%;
+  margin-bottom: 18px;
+}
+.modal-field {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.modal-field label {
+  color: #222;
+  font-size: 15px;
+  font-weight: 400;
+  text-align: left;
+}
+.modal-field select,
+.modal-date-input,
+.modal-time-input {
+  background: #fff;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 15px;
+  color: #222;
+  outline: none;
+  transition: border 0.2s;
+}
+.modal-field-schedule .modal-schedule-fields {
+  display: flex;
+  gap: 8px;
+}
+.btn.btn-primary {
+  border-radius: 22px;
+  background: #0164a5;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 500;
+  padding: 10px 32px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 18px;
+  align-self: flex-end;
+}
+.btn.btn-primary:hover {
+  background: #005fa3;
+}
+@media (max-width: 900px) {
+  .send-notification-modal {
+    padding: 18px 8px;
+    border-radius: 14px;
+  }
+  .modal-row {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+@media (max-width: 600px) {
+  .send-notification-modal {
+    padding: 12px 2vw;
+    border-radius: 10px;
+    min-width: 0;
+    max-width: 98vw;
+  }
+}
 </style>

@@ -5,6 +5,7 @@
         <button
           class="notifications-page-size-btn"
           @click="$emit('togglePageDropdown')"
+          ref="pageSizeBtn"
         >
           {{ pageSize }}/page
           <img
@@ -16,6 +17,7 @@
         <div
           v-if="showPageDropdown"
           class="notifications-page-size-menu"
+          ref="pageSizeMenu"
         >
           <div
             v-for="size in pageSizes"
@@ -37,8 +39,9 @@
           <img
             src="@/assets/images/VectorLeft.svg"
             alt="Previous"
+            class="pagination-btn-icon"
           />
-          Previous
+          <span class="pagination-btn-text prev-text">Previous</span>
         </button>
         <button
           v-for="page in computedPaginationPages"
@@ -62,10 +65,11 @@
           :disabled="currentPage === totalPages"
           @click="$emit('goToPage', currentPage + 1)"
         >
-          Next
+          <span class="pagination-btn-text next-text">Next</span>
           <img
             src="@/assets/images/VectorRight.svg"
             alt="Next"
+            class="pagination-btn-icon"
           />
         </button>
       </div>
@@ -138,6 +142,22 @@ export default {
       ].filter((v, i, arr) => arr.indexOf(v) === i);
     },
   },
+  mounted() {
+    document.addEventListener('mousedown', this.handleClickOutside);
+  },
+  beforeUnmount() {
+    document.removeEventListener('mousedown', this.handleClickOutside);
+  },
+  methods: {
+    handleClickOutside(e) {
+      if (!this.showPageDropdown) return;
+      const menu = this.$refs.pageSizeMenu;
+      const btn = this.$refs.pageSizeBtn;
+      if (menu && !menu.contains(e.target) && btn && !btn.contains(e.target)) {
+        this.$emit('togglePageDropdown');
+      }
+    },
+  },
 };
 </script>
 
@@ -190,8 +210,6 @@ export default {
   display: flex;
   align-items: center;
   gap: 4px;
-  font-weight: 500;
-  transition: border 0.2s;
   height: 32px;
   min-width: 70px;
   box-sizing: border-box;
@@ -240,6 +258,11 @@ export default {
   padding: 0;
   box-sizing: border-box;
   margin-left: auto;
+  margin-right: 0;
+  width: auto;
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: nowrap;
 }
 .notifications-pagination > * {
   display: inline-block;
@@ -254,20 +277,44 @@ export default {
   color: #222;
   padding: 0 14px;
   height: 32px;
-  min-width: 32px;
+  min-width: 90px; /* Ensures all pagination buttons have a minimum width */
   display: flex;
   align-items: center;
-  cursor: pointer;
-  transition: background 0.15s;
+  justify-content: center;
+  gap: 4px;
   border-right: 1px solid #e0e0e0;
-  border-radius: 0;
-  font-family: inherit;
-  font-weight: 400;
-  margin: 0;
-  box-sizing: border-box;
-  flex-shrink: 0;
-  white-space: nowrap;
 }
+.notifications-pagination-btn.prev,
+.notifications-pagination-btn.next {
+  width: 100px; /* Fixed width for both buttons */
+  min-width: 100px;
+  padding-left: 0;
+  padding-right: 0;
+  justify-content: center;
+}
+.notifications-pagination-btn.prev img {
+  margin-right: 8px;
+  margin-left: 0;
+}
+.notifications-pagination-btn.next img {
+  margin-left: 8px;
+  margin-right: 0;
+}
+.notifications-pagination-btn:first-child {
+  border-top-left-radius: 16px;
+  border-bottom-left-radius: 16px;
+}
+.notifications-pagination-btn:last-child {
+  border-top-right-radius: 16px;
+  border-bottom-right-radius: 16px;
+  border-right: none;
+}
+.notifications-pagination-btn[disabled] {
+  color: #888;
+  background: #fff;
+  cursor: default;
+}
+/* Add left border to the first pagination page after prev button */
 .notifications-pagination-page {
   border: none;
   background: #fff;
@@ -281,6 +328,7 @@ export default {
   cursor: pointer;
   transition: background 0.15s;
   border-right: 1px solid #e0e0e0;
+  border-left: 1px solid #e0e0e0;
   border-radius: 0;
   font-family: inherit;
   font-weight: 400;
@@ -288,6 +336,10 @@ export default {
   box-sizing: border-box;
   flex-shrink: 0;
   white-space: nowrap;
+}
+/* Remove left border for the very first page if it's the first child (to avoid double border if needed) */
+.notifications-pagination > .notifications-pagination-page:first-of-type {
+  border-left: none;
 }
 .notifications-pagination-btn.prev img {
   margin-right: 8px;
@@ -330,6 +382,13 @@ export default {
   height: 32px;
   box-sizing: border-box;
 }
+.pagination-btn-text {
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  line-height: 32px;
+  font-size: 13px;
+}
 @media (max-width: 900px) {
   .footer-box {
     margin: 12px;
@@ -370,9 +429,76 @@ export default {
     min-width: 0;
     overflow-x: auto;
     white-space: nowrap;
+    width: auto;
+    margin-left: auto;
+    margin-right: auto;
+    justify-content: center;
   }
   .notifications-pagination > * {
     display: inline-block;
+  }
+  .notifications-pagination-btn {
+    height: 32px;
+    min-height: 32px;
+    max-height: 32px;
+    font-size: 13px;
+    gap: 4px;
+    align-items: center;
+    justify-content: center;
+    /* Remove any margin-top from img to keep icon vertically centered */
+  }
+  .pagination-btn-text {
+    height: 32px;
+    line-height: 32px;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .notifications-pagination-btn img {
+    height: 18px;
+    width: 18px;
+    object-fit: contain;
+    display: inline-block;
+    margin-top: 0; /* Ensure icon is vertically centered */
+    vertical-align: middle;
+  }
+}
+@media (max-width: 600px) {
+  .notifications-page-size-menu {
+    left: 50% !important;
+    transform: translateX(-50%);
+    min-width: 100px !important;
+    width: auto !important;
+    max-width: 90vw;
+  }
+  .notifications-pagination {
+    flex-wrap: nowrap;
+    max-width: 100vw;
+    min-width: 0;
+    overflow-x: auto;
+    white-space: nowrap;
+    width: auto;
+    margin-left: auto;
+    margin-right: auto;
+    justify-content: center;
+  }
+  .notifications-pagination-btn.prev .prev-text,
+  .notifications-pagination-btn.next .next-text {
+    display: none;
+  }
+  .notifications-pagination-btn.prev,
+  .notifications-pagination-btn.next {
+    width: 40px;
+    min-width: 40px;
+    padding: 0;
+    justify-content: center;
+  }
+  .pagination-btn-icon {
+    height: 18px;
+    width: 18px;
+    display: inline-block;
+    margin: 0 auto;
   }
 }
 </style>
