@@ -9,149 +9,124 @@
             @submit.prevent="updateDetails"
           >
             <!-- First row: Org Name, Size, Source -->
-            <div class="org-edit-grid org-edit-grid-3">
-              <div class="org-edit-field">
-                <label>Organization Name</label>
-                <input
-                  type="text"
-                  v-model="form.orgName"
-                />
+            <FormRow>
+              <div>
+                <FormLabel>Organization Name</FormLabel>
+                <FormInput v-model="form.orgName" />
               </div>
-              <div class="org-edit-field">
-                <label>Organization Size</label>
-                <select v-model="form.orgSize">
+              <div>
+                <FormLabel>Organization Size</FormLabel>
+                <FormDropdown v-model="form.orgSize">
                   <option>250+ Employees (Large)</option>
                   <option>100-249 Employees (Medium)</option>
                   <option>1-99 Employees (Small)</option>
-                </select>
+                </FormDropdown>
               </div>
-              <div class="org-edit-field">
-                <label>Source</label>
-                <input
-                  type="text"
-                  v-model="form.source"
-                />
+              <div>
+                <FormLabel>Source</FormLabel>
+                <FormInput v-model="form.source" />
               </div>
-            </div>
+            </FormRow>
             <!-- Address section: first row -->
-            <div class="org-edit-grid org-edit-grid-3">
-              <div class="org-edit-field">
-                <label>Address</label>
-                <input
-                  type="text"
-                  v-model="form.address1"
-                />
+            <FormRow>
+              <div>
+                <FormLabel>Address</FormLabel>
+                <FormInput v-model="form.address1" />
               </div>
-              <div class="org-edit-field">
-                <label>&nbsp;</label>
-                <input
-                  type="text"
-                  v-model="form.address2"
-                />
+              <div>
+                <FormLabel>Street</FormLabel>
+                <FormInput v-model="form.address2" />
               </div>
-              <div class="org-edit-field">
-                <label>&nbsp;</label>
-                <input
-                  type="text"
-                  v-model="form.city"
-                />
+              <div>
+                <FormLabel>City</FormLabel>
+                <FormInput v-model="form.city" />
               </div>
-            </div>
-            <!-- Address section: second row -->
-            <div class="org-edit-grid org-edit-grid-3">
-              <div class="org-edit-field">
-                <label>&nbsp;</label>
-                <select v-model="form.state">
-                  <option>Arkansas(AR)</option>
-                  <option>California(CA)</option>
-                  <option>New York(NY)</option>
-                </select>
+            </FormRow>
+
+            <FormRow>
+              <div>
+                <FormLabel>State</FormLabel>
+                <FormDropdown v-model="form.state">
+                  <option>Gujarat</option>
+                  <option>UP</option>
+                  <option>MP</option>
+                </FormDropdown>
               </div>
-              <div class="org-edit-field">
-                <label>&nbsp;</label>
-                <input
-                  type="text"
-                  v-model="form.zip"
-                />
+              <div>
+                <FormLabel>PIN</FormLabel>
+                <FormInput v-model="form.zip" />
               </div>
-              <div class="org-edit-field">
-                <label>&nbsp;</label>
-                <select v-model="form.country">
+              <div>
+                <FormLabel>Country;</FormLabel>
+                <FormDropdown v-model="form.country">
+                  <option>India</option>
                   <option>United States</option>
                   <option>Canada</option>
-                </select>
+                </FormDropdown>
               </div>
-            </div>
+            </FormRow>
             <!-- Contract dates row: use 3 columns, last is empty -->
-            <div class="org-edit-grid org-edit-grid-3">
-              <div class="org-edit-field">
-                <label>Contract Start</label>
-                <input
-                  type="text"
+            <FormRow>
+              <div>
+                <FormLabel>Contract Start</FormLabel>
+                <FormInput
                   v-model="form.contractStart"
                   disabled
                 />
               </div>
-              <div class="org-edit-field">
-                <label>Contract End</label>
-                <input
-                  type="text"
+              <div>
+                <FormLabel>Contract End</FormLabel>
+                <FormInput
                   v-model="form.contractEnd"
                   disabled
                 />
               </div>
-              <div class="org-edit-field"><label>&nbsp;</label></div>
-            </div>
+              <div><FormLabel>&nbsp;</FormLabel></div>
+            </FormRow>
             <!-- Divider line -->
             <div class="org-edit-divider"></div>
             <!-- Admin/contact section: 2 rows of 3 fields -->
-            <div class="org-edit-grid org-edit-grid-3">
-              <div class="org-edit-field">
-                <label>Main Contact</label>
-                <input
-                  type="text"
-                  v-model="form.mainContact"
-                />
+            <FormRow>
+              <div>
+                <FormLabel>Main Contact</FormLabel>
+                <FormInput v-model="form.mainContact" />
               </div>
-              <div class="org-edit-field">
-                <label>Admin Email</label>
-                <input
-                  type="email"
+              <div>
+                <FormLabel>Admin Email</FormLabel>
+                <FormInput
                   v-model="form.adminEmail"
+                  type="email"
                   disabled
                 />
               </div>
-              <div class="org-edit-field">
-                <label>Admin Phone#</label>
-                <input
-                  type="text"
+              <div>
+                <FormLabel>Admin Phone#</FormLabel>
+                <FormInput
                   v-model="form.adminPhone"
                   disabled
                 />
               </div>
-              <div class="org-edit-field">
-                <label>Sales Person</label>
-                <input
-                  type="text"
-                  v-model="form.salesPerson"
-                />
+            </FormRow>
+            <FormRow>
+              <div>
+                <FormLabel>Sales Person</FormLabel>
+                <FormInput v-model="form.salesPerson" />
               </div>
-              <div class="org-edit-field">
-                <label>Last Contacted</label>
-                <input
-                  type="text"
+              <div>
+                <FormLabel>Last Contacted</FormLabel>
+                <FormInput
                   v-model="form.lastContacted"
                   disabled
                 />
               </div>
-              <div class="org-edit-field">
-                <label>Certified Staff</label>
-                <input
-                  type="number"
+              <div>
+                <FormLabel>Certified Staff</FormLabel>
+                <FormInput
                   v-model="form.certifiedStaff"
+                  type="number"
                 />
               </div>
-            </div>
+            </FormRow>
             <div class="org-edit-actions">
               <button
                 type="button"
@@ -176,10 +151,16 @@
 
 <script>
 import MainLayout from '@/components/layout/MainLayout.vue';
+import {
+  FormRow,
+  FormLabel,
+  FormInput,
+  FormDropdown,
+} from '@/components/Common/Common_UI/Form';
 
 export default {
   name: 'OrganizationEdit',
-  components: { MainLayout },
+  components: { MainLayout, FormRow, FormLabel, FormInput, FormDropdown },
   data() {
     return {
       form: {

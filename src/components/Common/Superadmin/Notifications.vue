@@ -378,7 +378,7 @@ export default {
 .send-notification-modal {
   background: #fff;
   border-radius: 22px;
-  box-shadow: 0 4px 32px 0 rgba(33, 150, 243, 0.10);
+  box-shadow: 0 4px 32px 0 rgba(33, 150, 243, 0.1);
   padding: 40px 48px 32px 48px;
   min-width: 320px;
   max-width: 700px;

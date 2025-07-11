@@ -5,151 +5,138 @@
         <div class="lead-capture-card">
           <h3 class="lead-capture-card-title">Enter Lead Details</h3>
           <form class="lead-capture-form">
-            <div class="lead-capture-grid">
-              <div class="lead-capture-field">
-                <label>First Name</label>
-                <div class="input-icon-wrapper">
-                  <i class="fas fa-user"></i>
-                  <input
-                    type="text"
-                    placeholder="Type here"
-                  />
-                </div>
+            <FormRow>
+              <div>
+                <FormLabel>First Name</FormLabel>
+                <FormInput
+                  v-model="form.firstName"
+                  icon="fas fa-user"
+                  placeholder="Type here"
+                />
               </div>
-              <div class="lead-capture-field">
-                <label>Last Name</label>
-                <div class="input-icon-wrapper">
-                  <i class="fas fa-user"></i>
-                  <input
-                    type="text"
-                    placeholder="Type here"
-                  />
-                </div>
+              <div>
+                <FormLabel>Last Name</FormLabel>
+                <FormInput
+                  v-model="form.lastName"
+                  icon="fas fa-user"
+                  placeholder="Type here"
+                />
               </div>
-              <div class="lead-capture-field">
-                <label>Email</label>
-                <div class="input-icon-wrapper">
-                  <i class="fas fa-envelope"></i>
-                  <input
-                    type="email"
-                    placeholder="abc@gmail.com"
-                  />
-                </div>
+              <div>
+                <FormLabel>Email</FormLabel>
+                <FormInput
+                  v-model="form.email"
+                  icon="fas fa-envelope"
+                  type="email"
+                  placeholder="abc@gmail.com"
+                />
               </div>
-              <div class="lead-capture-field">
-                <label>Phone</label>
-                <div class="input-icon-wrapper">
-                  <i class="fas fa-phone"></i>
-                  <input
-                    type="text"
-                    placeholder="Type here"
-                  />
-                </div>
+            </FormRow>
+            <FormRow>
+              <div>
+                <FormLabel>Phone</FormLabel>
+                <FormInput
+                  v-model="form.phone"
+                  icon="fas fa-phone"
+                  placeholder="Type here"
+                />
               </div>
-              <div class="lead-capture-field">
-                <label>Password</label>
-                <div class="input-icon-wrapper">
-                  <i class="fas fa-lock"></i>
-                  <input
-                    :type="showPassword ? 'text' : 'password'"
-                    placeholder="Type here"
-                  />
-                  <i
-                    :class="[
-                      'fas',
-                      showPassword ? 'fa-eye-slash' : 'fa-eye',
-                      'input-eye',
-                    ]"
-                    @click="togglePassword"
-                  ></i>
-                </div>
+              <div>
+                <FormLabel>Password</FormLabel>
+                <FormPassword
+                  v-model="form.password"
+                  placeholder="Type here"
+                />
               </div>
-              <div class="lead-capture-field">
-                <label>How did you find us?</label>
-                <div class="input-icon-wrapper">
-                  <i class="fas fa-search"></i>
-                  <select>
-                    <option>Select</option>
-                  </select>
-                  <i class="fas fa-chevron-down input-chevron"></i>
-                </div>
+              <div>
+                <FormLabel>How did you find us?</FormLabel>
+                <FormDropdown
+                  v-model="form.findUs"
+                  icon="fas fa-search"
+                >
+                  <option>Select</option>
+                  <option>Google</option>
+                  <option>Friend</option>
+                  <option>Other</option>
+                </FormDropdown>
               </div>
-              <div class="lead-capture-field">
-                <label>Organization Name</label>
-                <div class="input-icon-wrapper">
-                  <i class="fas fa-cog"></i>
-                  <input
-                    type="text"
-                    placeholder="Flexi-Finders"
-                  />
-                </div>
+            </FormRow>
+            <FormRow>
+              <div>
+                <FormLabel>Organization Name</FormLabel>
+                <FormInput
+                  v-model="form.orgName"
+                  icon="fas fa-cog"
+                  placeholder="Flexi-Finders"
+                />
               </div>
-              <div class="lead-capture-field">
-                <label>Organization Size</label>
-                <div class="input-icon-wrapper">
-                  <i class="fas fa-users"></i>
-                  <select>
-                    <option>250+ Employees (Large)</option>
-                  </select>
-                  <i class="fas fa-chevron-down input-chevron"></i>
-                </div>
+              <div>
+                <FormLabel>Organization Size</FormLabel>
+                <FormDropdown
+                  v-model="form.orgSize"
+                  icon="fas fa-users"
+                >
+                  <option>250+ Employees (Large)</option>
+                  <option>100-249 Employees (Medium)</option>
+                  <option>1-99 Employees (Small)</option>
+                </FormDropdown>
               </div>
-              <!-- Add empty div for grid alignment -->
-              <div
-                class="lead-capture-field"
-                style="visibility: hidden"
-              ></div>
-              <div class="lead-capture-field">
-                <label>Address Line</label>
-                <div class="input-icon-wrapper">
-                  <i class="fas fa-map-marker-alt"></i>
-                  <input
-                    type="text"
-                    placeholder="153, Maggie Loop Pottsville"
-                  />
-                </div>
+              <div></div>
+            </FormRow>
+            <FormRow>
+              <div>
+                <FormLabel>Address Line</FormLabel>
+                <FormInput
+                  v-model="form.address"
+                  icon="fas fa-map-marker-alt"
+                  placeholder="153, Maggie Loop Pottsville"
+                />
               </div>
-              <div class="lead-capture-field">
-                <label>Country</label>
-                <div class="input-icon-wrapper">
-                  <i class="fas fa-globe"></i>
-                  <select>
-                    <option>United States</option>
-                  </select>
-                  <i class="fas fa-chevron-down input-chevron"></i>
-                </div>
+              <div>
+                <FormLabel>Country</FormLabel>
+                <FormDropdown
+                  v-model="form.country"
+                  icon="fas fa-globe"
+                >
+                  <option>India</option>
+                  <option>United States</option>
+                  <option>Canada</option>
+                </FormDropdown>
               </div>
-              <div class="lead-capture-field">
-                <label>State</label>
-                <div class="input-icon-wrapper">
-                  <i class="fas fa-map-marker-alt"></i>
-                  <select>
-                    <option>Arkansas(AR)</option>
-                  </select>
-                  <i class="fas fa-chevron-down input-chevron"></i>
-                </div>
+              <div>
+                <FormLabel>State</FormLabel>
+                <FormDropdown
+                  v-model="form.state"
+                  icon="fas fa-map-marker-alt"
+                >
+                  <option>Gujarat</option>
+                  <option>UP</option>
+                  <option>MP</option>
+                </FormDropdown>
               </div>
-              <div class="lead-capture-field">
-                <label>City</label>
-                <div class="input-icon-wrapper">
-                  <i class="fas fa-map-marker-alt"></i>
-                  <select>
-                    <option>Adona</option>
-                  </select>
-                  <i class="fas fa-chevron-down input-chevron"></i>
-                </div>
+            </FormRow>
+            <FormRow>
+              <div>
+                <FormLabel>City</FormLabel>
+                <FormDropdown
+                  v-model="form.city"
+                  icon="fas fa-map-marker-alt"
+                >
+                  <option>A'bad</option>
+                  <option>Baroda</option>
+                  <option>surat</option>
+                </FormDropdown>
               </div>
-              <div class="lead-capture-field">
-                <label>Zip Code</label>
-                <div class="input-icon-wrapper">
-                  <i class="fas fa-map-marker-alt"></i>
-                  <input
-                    type="text"
-                    placeholder="72858"
-                  />
-                </div>
+              <div>
+                <FormLabel>Zip Code</FormLabel>
+                <FormInput
+                  v-model="form.zip"
+                  icon="fas fa-map-marker-alt"
+                  placeholder="382443"
+                />
               </div>
-            </div>
+              <div></div>
+            </FormRow>
             <div class="lead-capture-actions">
               <button
                 type="button"
@@ -174,14 +161,43 @@
 
 <script>
 import MainLayout from '@/components/layout/MainLayout.vue';
+import {
+  FormRow,
+  FormLabel,
+  FormInput,
+  FormDropdown,
+  FormBox,
+  FormPassword,
+} from '@/components/Common/Common_UI/Form';
 export default {
   name: 'LeadCapture',
   components: {
     MainLayout,
+    FormRow,
+    FormLabel,
+    FormInput,
+    FormDropdown,
+    FormBox,
+    FormPassword,
   },
   data() {
     return {
       showPassword: false,
+      form: {
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        password: '',
+        findUs: '',
+        orgName: '',
+        orgSize: '',
+        address: '',
+        country: '',
+        state: '',
+        city: '',
+        zip: '',
+      },
     };
   },
   methods: {
@@ -235,93 +251,6 @@ export default {
   width: 100%;
 }
 
-.lead-capture-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px 24px;
-  margin-bottom: 32px;
-}
-
-.lead-capture-field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.lead-capture-field label {
-  color: #222;
-  font-size: 15px;
-  font-weight: 400;
-  text-align: left;
-  width: 100%;
-}
-
-.input-icon-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.input-icon-wrapper select {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background: #fff;
-  border: 1.5px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 10px 14px 10px 36px; /* add left padding for icon */
-  font-size: 15px;
-  color: #222;
-  outline: none;
-  transition: border 0.2s;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.input-icon-wrapper input {
-  background: #fff;
-  border: 1.5px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 10px 14px 10px 36px;
-  font-size: 15px;
-  color: #222;
-  outline: none;
-  transition: border 0.2s;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.input-icon-wrapper input:focus,
-.input-icon-wrapper select:focus {
-  border: 1.5px solid #0074c2;
-}
-
-.input-icon-wrapper i:not(.input-eye):not(.input-chevron) {
-  position: absolute;
-  left: 12px;
-  color: #b0b0b0;
-  font-size: 1rem;
-  z-index: 2;
-  pointer-events: none;
-}
-
-.input-icon-wrapper .input-eye {
-  right: 12px;
-  left: auto;
-  position: absolute;
-  color: #b0b0b0;
-  cursor: pointer;
-  z-index: 3;
-}
-
-.input-icon-wrapper .input-chevron {
-  right: 12px;
-  left: auto;
-  position: absolute;
-  color: #b0b0b0;
-  pointer-events: none;
-}
-
 .lead-capture-actions {
   display: flex;
   justify-content: flex-end;
@@ -341,9 +270,6 @@ export default {
     border-radius: 14px;
     padding: 18px 8px 12px 8px;
   }
-  .lead-capture-grid {
-    gap: 12px 8px;
-  }
 }
 
 @media (max-width: 900px) {
@@ -355,13 +281,59 @@ export default {
     padding: 8px 2vw 8px 2vw;
     border-radius: 10px;
   }
-  .lead-capture-grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-  .lead-capture-field {
-    grid-column: auto !important;
-    grid-row: auto !important;
-  }
+}
+
+.form-input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 16px;
+  color: #222;
+  width: 100%;
+  height: 44px;
+  padding: 0 36px 0 32px; /* left for lock, right for eye */
+  font-family: inherit;
+  box-sizing: border-box;
+}
+.form-input:disabled {
+  background: #f0f0f0;
+  color: #aaa;
+}
+.form-input-icon {
+  position: absolute;
+  left: 12px;
+  color: #888;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+.input-eye {
+  position: absolute;
+  right: 12px;
+  color: #888;
+  font-size: 18px;
+  cursor: pointer;
+  z-index: 3;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  padding: 0;
+}
+.form-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #f6f6f6;
+  border-radius: 10px;
+  border: 1.5px solid #e0e0e0;
+  padding: 0;
+  min-height: 48px;
+  margin-bottom: 0;
+  box-sizing: border-box;
+  transition: border 0.18s;
 }
 </style>
