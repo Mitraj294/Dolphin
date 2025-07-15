@@ -8,15 +8,23 @@
             class="org-edit-form"
             @submit.prevent="updateDetails"
           >
-            <!-- First row: Org Name, Size, Source -->
             <FormRow>
               <div>
                 <FormLabel>Organization Name</FormLabel>
-                <FormInput v-model="form.orgName" />
+                <FormInput
+                  v-model="form.orgName"
+                  placeholder="Enter organization name"
+                />
               </div>
               <div>
                 <FormLabel>Organization Size</FormLabel>
                 <FormDropdown v-model="form.orgSize">
+                  <option
+                    disabled
+                    value=""
+                  >
+                    Select organization size
+                  </option>
                   <option>250+ Employees (Large)</option>
                   <option>100-249 Employees (Medium)</option>
                   <option>1-99 Employees (Small)</option>
@@ -24,22 +32,41 @@
               </div>
               <div>
                 <FormLabel>Source</FormLabel>
-                <FormInput v-model="form.source" />
+                <FormDropdown v-model="form.source">
+                  <option
+                    disabled
+                    value=""
+                  >
+                    Select source
+                  </option>
+                  <option>Google</option>
+                  <option>Friend</option>
+                  <option>Other</option>
+                </FormDropdown>
               </div>
             </FormRow>
-            <!-- Address section: first row -->
+
             <FormRow>
               <div>
                 <FormLabel>Address</FormLabel>
-                <FormInput v-model="form.address1" />
+                <FormInput
+                  v-model="form.address1"
+                  placeholder="Enter address"
+                />
               </div>
               <div>
                 <FormLabel>Street</FormLabel>
-                <FormInput v-model="form.address2" />
+                <FormInput
+                  v-model="form.address2"
+                  placeholder="Enter street"
+                />
               </div>
               <div>
                 <FormLabel>City</FormLabel>
-                <FormInput v-model="form.city" />
+                <FormInput
+                  v-model="form.city"
+                  placeholder="Enter city"
+                />
               </div>
             </FormRow>
 
@@ -47,6 +74,12 @@
               <div>
                 <FormLabel>State</FormLabel>
                 <FormDropdown v-model="form.state">
+                  <option
+                    disabled
+                    value=""
+                  >
+                    Select state
+                  </option>
                   <option>Gujarat</option>
                   <option>UP</option>
                   <option>MP</option>
@@ -54,11 +87,20 @@
               </div>
               <div>
                 <FormLabel>PIN</FormLabel>
-                <FormInput v-model="form.zip" />
+                <FormInput
+                  v-model="form.zip"
+                  placeholder="Enter PIN code"
+                />
               </div>
               <div>
-                <FormLabel>Country;</FormLabel>
+                <FormLabel>Country</FormLabel>
                 <FormDropdown v-model="form.country">
+                  <option
+                    disabled
+                    value=""
+                  >
+                    Select country
+                  </option>
                   <option>India</option>
                   <option>United States</option>
                   <option>Canada</option>
@@ -89,7 +131,10 @@
             <FormRow>
               <div>
                 <FormLabel>Main Contact</FormLabel>
-                <FormInput v-model="form.mainContact" />
+                <FormInput
+                  v-model="form.mainContact"
+                  placeholder="Enter main contact name"
+                />
               </div>
               <div>
                 <FormLabel>Admin Email</FormLabel>
@@ -97,26 +142,32 @@
                   v-model="form.adminEmail"
                   type="email"
                   disabled
+                  placeholder="Admin email"
                 />
               </div>
               <div>
-                <FormLabel>Admin Phone#</FormLabel>
+                <FormLabel>Admin Phone</FormLabel>
                 <FormInput
                   v-model="form.adminPhone"
                   disabled
+                  placeholder="Admin phone"
                 />
               </div>
             </FormRow>
             <FormRow>
               <div>
                 <FormLabel>Sales Person</FormLabel>
-                <FormInput v-model="form.salesPerson" />
+                <FormInput
+                  v-model="form.salesPerson"
+                  placeholder="Enter sales person name"
+                />
               </div>
               <div>
                 <FormLabel>Last Contacted</FormLabel>
                 <FormInput
                   v-model="form.lastContacted"
                   disabled
+                  placeholder="Last contacted date"
                 />
               </div>
               <div>
@@ -124,6 +175,7 @@
                 <FormInput
                   v-model="form.certifiedStaff"
                   type="number"
+                  placeholder="Enter number of certified staff"
                 />
               </div>
             </FormRow>
@@ -170,7 +222,7 @@ export default {
         address1: '153',
         address2: 'Maggie Loop',
         city: 'Pottsville',
-        state: 'Arkansas(AR)',
+        state: '', // Show placeholder for state
         zip: '72858',
         country: 'United States',
         contractStart: 'Jun 18, 2024',
@@ -287,6 +339,14 @@ export default {
   background: #fff
     url('data:image/svg+xml;utf8,<svg fill="%23888" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7.293 7.293a1 1 0 011.414 0L10 8.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414z"/></svg>')
     no-repeat right 10px center/18px 18px;
+}
+
+.org-edit-field select option[disabled][value=''] {
+  color: #888;
+}
+
+.org-edit-field select:invalid {
+  color: #bdbdbd;
 }
 
 .org-edit-divider {

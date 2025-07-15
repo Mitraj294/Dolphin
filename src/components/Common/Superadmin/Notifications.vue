@@ -11,7 +11,7 @@
               <img
                 src="@/assets/images/SendNotification.svg"
                 alt="Send"
-                class="notifications-add-btn-icon"
+                class="user-permission-add-btn-icon"
               />
               Send Notification
             </button>
@@ -90,36 +90,43 @@
             ></textarea>
             <div class="modal-row">
               <div class="modal-field">
-                <label>Select Organizations</label>
-                <select>
-                  <option>Select</option>
-                </select>
+                <FormLabel>Select Organizations</FormLabel>
+                <FormDropdown v-model="selectedOrganization">
+                  <option value="">Select</option>
+                  <option value="org1">Organization 1</option>
+                  <option value="org2">Organization 2</option>
+                </FormDropdown>
               </div>
               <div class="modal-field">
-                <label>Select Admin</label>
-                <select>
-                  <option>Select</option>
-                </select>
+                <FormLabel>Select Admin</FormLabel>
+                <FormDropdown v-model="selectedAdmin">
+                  <option value="">Select</option>
+                  <option value="admin1">Admin 1</option>
+                  <option value="admin2">Admin 2</option>
+                </FormDropdown>
               </div>
             </div>
             <div class="modal-row">
               <div class="modal-field">
-                <label>Select Group</label>
-                <select>
-                  <option>Select</option>
-                </select>
+                <FormLabel>Select Group</FormLabel>
+                <FormDropdown v-model="selectedGroup">
+                  <option value="">Select</option>
+                  <option value="group1">Group 1</option>
+                  <option value="group2">Group 2</option>
+                </FormDropdown>
               </div>
-              <div class="modal-field modal-field-schedule">
-                <label>Schedule</label>
-                <div class="modal-schedule-fields">
-                  <input
-                    type="text"
+              <div class="schedule-demo-field schedule-demo-schedule-field">
+                <FormLabel>Schedule</FormLabel>
+                <div class="schedule-demo-schedule-inputs">
+                  <FormInput
+                    v-model="date"
+                    type="date"
                     placeholder="MM/DD/YYYY"
-                    class="modal-date-input"
                   />
-                  <input
+                  <FormInput
+                    v-model="time"
                     type="time"
-                    class="modal-time-input"
+                    placeholder="00:00"
                   />
                 </div>
               </div>
@@ -136,9 +143,25 @@
 import MainLayout from '../../layout/MainLayout.vue';
 import Pagination from '../../layout/Pagination.vue';
 import TableHeader from '@/components/Common/Common_UI/TableHeader.vue';
+import {
+  FormDropdown,
+  FormRow,
+  FormLabel,
+  FormDateTime,
+} from '@/components/Common/Common_UI/Form';
+import FormInput from '../Common_UI/Form/FormInput.vue';
 export default {
   name: 'Notifications',
-  components: { MainLayout, Pagination, TableHeader },
+  components: {
+    MainLayout,
+    Pagination,
+    TableHeader,
+    FormDropdown,
+    FormRow,
+    FormInput,
+    FormLabel,
+    FormDateTime,
+  },
   data() {
     return {
       showPageDropdown: false,
@@ -147,6 +170,11 @@ export default {
       currentPage: 1,
       sortKey: '',
       sortAsc: true,
+      selectedOrganization: '',
+      selectedAdmin: '',
+      selectedGroup: '',
+      scheduledDate: '',
+      scheduledTime: '',
       notifications: [
         { title: 'Lorem Ipsum is simply', date: 'Jan 22, 2025 at 02:00 PM' },
         {
@@ -226,11 +254,15 @@ export default {
         this.sortAsc = true;
       }
     },
+    sendNotification() {
+      this.showSendModal = false;
+    },
   },
 };
 </script>
 
 <style scoped>
+@import '@/assets/global.css';
 /* --- Layout and spacing to match Leads/OrganizationTable --- */
 .notifications-table-outer {
   width: 100%;
@@ -481,11 +513,59 @@ export default {
   border: none;
   cursor: pointer;
   transition: background 0.2s;
-  margin-top: 18px;
+
   align-self: flex-end;
 }
 .btn.btn-primary:hover {
   background: #005fa3;
+}
+.schedule-demo-field {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.schedule-demo-field label {
+  color: #222;
+  font-size: 15px;
+  font-weight: 400;
+  text-align: left;
+}
+.schedule-demo-field input,
+.schedule-demo-field select {
+  background: #fafafa;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 15px;
+  color: #222;
+  outline: none;
+  transition: border 0.2s;
+}
+.schedule-demo-schedule-inputs {
+  display: flex;
+  gap: 18px;
+  width: 100%;
+}
+.schedule-demo-schedule-inputs input[type='date'],
+.schedule-demo-schedule-inputs input[type='time'] {
+  flex: 1 1 0;
+  min-width: 0;
+  background: #fafafa;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 10px 14px 10px 44px;
+  font-size: 15px;
+  color: #222;
+  outline: none;
+  transition: border 0.2s;
+  box-sizing: border-box;
+}
+.schedule-demo-schedule-inputs input[type='date']::placeholder,
+.schedule-demo-schedule-inputs input[type='time']::placeholder {
+  color: #888;
+  opacity: 1;
 }
 @media (max-width: 900px) {
   .send-notification-modal {
@@ -504,5 +584,12 @@ export default {
     min-width: 0;
     max-width: 98vw;
   }
+}
+.user-permission-add-btn-icon {
+  width: 18px;
+  height: 18px;
+  margin-right: 6px;
+  display: inline-block;
+  vertical-align: middle;
 }
 </style>

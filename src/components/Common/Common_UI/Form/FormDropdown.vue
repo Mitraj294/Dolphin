@@ -1,23 +1,35 @@
 <template>
   <FormBox :error="error">
-    <span
-      v-if="icon"
-      class="form-input-icon"
-      ><i :class="icon"></i
-    ></span>
-    <select
-      v-bind="$attrs"
-      v-model="inputValue"
-      :disabled="disabled"
-      class="form-dropdown"
-      :class="{ 'with-icon': icon }"
-      @change="$emit('update:modelValue', inputValue)"
-    >
-      <slot />
-    </select>
-    <span class="form-dropdown-chevron"
-      ><i class="fas fa-chevron-down"></i
-    ></span>
+    <template v-if="icon">
+      <span class="form-input-icon">
+        <i :class="icon"></i>
+      </span>
+      <select
+        v-bind="$attrs"
+        v-model="inputValue"
+        :disabled="disabled"
+        class="form-dropdown with-icon"
+        @change="$emit('update:modelValue', inputValue)"
+      >
+        <slot />
+      </select>
+    </template>
+    <template v-else>
+      <div class="form-dropdown-noicon-wrap">
+        <select
+          v-bind="$attrs"
+          v-model="inputValue"
+          :disabled="disabled"
+          class="form-dropdown"
+          @change="$emit('update:modelValue', inputValue)"
+        >
+          <slot />
+        </select>
+      </div>
+    </template>
+    <span class="form-dropdown-chevron">
+      <i class="fas fa-chevron-down"></i>
+    </span>
   </FormBox>
 </template>
 
@@ -54,16 +66,22 @@ export default {
   color: #222;
   width: 100%;
   height: 44px;
-  padding: 0;
+  padding: 0 36px 0 16px; /* always left padding for selection box */
   font-family: inherit;
   appearance: none;
   cursor: pointer;
+  box-sizing: border-box;
 }
 .form-dropdown.with-icon {
-  padding-left: 36px;
+  padding-left: 36px; /* left space for icon inside the box */
 }
-.form-dropdown {
-  padding-right: 36px;
+.form-dropdown-noicon-wrap {
+  width: 100%;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  padding-left: 0; /* remove left space for dropdown list */
+  box-sizing: border-box;
 }
 .form-dropdown:disabled {
   background: #f0f0f0;
@@ -81,14 +99,30 @@ export default {
   height: 100%;
 }
 .form-dropdown-chevron {
-  margin-left: auto;
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
   color: #888;
   font-size: 16px;
   display: flex;
   align-items: center;
   pointer-events: none;
-  position: absolute;
-  right: 10px;
   height: 100%;
+  background: none;
+  padding: 0;
+}
+.form-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #f6f6f6;
+  border-radius: 10px;
+  border: 1.5px solid #e0e0e0;
+  padding: 0;
+  min-height: 48px;
+  margin-bottom: 0;
+  box-sizing: border-box;
+  transition: border 0.18s;
 }
 </style>

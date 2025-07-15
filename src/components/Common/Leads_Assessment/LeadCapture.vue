@@ -54,7 +54,12 @@
                   v-model="form.findUs"
                   icon="fas fa-search"
                 >
-                  <option>Select</option>
+                  <option
+                    disabled
+                    value=""
+                  >
+                    Select
+                  </option>
                   <option>Google</option>
                   <option>Friend</option>
                   <option>Other</option>
@@ -76,6 +81,12 @@
                   v-model="form.orgSize"
                   icon="fas fa-users"
                 >
+                  <option
+                    disabled
+                    value=""
+                  >
+                    Select
+                  </option>
                   <option>250+ Employees (Large)</option>
                   <option>100-249 Employees (Medium)</option>
                   <option>1-99 Employees (Small)</option>
@@ -98,6 +109,12 @@
                   v-model="form.country"
                   icon="fas fa-globe"
                 >
+                  <option
+                    disabled
+                    value=""
+                  >
+                    Select
+                  </option>
                   <option>India</option>
                   <option>United States</option>
                   <option>Canada</option>
@@ -109,6 +126,12 @@
                   v-model="form.state"
                   icon="fas fa-map-marker-alt"
                 >
+                  <option
+                    disabled
+                    value=""
+                  >
+                    Select
+                  </option>
                   <option>Gujarat</option>
                   <option>UP</option>
                   <option>MP</option>
@@ -122,6 +145,12 @@
                   v-model="form.city"
                   icon="fas fa-map-marker-alt"
                 >
+                  <option
+                    disabled
+                    value=""
+                  >
+                    Select
+                  </option>
                   <option>A'bad</option>
                   <option>Baroda</option>
                   <option>surat</option>

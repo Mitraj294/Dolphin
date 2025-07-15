@@ -1,72 +1,76 @@
 <template>
   <MainLayout>
-    <div class="class">
-      <div class="schedule-demo-outer">
-        <div class="schedule-demo-card">
-          <h2 class="schedule-demo-title">Schedule Classes/Training</h2>
-          <div class="schedule-demo-desc">
-            Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry.
-          </div>
-          <form class="schedule-demo-form">
-            <div class="schedule-demo-row">
-              <div class="schedule-demo-field">
-                <label>Select Organization</label>
-                <select>
-                  <option>Select</option>
-                </select>
-              </div>
-              <div class="schedule-demo-field">
-                <label>Select Admin</label>
-                <select>
-                  <option>Select</option>
-                </select>
-              </div>
-              <div class="schedule-demo-field">
-                <label>Select User</label>
-                <select>
-                  <option>Select</option>
-                </select>
-              </div>
+    <div class="schedule-demo-outer">
+      <div class="schedule-demo-card">
+        <h2 class="schedule-demo-title">Schedule Classes/Training</h2>
+        <div class="schedule-demo-desc">
+          Lorem Ipsum is simply dummy text of the printing and typesetting
+          industry.
+        </div>
+        <form class="schedule-demo-form">
+          <FormRow>
+            <div class="schedule-demo-field">
+              <FormLabel>Select Organization</FormLabel>
+              <FormDropdown v-model="organization">
+                <option value="">Select</option>
+                <!-- Add more options here -->
+              </FormDropdown>
             </div>
-            <div class="schedule-demo-row">
-              <div class="schedule-demo-field">
-                <label>Subject</label>
-                <input
-                  type="text"
-                  placeholder="Type here"
+            <div class="schedule-demo-field">
+              <FormLabel>Select Admin</FormLabel>
+              <FormDropdown v-model="admin">
+                <option value="">Select</option>
+                <!-- Add more options here -->
+              </FormDropdown>
+            </div>
+            <div class="schedule-demo-field">
+              <FormLabel>Select User</FormLabel>
+              <FormDropdown v-model="user">
+                <option value="">Select</option>
+                <!-- Add more options here -->
+              </FormDropdown>
+            </div>
+          </FormRow>
+          <FormRow>
+            <div class="schedule-demo-field">
+              <FormLabel>Subject</FormLabel>
+              <FormInput
+                v-model="subject"
+                placeholder="Type here"
+              />
+            </div>
+            <div class="schedule-demo-field">
+              <FormLabel>Select Classes/Training</FormLabel>
+              <FormDropdown v-model="classType">
+                <option value="">Select</option>
+                <!-- Add more options here -->
+              </FormDropdown>
+            </div>
+            <div class="schedule-demo-field schedule-demo-schedule-field">
+              <FormLabel>Schedule</FormLabel>
+              <div class="schedule-demo-schedule-inputs">
+                <FormInput
+                  v-model="date"
+                  type="date"
+                  placeholder="MM/DD/YYYY"
+                />
+                <FormInput
+                  v-model="time"
+                  type="time"
+                  placeholder="00:00"
                 />
               </div>
-              <div class="schedule-demo-field">
-                <label>Select Classes/Training</label>
-                <select>
-                  <option>Select</option>
-                </select>
-              </div>
-              <div class="schedule-demo-field schedule-demo-schedule-field">
-                <label>Schedule</label>
-                <div class="schedule-demo-schedule-inputs">
-                  <input
-                    type="date"
-                    placeholder="MM/DD/YYYY"
-                  />
-                  <input
-                    type="time"
-                    placeholder="00:00"
-                  />
-                </div>
-              </div>
             </div>
-            <div class="schedule-demo-actions">
-              <button
-                type="submit"
-                class="btn btn-primary"
-              >
-                Schedule Classes/Training
-              </button>
-            </div>
-          </form>
-        </div>
+          </FormRow>
+          <div class="schedule-demo-actions">
+            <button
+              type="submit"
+              class="btn btn-primary"
+            >
+              Schedule Classes/Training
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </MainLayout>
@@ -74,9 +78,26 @@
 
 <script>
 import MainLayout from '../../layout/MainLayout.vue';
+import {
+  FormInput,
+  FormDropdown,
+  FormRow,
+  FormLabel,
+} from '@/components/Common/Common_UI/Form';
 export default {
   name: 'ScheduleClassTraining',
-  components: { MainLayout },
+  components: { MainLayout, FormInput, FormDropdown, FormRow, FormLabel },
+  data() {
+    return {
+      organization: '',
+      admin: '',
+      user: '',
+      subject: '',
+      classType: '',
+      date: '',
+      time: '',
+    };
+  },
 };
 </script>
 
@@ -161,10 +182,24 @@ export default {
   gap: 18px;
   width: 100%;
 }
-.schedule-demo-schedule-inputs input[type='date'],
-.schedule-demo-schedule-inputs input[type='time'] {
+.schedule-demo-schedule-inputs .form-box {
   flex: 1 1 0;
   min-width: 0;
+  background: #f6f6f6;
+  border-radius: 9px;
+  padding: 0 16px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  position: relative;
+}
+.schedule-demo-schedule-inputs .form-input-noicon-wrap {
+  width: 100%;
+}
+.schedule-demo-schedule-inputs input.form-input[type='date'],
+.schedule-demo-schedule-inputs input.form-input[type='time'] {
+  width: 100%;
   background: #fafafa;
   border: 1.5px solid #e0e0e0;
   border-radius: 8px;
@@ -175,17 +210,6 @@ export default {
   transition: border 0.2s;
   box-sizing: border-box;
 }
-.schedule-demo-schedule-inputs input[type='date']::placeholder,
-.schedule-demo-schedule-inputs input[type='time']::placeholder {
-  color: #888;
-  opacity: 1;
-}
-.schedule-demo-actions {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 18px;
-}
-
 @media (max-width: 1400px) {
   .schedule-demo-outer {
     margin: 12px;
@@ -212,6 +236,29 @@ export default {
   .schedule-demo-row {
     flex-direction: column !important;
     gap: 12px;
+  }
+  .schedule-demo-schedule-inputs {
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+  .schedule-demo-schedule-inputs .form-box {
+    height: auto;
+    min-width: 0;
+    width: 100%;
+    padding: 0 4px;
+    border-radius: 7px;
+    font-size: 15px;
+    box-sizing: border-box;
+  }
+  .schedule-demo-schedule-inputs input.form-input[type='date'],
+  .schedule-demo-schedule-inputs input.form-input[type='time'] {
+    width: 100%;
+    min-width: 0;
+    padding: 8px 8px 8px 36px;
+    font-size: 15px;
+    border-radius: 7px;
+    box-sizing: border-box;
   }
 }
 </style>

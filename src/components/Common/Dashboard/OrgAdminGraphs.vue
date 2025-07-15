@@ -8,7 +8,6 @@
             <Dropdown
               :options="orgTypeOptions"
               v-model="orgType"
-              style="margin-right: 18px"
             />
             <Dropdown
               :options="quarterOptions"
@@ -26,7 +25,6 @@
             <Dropdown
               :options="deptTypeOptions"
               v-model="deptType"
-              style="margin-right: 18px"
             />
             <Dropdown
               :options="quarterOptions"
@@ -211,8 +209,8 @@ const chartOptions = {
 .graph-controls {
   display: flex;
   flex-wrap: wrap;
-  gap: 32px;
-  justify-content: space-between;
+  gap: 8px;
+  justify-content: flex-end;
   align-items: flex-end;
   margin-bottom: 18px;
   width: 100%;
@@ -230,19 +228,15 @@ const chartOptions = {
   }
   .graph-controls {
     flex-direction: column;
-    gap: 8px;
+    gap: 4px;
     align-items: flex-end;
     justify-content: flex-end;
     width: 100%;
     display: flex;
   }
-  .graph-controls .dropdown-radio {
-    width: 240px !important;
-    min-width: 240px !important;
-    max-width: 240px !important;
-    flex-basis: unset !important;
-    margin-right: 0 !important;
+  .graph-controls > * {
     align-self: flex-end;
+    margin-right: 0 !important;
   }
 }
 @media (max-width: 1400px) {

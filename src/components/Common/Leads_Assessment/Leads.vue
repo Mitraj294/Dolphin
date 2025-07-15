@@ -142,13 +142,13 @@
             ></textarea>
             <div class="notes-modal-actions">
               <button
-                class="notes-modal-btn"
+                class="btn btn-secondary"
                 @click="notesModalMode === 'add' ? submitNotes() : saveNotes()"
               >
                 {{ notesModalMode === 'add' ? 'Submit' : 'Save' }}
               </button>
               <button
-                class="notes-modal-btn notes-modal-cancel"
+                class="btn btn-primary"
                 @click="closeNotesModal"
               >
                 Cancel
@@ -782,19 +782,7 @@ export default {
   justify-content: center;
   margin-top: 8px;
 }
-.notes-modal-btn {
-  background: #0164a5;
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 8px 20px;
-  font-size: 15px;
-  font-weight: 500;
-  transition: background 0.2s;
-}
-.notes-modal-btn:hover {
-  background: #005fa3;
-}
+
 .lead-contact-link {
   cursor: pointer;
   font-weight: 500;

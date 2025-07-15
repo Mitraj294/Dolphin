@@ -14,29 +14,31 @@
             industry.
           </div>
           <form class="send-assessment-form">
-            <div class="send-assessment-row">
+            <FormRow>
               <div class="send-assessment-field">
-                <label>To</label>
-                <input
-                  type="email"
+                <FormLabel>To</FormLabel>
+                <FormInput
                   v-model="to"
+                  type="email"
                   placeholder="meet@gmail.com"
                 />
               </div>
               <div class="send-assessment-field">
-                <label>Subject</label>
-                <input
+                <FormLabel>Subject</FormLabel>
+                <FormInput
+                  v-model="subject"
                   type="text"
                   placeholder="Type here"
                 />
               </div>
               <div class="send-assessment-field">
-                <label>Template</label>
-                <select>
-                  <option>Select Template</option>
-                </select>
+                <FormLabel>Template</FormLabel>
+                <FormDropdown v-model="template">
+                  <option value="">Select Template</option>
+                  <!-- Add more options here -->
+                </FormDropdown>
               </div>
-            </div>
+            </FormRow>
             <div class="send-assessment-label">Editable Template</div>
             <div class="send-assessment-template-box">
               <!-- Render dummy data as HTML above the editor -->
@@ -78,6 +80,12 @@
 
 <script>
 import MainLayout from '@/components/layout/MainLayout.vue';
+import {
+  FormInput,
+  FormDropdown,
+  FormRow,
+  FormLabel,
+} from '@/components/Common/Common_UI/Form';
 // Import Quill editor and styles
 import { QuillEditor } from '@vueup/vue-quill';
 import '@vueup/vue-quill/dist/vue-quill.snow.css';
@@ -85,17 +93,19 @@ import Quill from 'quill';
 
 export default {
   name: 'SendAssessment',
-  components: { MainLayout, QuillEditor },
+  components: {
+    MainLayout,
+    QuillEditor,
+    FormInput,
+    FormDropdown,
+    FormRow,
+    FormLabel,
+  },
   data() {
     return {
       to: '',
-      contact: '',
-      email: '',
-      phone: '',
-      organization: '',
-      size: '',
-      source: '',
-      status: '',
+      subject: '',
+      template: '',
       templateContent: '',
       editorOptions: {
         theme: 'snow',
@@ -121,13 +131,6 @@ export default {
   mounted() {
     // Pre-fill from query params
     this.to = this.$route.query.email || '';
-    this.contact = this.$route.query.contact || '';
-    this.email = this.$route.query.email || '';
-    this.phone = this.$route.query.phone || '';
-    this.organization = this.$route.query.organization || '';
-    this.size = this.$route.query.size || '';
-    this.source = this.$route.query.source || '';
-    this.status = this.$route.query.status || '';
   },
 };
 </script>
@@ -285,15 +288,17 @@ export default {
   box-sizing: border-box;
   overflow: hidden;
 }
-.send-assessment-link {
-  display: inline-block;
-  color: #0074c2;
-  text-decoration: underline;
-  font-size: 15px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
+@media (max-width: 900px) {
+  .send-assessment-link-box {
+    min-width: 0;
+    max-width: 100%;
+    width: 100%;
+    padding: 8px 8px;
+    margin-bottom: 0;
+    min-height: 32px;
+    max-height: 40px;
+    height: auto;
+  }
 }
 .send-assessment-actions {
   margin-left: auto;

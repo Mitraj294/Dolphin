@@ -81,3 +81,8 @@ also look how just its only table part is scorable all other fiexed and resonsiv
 
 so basic stucture and all things fix  like this
 it's data and conenet will just as it is we need to fix stuctute cause we need same type of pages across app
+
+
+
+
+git4227@gmail.com

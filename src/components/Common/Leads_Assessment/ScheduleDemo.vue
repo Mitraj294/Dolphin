@@ -9,54 +9,60 @@
             industry.
           </div>
           <form class="schedule-demo-form">
-            <div class="schedule-demo-row">
+            <FormRow>
               <div class="schedule-demo-field">
-                <label>Select Organization</label>
-                <select>
-                  <option>Select</option>
-                </select>
+                <FormLabel>Select Organization</FormLabel>
+                <FormDropdown v-model="organization">
+                  <option value="">Select</option>
+                  <!-- Add more options here -->
+                </FormDropdown>
               </div>
               <div class="schedule-demo-field">
-                <label>Select Admin</label>
-                <select>
-                  <option>Select</option>
-                </select>
+                <FormLabel>Select Admin</FormLabel>
+                <FormDropdown v-model="admin">
+                  <option value="">Select</option>
+                  <!-- Add more options here -->
+                </FormDropdown>
               </div>
               <div class="schedule-demo-field">
-                <label>Select User</label>
-                <select>
-                  <option>Select</option>
-                </select>
+                <FormLabel>Select User</FormLabel>
+                <FormDropdown v-model="user">
+                  <option value="">Select</option>
+                  <!-- Add more options here -->
+                </FormDropdown>
               </div>
-            </div>
-            <div class="schedule-demo-row">
+            </FormRow>
+            <FormRow>
               <div class="schedule-demo-field">
-                <label>Subject</label>
-                <input
-                  type="text"
+                <FormLabel>Subject</FormLabel>
+                <FormInput
+                  v-model="subject"
                   placeholder="Type here"
                 />
               </div>
               <div class="schedule-demo-field">
-                <label>Select Method</label>
-                <select>
-                  <option>Select</option>
-                </select>
+                <FormLabel>Select Method</FormLabel>
+                <FormDropdown v-model="method">
+                  <option value="">Select</option>
+                  <!-- Add more options here -->
+                </FormDropdown>
               </div>
               <div class="schedule-demo-field schedule-demo-schedule-field">
-                <label>Schedule</label>
+                <FormLabel>Schedule</FormLabel>
                 <div class="schedule-demo-schedule-inputs">
-                  <input
+                  <FormInput
+                    v-model="date"
                     type="date"
                     placeholder="MM/DD/YYYY"
                   />
-                  <input
+                  <FormInput
+                    v-model="time"
                     type="time"
                     placeholder="00:00"
                   />
                 </div>
               </div>
-            </div>
+            </FormRow>
             <div class="schedule-demo-actions">
               <button
                 type="submit"
@@ -74,9 +80,26 @@
 
 <script>
 import MainLayout from '@/components/layout/MainLayout.vue';
+import {
+  FormInput,
+  FormDropdown,
+  FormRow,
+  FormLabel,
+} from '@/components/Common/Common_UI/Form';
 export default {
   name: 'ScheduleDemo',
-  components: { MainLayout },
+  components: { MainLayout, FormInput, FormDropdown, FormRow, FormLabel },
+  data() {
+    return {
+      organization: '',
+      admin: '',
+      user: '',
+      subject: '',
+      method: '',
+      date: '',
+      time: '',
+    };
+  },
 };
 </script>
 

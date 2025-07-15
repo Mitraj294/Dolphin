@@ -57,28 +57,65 @@
           @submit.prevent="changePassword"
         >
           <div class="profile-form-row">
-            <label>Current Password*</label>
-            <input
-              type="password"
-              v-model="currentPassword"
-              required
-            />
+            <label class="profile-form-label">Current Password*</label>
+            <div class="profile-input-wrapper">
+              <input
+                :type="showCurrentPassword ? 'text' : 'password'"
+                v-model="currentPassword"
+                required
+                placeholder="Enter current password"
+              />
+              <span
+                class="profile-eye-icon"
+                @click="showCurrentPassword = !showCurrentPassword"
+              >
+                <i
+                  :class="
+                    showCurrentPassword ? 'fas fa-eye-slash' : 'fas fa-eye'
+                  "
+                ></i>
+              </span>
+            </div>
           </div>
           <div class="profile-form-row">
-            <label>New Password*</label>
-            <input
-              type="password"
-              v-model="newPassword"
-              required
-            />
+            <label class="profile-form-label">New Password*</label>
+            <div class="profile-input-wrapper">
+              <input
+                :type="showNewPassword ? 'text' : 'password'"
+                v-model="newPassword"
+                required
+                placeholder="Enter new password"
+              />
+              <span
+                class="profile-eye-icon"
+                @click="showNewPassword = !showNewPassword"
+              >
+                <i
+                  :class="showNewPassword ? 'fas fa-eye-slash' : 'fas fa-eye'"
+                ></i>
+              </span>
+            </div>
           </div>
           <div class="profile-form-row">
-            <label>Confirm New Password*</label>
-            <input
-              type="password"
-              v-model="confirmPassword"
-              required
-            />
+            <label class="profile-form-label">Confirm New Password*</label>
+            <div class="profile-input-wrapper">
+              <input
+                :type="showConfirmPassword ? 'text' : 'password'"
+                v-model="confirmPassword"
+                required
+                placeholder="Confirm new password"
+              />
+              <span
+                class="profile-eye-icon"
+                @click="showConfirmPassword = !showConfirmPassword"
+              >
+                <i
+                  :class="
+                    showConfirmPassword ? 'fas fa-eye-slash' : 'fas fa-eye'
+                  "
+                ></i>
+              </span>
+            </div>
           </div>
           <div class="profile-save-btn-row">
             <button
@@ -120,6 +157,9 @@ export default {
       newPassword: '',
       confirmPassword: '',
       message: '',
+      showCurrentPassword: false,
+      showNewPassword: false,
+      showConfirmPassword: false,
     };
   },
   methods: {
@@ -217,24 +257,41 @@ export default {
 }
 .profile-form-row {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
 }
-.profile-form-row label {
+.profile-form-label {
+  width: 170px;
   color: #888;
   font-size: 15px;
   font-weight: 400;
-  margin-bottom: 2px;
+  margin-bottom: 0;
 }
-.profile-form-row input {
+.profile-input-wrapper {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+.profile-input-wrapper input {
+  width: 100%;
   background: #fff;
   border: 1.5px solid #e0e0e0;
   border-radius: 8px;
-  padding: 10px 14px;
+  padding: 10px 38px 10px 14px;
   font-size: 15px;
   color: #222;
   outline: none;
   transition: border 0.2s;
+}
+.profile-eye-icon {
+  position: absolute;
+  right: 12px;
+  cursor: pointer;
+  color: #888;
+  font-size: 1.1rem;
+  z-index: 2;
 }
 .profile-save-btn-row {
   display: flex;

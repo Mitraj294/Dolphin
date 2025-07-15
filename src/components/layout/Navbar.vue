@@ -117,13 +117,13 @@
         <div class="logout-confirm-title">Are you sure you want to logout?</div>
         <div class="logout-confirm-actions">
           <button
-            class="btn btn-danger"
+            class="btn btn-secondary"
             @click="handleLogoutYes"
           >
             Yes
           </button>
           <button
-            class="btn btn-secondary"
+            class="btn btn-primary"
             @click="handleLogoutCancel"
           >
             Cancel

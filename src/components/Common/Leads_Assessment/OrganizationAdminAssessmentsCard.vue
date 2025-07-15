@@ -73,70 +73,11 @@
       v-if="showScheduleModal"
       class="modal-overlay"
     >
-      <div class="modal-card">
-        <button
-          class="modal-close"
-          @click="closeScheduleModal"
-        >
-          &times;
-        </button>
-        <h2 class="modal-title">
-          Schedule {{ selectedAssessment && selectedAssessment.name }}
-        </h2>
-        <form
-          class="modal-form"
-          @submit.prevent
-        >
-          <div class="modal-form-row">
-            <div class="modal-form-group">
-              <input
-                class="modal-input"
-                placeholder="MM/DD/YYYY"
-                type="text"
-              />
-            </div>
-            <div class="modal-form-group">
-              <input
-                class="modal-input"
-                placeholder="00:00"
-                type="text"
-              />
-            </div>
-          </div>
-          <div class="modal-form-row">
-            <div class="modal-form-group custom-dropdown">
-              <span class="modal-icon"><i class="fas fa-users"></i></span>
-              <div
-                class="custom-dropdown-input"
-                @click="showGroupsDropdown = !showGroupsDropdown"
-              >
-                <span style="color: #888">Groups</span>
-                <i class="fas fa-chevron-down"></i>
-              </div>
-              <!-- Dropdown list could go here if needed -->
-            </div>
-            <div class="modal-form-group custom-dropdown">
-              <span class="modal-icon"><i class="fas fa-user"></i></span>
-              <div
-                class="custom-dropdown-input"
-                @click="showMembersDropdown = !showMembersDropdown"
-              >
-                <span style="color: #888">Members</span>
-                <i class="fas fa-chevron-down"></i>
-              </div>
-              <!-- Dropdown list could go here if needed -->
-            </div>
-          </div>
-          <div class="modal-form-actions">
-            <button
-              class="modal-save-btn"
-              type="submit"
-            >
-              Schedule
-            </button>
-          </div>
-        </form>
-      </div>
+      <ScheduleAssessmentModal
+        :assessmentName="selectedAssessment && selectedAssessment.name"
+        @close="closeScheduleModal"
+        @schedule="closeScheduleModal"
+      />
     </div>
   </div>
   <Pagination
@@ -153,9 +94,10 @@
 
 <script>
 import Pagination from '@/components/layout/Pagination.vue';
+import ScheduleAssessmentModal from '@/components/Common/MyOrganization/ScheduleAssessmentModal.vue';
 export default {
   name: 'OrganizationAdminAssessmentsCard',
-  components: { Pagination },
+  components: { Pagination, ScheduleAssessmentModal },
   data() {
     return {
       assessments: Array.from({ length: 10 }, (_, i) => ({
@@ -168,7 +110,7 @@ export default {
       pageSize: 10,
       currentPage: 1,
       showPageDropdown: false,
-      // Dropdown state for modal
+      // Dropdown state for modal (future use)
       showGroupsDropdown: false,
       showMembersDropdown: false,
     };
@@ -388,52 +330,6 @@ export default {
   margin-bottom: 0;
   box-sizing: border-box;
 }
-.modal-input {
-  border: none;
-  background: transparent;
-  outline: none;
-  font-size: 16px;
-  color: #222;
-  width: 100%;
-  height: 44px;
-  padding: 0;
-  font-family: inherit;
-}
-.modal-form-actions {
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 18px;
-}
-.modal-save-btn {
-  border-radius: 22px;
-  background: #0164a5;
-  color: #fff;
-  font-size: 17px;
-  font-weight: 500;
-  padding: 10px 32px;
-  border: none;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.modal-save-btn:hover {
-  background: #005fa3;
-}
-.assessment-link {
-  background: none;
-  border: none;
-  color: #0074c2;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  text-align: left;
-  padding: 0;
-  transition: color 0.18s;
-}
-.assessment-link:hover {
-  color: #005fa3;
-  text-decoration: underline;
-}
 .modal-form-group.custom-dropdown {
   flex-direction: row;
   align-items: center;
@@ -484,6 +380,41 @@ export default {
   font-weight: 500;
   font-family: inherit;
   margin-left: 2px;
+}
+.modal-form-actions {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+.modal-save-btn {
+  border-radius: 22px;
+  background: #0164a5;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 500;
+  padding: 10px 32px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.modal-save-btn:hover {
+  background: #005fa3;
+}
+.assessment-link {
+  background: none;
+  border: none;
+  color: #0074c2;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+  transition: color 0.18s;
+}
+.assessment-link:hover {
+  color: #005fa3;
+  text-decoration: underline;
 }
 @media (max-width: 1400px) {
   .assessments-card {
