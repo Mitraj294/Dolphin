@@ -378,10 +378,3 @@
         padding: 3px 6px;
     }
 }
-
-.org-table-outer {
-
-    overflow: visible !important;
-    position: relative;
-    z-index: auto;
-}

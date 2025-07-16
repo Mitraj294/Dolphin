@@ -1,8 +1,8 @@
 <template>
   <MainLayout>
     <div class="page">
-      <div class="my-org-table-outer">
-        <div class="my-org-table-card">
+      <div class="table-outer">
+        <div class="table-card">
           <OrgActionButtons
             @show-add-group="showAddGroupModal = true"
             @show-add-member="showAddMemberModal = true"
@@ -93,104 +93,6 @@ export default {
 </script>
 
 <style scoped>
-.my-org-table-outer {
-  width: 100%;
-  max-width: 1400px;
-  min-width: auto;
-  margin: 64px auto 64px auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-sizing: border-box;
-  background: none !important;
-  padding: 0;
-}
-.my-org-table-card {
-  width: 100%;
-  max-width: 1400px;
-  min-width: auto;
-  background: #fff;
-  border-radius: 24px;
-  border: 1px solid #ebebeb;
-  box-shadow: 0 2px 16px 0 rgba(33, 150, 243, 0.04);
-  margin: 0 auto;
-  box-sizing: border-box;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  position: relative;
-}
-.my-org-table-container {
-  width: 100%;
-  overflow-x: auto;
-  box-sizing: border-box;
-  padding: 0 24px 24px 24px;
-  background: #fff;
-  border-bottom-left-radius: 24px;
-  border-bottom-right-radius: 24px;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-.my-org-table-container::-webkit-scrollbar {
-  display: none;
-}
-.my-org-table {
-  min-width: auto;
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  margin-bottom: 8px;
-  background: transparent;
-  margin-left: 0;
-  margin-right: 0;
-  table-layout: auto;
-  border: none;
-  margin-top: 0;
-}
-.my-org-table th,
-.my-org-table td {
-  padding: 12px 8px;
-  text-align: left;
-  font-size: 14px;
-  border-bottom: 1px solid #f0f0f0;
-  background: #fff;
-  font-family: 'Inter', Arial, sans-serif;
-  font-weight: 400;
-  line-height: 18px;
-  letter-spacing: 0.01em;
-}
-.my-org-table th {
-  background: #f8f8f8;
-  font-weight: 600;
-  color: #888;
-  position: relative;
-  vertical-align: middle;
-  min-width: auto;
-  border-bottom: 1.5px solid #ebebeb;
-}
-.rounded-th-left {
-  border-top-left-radius: 24px;
-  border-bottom-left-radius: 24px;
-  overflow: hidden;
-  background: #f8f8f8;
-}
-.rounded-th-right {
-  border-top-right-radius: 24px;
-  border-bottom-right-radius: 24px;
-  overflow: hidden;
-  background: #f8f8f8;
-}
-.my-org-table td {
-  color: #222;
-  background: #fff;
-}
-.my-org-table .empty-row {
-  text-align: center;
-  color: #888;
-  font-style: italic;
-  background: #fff;
-}
 .icon-btn.view-btn {
   display: flex;
   align-items: center;
@@ -217,70 +119,5 @@ export default {
   font-weight: 500;
   font-size: 15px;
   cursor: pointer;
-}
-@media (max-width: 1400px) {
-  .my-org-table-outer {
-    margin: 12px;
-    max-width: 100%;
-  }
-  .my-org-table-card {
-    max-width: 100%;
-    border-radius: 14px;
-  }
-  .my-org-table-header {
-    padding: 12px 8px 12px 8px;
-    border-top-left-radius: 14px;
-    border-top-right-radius: 14px;
-  }
-  .my-org-table-container {
-    padding: 0 8px 8px 8px;
-    border-bottom-left-radius: 14px;
-    border-bottom-right-radius: 14px;
-  }
-  .my-org-table th,
-  .my-org-table td {
-    font-size: 12px;
-    padding: 8px 4px;
-  }
-  .rounded-th-left {
-    border-top-left-radius: 14px;
-    border-bottom-left-radius: 14px;
-  }
-  .rounded-th-right {
-    border-top-right-radius: 14px;
-    border-bottom-right-radius: 14px;
-  }
-}
-@media (max-width: 900px) {
-  .my-org-table-outer {
-    margin: 4px;
-    max-width: 100%;
-  }
-  .my-org-table-card {
-    border-radius: 10px;
-  }
-  .my-org-table-header {
-    padding: 12px 8px 12px 8px;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-  }
-  .my-org-table-container {
-    padding: 0 4px 4px 4px;
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
-  }
-  .my-org-table th,
-  .my-org-table td {
-    font-size: 11px;
-    padding: 6px 2px;
-  }
-  .rounded-th-left {
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
-  }
-  .rounded-th-right {
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
-  }
 }
 </style>

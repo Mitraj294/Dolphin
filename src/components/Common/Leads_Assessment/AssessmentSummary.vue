@@ -1,7 +1,7 @@
 <template>
   <MainLayout>
     <div class="page">
-      <div class="assessment-table-outer">
+      <div class="assessment-zztable-outer">
         <div class="assessment-table-card">
           <div class="assessment-summary-cards">
             <div class="assessment-summary-card">

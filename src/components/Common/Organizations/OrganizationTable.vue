@@ -1,15 +1,15 @@
 <template>
-  <div class="org-table-outer">
-    <div class="org-table-card">
-      <div class="org-table-search-bar">
+  <div class="table-outer">
+    <div class="table-card">
+      <div class="table-search-bar">
         <input
           class="org-search"
           placeholder="Search Organization Name"
           v-model="search"
         />
       </div>
-      <div class="org-table-container">
-        <table class="org-table">
+      <div class="table-container">
+        <table class="table">
           <TableHeader
             :columns="[
               { label: 'Organizations Name', key: 'name', sortable: true },
@@ -27,13 +27,13 @@
               v-for="org in paginatedOrganizations"
               :key="org.name"
             >
-              <td class="org-td-content">{{ org.name }}</td>
-              <td class="org-td-content">{{ org.size }}</td>
-              <td class="org-td-content">{{ org.admin }}</td>
-              <td class="org-td-content">{{ org.contractStart }}</td>
-              <td class="org-td-content">{{ org.contractEnd }}</td>
-              <td class="org-td-content">{{ org.lastLogin }}</td>
-              <td class="org-td-content">
+              <td>{{ org.name }}</td>
+              <td>{{ org.size }}</td>
+              <td>{{ org.admin }}</td>
+              <td>{{ org.contractStart }}</td>
+              <td>{{ org.contractEnd }}</td>
+              <td>{{ org.lastLogin }}</td>
+              <td>
                 <button
                   class="btn-view"
                   @click="goToDetail(org)"
@@ -329,255 +329,6 @@ export default {
           contractEnd: 'May 13, 2025',
           lastLogin: 'May 14, 2025 at 1:50 pm',
         },
-        {
-          name: 'Alpha Group',
-          size: 'Large',
-          admin: 'Alice Adams',
-          contractStart: 'Feb 1, 2024',
-          contractEnd: 'Feb 1, 2025',
-          lastLogin: 'Feb 2, 2025 at 9:00 am',
-        },
-        {
-          name: 'Beta Solutions',
-          size: 'Small',
-          admin: 'Bob Brown',
-          contractStart: 'Mar 10, 2024',
-          contractEnd: 'Mar 10, 2025',
-          lastLogin: 'Mar 11, 2025 at 10:30 am',
-        },
-        {
-          name: 'Crest Corp',
-          size: 'Large',
-          admin: 'Cathy Clark',
-          contractStart: 'Apr 5, 2024',
-          contractEnd: 'Apr 5, 2025',
-          lastLogin: 'Apr 6, 2025 at 11:15 am',
-        },
-        {
-          name: 'Delta Dynamics',
-          size: 'Small',
-          admin: 'David Duke',
-          contractStart: 'May 12, 2024',
-          contractEnd: 'May 12, 2025',
-          lastLogin: 'May 13, 2025 at 8:45 am',
-        },
-        {
-          name: 'Echo Enterprises',
-          size: 'Large',
-          admin: 'Eve Evans',
-          contractStart: 'Jun 18, 2024',
-          contractEnd: 'Jun 18, 2025',
-          lastLogin: 'Jun 19, 2025 at 10:20 am',
-        },
-        {
-          name: 'Flexi-Finders',
-          size: 'Large',
-          admin: 'Aaliyah Moss',
-          contractStart: 'Jun 18, 2024',
-          contractEnd: 'Jun-18-2025',
-          lastLogin: 'Feb 18, 2025 at 10:20 am',
-        },
-        {
-          name: 'Gamma Group',
-          size: 'Small',
-          admin: 'Gina Green',
-          contractStart: 'Jul 7, 2024',
-          contractEnd: 'Jul 7, 2025',
-          lastLogin: 'Jul 8, 2025 at 2:00 pm',
-        },
-        {
-          name: 'Helix Holdings',
-          size: 'Large',
-          admin: 'Hank Hill',
-          contractStart: 'Aug 15, 2024',
-          contractEnd: 'Aug 15, 2025',
-          lastLogin: 'Aug 16, 2025 at 3:30 pm',
-        },
-        {
-          name: 'Interim Solutions',
-          size: 'Small',
-          admin: 'Clarence Reed',
-          contractStart: 'Jan 1, 2024',
-          contractEnd: 'Dec 31, 2024',
-          lastLogin: 'Jan 4, 2025 at 4:40 pm',
-        },
-        {
-          name: 'Jupiter Jobs',
-          size: 'Large',
-          admin: 'Julia James',
-          contractStart: 'Sep 20, 2024',
-          contractEnd: 'Sep 20, 2025',
-          lastLogin: 'Sep 21, 2025 at 5:10 pm',
-        },
-        {
-          name: 'Kappa Konsulting',
-          size: 'Small',
-          admin: 'Karl King',
-          contractStart: 'Oct 2, 2024',
-          contractEnd: 'Oct 2, 2025',
-          lastLogin: 'Oct 3, 2025 at 6:00 pm',
-        },
-        {
-          name: 'Lambda Labs',
-          size: 'Large',
-          admin: 'Laura Lane',
-          contractStart: 'Nov 11, 2024',
-          contractEnd: 'Nov 11, 2025',
-          lastLogin: 'Nov 12, 2025 at 7:20 pm',
-        },
-        {
-          name: 'Matrix Media',
-          size: 'Small',
-          admin: 'Mona Moore',
-          contractStart: 'Dec 25, 2024',
-          contractEnd: 'Dec 25, 2025',
-          lastLogin: 'Dec 26, 2025 at 8:00 am',
-        },
-        {
-          name: 'Nova Networks',
-          size: 'Large',
-          admin: 'Nina North',
-          contractStart: 'Jan 3, 2025',
-          contractEnd: 'Jan 3, 2026',
-          lastLogin: 'Jan 4, 2026 at 9:30 am',
-        },
-        {
-          name: 'Omega Org',
-          size: 'Small',
-          admin: 'Oscar Owen',
-          contractStart: 'Feb 14, 2025',
-          contractEnd: 'Feb 14, 2026',
-          lastLogin: 'Feb 15, 2026 at 10:10 am',
-        },
-        {
-          name: 'Prime Partners',
-          size: 'Large',
-          admin: 'Paula Price',
-          contractStart: 'Mar 8, 2025',
-          contractEnd: 'Mar 8, 2026',
-          lastLogin: 'Mar 9, 2026 at 11:50 am',
-        },
-        {
-          name: 'QuickStaff',
-          size: 'Large',
-          admin: 'Mary Brucker',
-          contractStart: 'Jan 1, 2025',
-          contractEnd: 'Dec 31, 2025',
-          lastLogin: 'Nov 4, 2024 at 12:10 pm',
-        },
-        {
-          name: 'Rocket Resources',
-          size: 'Small',
-          admin: 'Rita Ray',
-          contractStart: 'Apr 17, 2025',
-          contractEnd: 'Apr 17, 2026',
-          lastLogin: 'Apr 18, 2026 at 12:30 pm',
-        },
-        {
-          name: 'Sigma Systems',
-          size: 'Large',
-          admin: 'Sam Smith',
-          contractStart: 'May 22, 2025',
-          contractEnd: 'May 22, 2026',
-          lastLogin: 'May 23, 2026 at 1:40 pm',
-        },
-        {
-          name: 'Titan Tech',
-          size: 'Small',
-          admin: 'Tina Turner',
-          contractStart: 'Jun 30, 2025',
-          contractEnd: 'Jun 30, 2026',
-          lastLogin: 'Jul 1, 2026 at 2:20 pm',
-        },
-        {
-          name: 'Umbrella United',
-          size: 'Large',
-          admin: 'Uma Underwood',
-          contractStart: 'Jul 19, 2025',
-          contractEnd: 'Jul 19, 2026',
-          lastLogin: 'Jul 20, 2026 at 3:00 pm',
-        },
-        {
-          name: 'Vega Ventures',
-          size: 'Small',
-          admin: 'Victor Voss',
-          contractStart: 'Aug 8, 2025',
-          contractEnd: 'Aug 8, 2026',
-          lastLogin: 'Aug 9, 2026 at 4:10 pm',
-        },
-        {
-          name: 'WaveWorks',
-          size: 'Large',
-          admin: 'Wendy White',
-          contractStart: 'Sep 14, 2025',
-          contractEnd: 'Sep 14, 2026',
-          lastLogin: 'Sep 15, 2026 at 5:30 pm',
-        },
-        {
-          name: 'Xeno Xperts',
-          size: 'Small',
-          admin: 'Xander Xu',
-          contractStart: 'Oct 27, 2025',
-          contractEnd: 'Oct 27, 2026',
-          lastLogin: 'Oct 28, 2026 at 6:40 pm',
-        },
-        {
-          name: 'Yield Yard',
-          size: 'Large',
-          admin: 'Yara Young',
-          contractStart: 'Nov 5, 2025',
-          contractEnd: 'Nov 5, 2026',
-          lastLogin: 'Nov 6, 2026 at 7:50 pm',
-        },
-        {
-          name: 'Zenith Zone',
-          size: 'Small',
-          admin: 'Zane Zeller',
-          contractStart: 'Dec 12, 2025',
-          contractEnd: 'Dec 12, 2026',
-          lastLogin: 'Dec 13, 2026 at 8:00 am',
-        },
-        {
-          name: 'Atlas Associates',
-          size: 'Large',
-          admin: 'Ava Allen',
-          contractStart: 'Jan 15, 2024',
-          contractEnd: 'Jan 15, 2025',
-          lastLogin: 'Jan 16, 2025 at 9:10 am',
-        },
-        {
-          name: 'Bright Bridge',
-          size: 'Small',
-          admin: 'Ben Brooks',
-          contractStart: 'Feb 22, 2024',
-          contractEnd: 'Feb 22, 2025',
-          lastLogin: 'Feb 23, 2025 at 10:20 am',
-        },
-        {
-          name: 'Clever Crew',
-          size: 'Large',
-          admin: 'Cara Carter',
-          contractStart: 'Mar 29, 2024',
-          contractEnd: 'Mar 29, 2025',
-          lastLogin: 'Mar 30, 2025 at 11:30 am',
-        },
-        {
-          name: 'Dynamic Devs',
-          size: 'Small',
-          admin: 'Derek Dean',
-          contractStart: 'Apr 6, 2024',
-          contractEnd: 'Apr 6, 2025',
-          lastLogin: 'Apr 7, 2025 at 12:40 pm',
-        },
-        {
-          name: 'Elite Experts',
-          size: 'Large',
-          admin: 'Ella East',
-          contractStart: 'May 13, 2024',
-          contractEnd: 'May 13, 2025',
-          lastLogin: 'May 14, 2025 at 1:50 pm',
-        },
-
         {
           name: 'Alpha Group',
           size: 'Large',
@@ -1156,37 +907,6 @@ export default {
 
 <style scoped>
 /* --- Layout and spacing to match reference page --- */
-.org-table-outer {
-  width: 100%;
-  max-width: 1400px;
-  margin: 64px auto 64px auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-sizing: border-box;
-}
-
-.org-table-card {
-  width: 100%;
-  background: #fff;
-  border-radius: 24px; /* was 18px */
-  border: 1px solid #ebebeb;
-  box-shadow: 0 2px 16px 0 rgba(33, 150, 243, 0.04);
-  overflow: visible;
-  margin: 0 auto;
-  box-sizing: border-box;
-}
-
-.org-table-search-bar {
-  padding: 18px 46px 18px 24px;
-  background: #fff;
-  border-top-left-radius: 24px; /* was 18px */
-  border-top-right-radius: 24px; /* was 18px */
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-}
 
 .org-search {
   width: 260px;
@@ -1207,92 +927,6 @@ export default {
   margin-left: 4px;
 }
 
-.org-table-container {
-  width: 100%;
-  overflow-x: auto;
-  box-sizing: border-box;
-  padding: 0 24px 24px 24px;
-  background: #fff;
-  border-bottom-left-radius: 24px; /* was 18px */
-  border-bottom-right-radius: 24px; /* was 18px */
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-.org-table-container::-webkit-scrollbar {
-  display: none;
-}
-
-.org-table {
-  min-width: 800px;
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  margin-bottom: 8px;
-  background: transparent;
-  margin-left: 0;
-  margin-right: 0;
-  table-layout: auto;
-  border: none;
-  margin-top: 0;
-}
-
-.org-table th,
-.org-table td {
-  padding: 18px 12px; /* Increased vertical and horizontal padding for more space */
-  text-align: left;
-  font-size: 15px; /* Slightly larger for readability */
-  border-bottom: 1.5px solid #f0f0f0; /* Slightly thicker, lighter line */
-  background: #fff;
-  font-family: 'Inter', Arial, sans-serif;
-  font-weight: 400;
-  line-height: 22px;
-}
-
-.org-table th {
-  background: #f8f8f8;
-  font-weight: 600;
-  color: #888;
-  position: relative;
-  vertical-align: middle;
-  min-width: 100px;
-  border-bottom: 1.5px solid #ebebeb;
-}
-
-.rounded-th-left {
-  border-top-left-radius: 24px; /* was 18px */
-  border-bottom-left-radius: 24px; /* was 18px */
-  overflow: hidden;
-  background: #f8f8f8;
-}
-.rounded-th-right {
-  border-top-right-radius: 24px; /* was 18px */
-  border-bottom-right-radius: 24px; /* was 18px */
-  overflow: hidden;
-  background: #f8f8f8;
-}
-
-.org-td-content,
-.org-table th,
-.org-th-content,
-.org-table td {
-  font-family: 'Inter', Arial, sans-serif;
-  font-weight: 400;
-  font-size: 13px;
-  line-height: 18px;
-  letter-spacing: 0.01em;
-}
-
-.org-td-content {
-  color: #222;
-  padding-left: 0;
-  background: #fff;
-}
-
-/* Increase left padding for only the first column's data cells to match the header and align with your design */
-.org-table td.org-td-content:first-child {
-  padding-left: 20px !important;
-}
-
 /* --- Pagination and footer spacing --- */
 .org-footer-row {
   width: 100%;
@@ -1311,65 +945,21 @@ export default {
 
 /* Responsive: shrink margin and font on small screens */
 @media (max-width: 1400px) {
-  .org-table-outer {
-    margin: 12px;
-    max-width: 100%;
-  }
-  .org-table-card {
-    border-radius: 14px; /* was 10px */
-  }
-  .org-table-search-bar {
-    padding: 8px 8px 8px 8px;
-    border-top-left-radius: 14px; /* was 10px */
-    border-top-right-radius: 14px; /* was 10px */
-  }
   .org-search {
     font-size: 13px;
     padding: 8px 16px 8px 32px;
     max-width: 320px;
     border-radius: 12px;
   }
-  .org-table-container {
-    padding: 0 8px 8px 8px;
-    border-bottom-left-radius: 14px; /* was 10px */
-    border-bottom-right-radius: 14px; /* was 10px */
-  }
-  .org-table th,
-  .org-table td {
-    font-size: 12px;
-    padding: 8px 4px;
-  }
+}
+
+@media (max-width: 1200px) {
 }
 
 @media (max-width: 900px) {
-  .org-table-outer {
-    margin: 4px;
-    max-width: 100%;
-  }
-  .org-table-card {
-    border-radius: 10px; /* was 6px */
-  }
-  .org-table-search-bar {
-    padding: 8px 4px 8px 4px;
-    border-top-left-radius: 10px; /* was 6px */
-    border-top-right-radius: 10px; /* was 6px */
-  }
-  .org-table-container {
-    padding: 0 4px 4px 4px;
-    border-bottom-left-radius: 10px; /* was 6px */
-    border-bottom-right-radius: 10px; /* was 6px */
-  }
-  .org-table th,
-  .org-table td {
-    font-size: 11px;
-    padding: 6px 2px;
-  }
-  .org-search {
-    font-size: 11px;
-    padding: 6px 10px 6px 28px;
-    max-width: 180px;
-    border-radius: 8px;
-  }
+}
+
+@media (max-width: 600px) {
 }
 
 /* --- Sort button and icon --- */
@@ -1407,17 +997,5 @@ export default {
 .org-th-sort-btn:hover .org-th-sort,
 .org-th-sort-btn:focus .org-th-sort {
   opacity: 1;
-}
-.org-th-content {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #888;
-}
-
-.org-table th.rounded-th-left {
-  padding-left: 32px !important;
 }
 </style>

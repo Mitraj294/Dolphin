@@ -1,9 +1,9 @@
 <template>
   <MainLayout>
     <div class="page">
-      <div class="org-table-outer">
-        <div class="org-table-card">
-          <div class="org-table-search-bar">
+      <div class="table-outer">
+        <div class="table-card">
+          <div class="table-search-bar">
             <input
               class="org-search"
               placeholder="Search Member..."
@@ -11,8 +11,8 @@
               @input="onSearch"
             />
           </div>
-          <div class="org-table-container">
-            <table class="org-table">
+          <div class="table-container">
+            <table class="table">
               <TableHeader
                 :columns="[
                   { label: 'Name', key: 'name' },
@@ -28,11 +28,11 @@
                   v-for="(member, idx) in paginatedMembers"
                   :key="member.id"
                 >
-                  <td class="org-td-content">{{ member.name }}</td>
-                  <td class="org-td-content">{{ member.email }}</td>
-                  <td class="org-td-content">{{ member.phone }}</td>
-                  <td class="org-td-content">{{ member.role }}</td>
-                  <td class="org-td-content">
+                  <td>{{ member.name }}</td>
+                  <td>{{ member.email }}</td>
+                  <td>{{ member.phone }}</td>
+                  <td>{{ member.role }}</td>
+                  <td>
                     <button
                       class="btn-view"
                       @click="viewMember(member)"
@@ -256,36 +256,6 @@ export default {
 </script>
 
 <style scoped>
-/* Use org-table styles for full consistency */
-.org-table-outer {
-  width: 100%;
-  max-width: 1400px;
-  margin: 64px auto 64px auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-sizing: border-box;
-}
-.org-table-card {
-  width: 100%;
-  background: #fff;
-  border-radius: 24px;
-  border: 1px solid #ebebeb;
-  box-shadow: 0 2px 16px 0 rgba(33, 150, 243, 0.04);
-  overflow: visible;
-  margin: 0 auto;
-  box-sizing: border-box;
-}
-.org-table-search-bar {
-  padding: 18px 46px 18px 24px;
-  background: #fff;
-  border-top-left-radius: 24px;
-  border-top-right-radius: 24px;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-start;
-}
 .org-search {
   width: 260px;
   padding: 8px 24px 8px 32px;
@@ -304,173 +274,15 @@ export default {
 .org-search::placeholder {
   margin-left: 4px;
 }
-.org-table-container {
-  width: 100%;
-  overflow-x: auto;
-  box-sizing: border-box;
-  padding: 0 24px 24px 24px;
-  background: #fff;
-  border-bottom-left-radius: 24px;
-  border-bottom-right-radius: 24px;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-.org-table-container::-webkit-scrollbar {
-  display: none;
-}
-.org-table {
-  min-width: 800px;
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  margin-bottom: 8px;
-  background: transparent;
-  margin-left: 0;
-  margin-right: 0;
-  table-layout: auto;
-  border: none;
-  margin-top: 0;
-}
-.org-table th,
-.org-table td {
-  padding: 18px 12px;
-  text-align: left;
-  font-size: 15px;
-  border-bottom: 1.5px solid #f0f0f0;
-  background: #fff;
-  font-family: 'Inter', Arial, sans-serif;
-  font-weight: 400;
-  line-height: 22px;
-}
-.org-table th {
-  background: #f8f8f8;
-  font-weight: 600;
-  color: #888;
-  position: relative;
-  vertical-align: middle;
-  min-width: 100px;
-  border-bottom: 1.5px solid #ebebeb;
-}
-.rounded-th-left {
-  border-top-left-radius: 24px;
-  border-bottom-left-radius: 24px;
-  overflow: hidden;
-  background: #f8f8f8;
-}
-.rounded-th-right {
-  border-top-right-radius: 24px;
-  border-bottom-right-radius: 24px;
-  overflow: hidden;
-  background: #f8f8f8;
-}
-.org-td-content,
-.org-table th,
-.org-th-content,
-.org-table td {
-  font-family: 'Inter', Arial, sans-serif;
-  font-weight: 400;
-  font-size: 13px;
-  line-height: 18px;
-  letter-spacing: 0.01em;
-}
-.org-td-content {
-  color: #222;
-  padding-left: 0;
-  background: #fff;
-}
-.org-table td.org-td-content:first-child {
-  padding-left: 20px !important;
-}
-.btn-view {
-  background: #fff;
-  border: 1.5px solid #e0e0e0;
-  border-radius: 24px;
-  padding: 4px 12px;
-  font-size: 14px;
-  color: #222;
-  cursor: pointer;
-  transition: border 0.2s;
-  font-weight: 500;
-  gap: 4px;
-  display: flex;
-  align-items: center;
-}
-.btn-view:hover {
-  border: 1.5px solid #0074c2;
-}
-.btn-view-icon {
-  width: 18px;
-  height: 18px;
-  margin-right: 6px;
-  vertical-align: middle;
-}
-.no-data {
-  text-align: center;
-  color: #888;
-  font-size: 16px;
-  padding: 32px 0;
-}
 @media (max-width: 1400px) {
-  .org-table-outer {
-    margin: 12px;
-    max-width: 100%;
-  }
-  .org-table-card {
-    border-radius: 14px;
-  }
-  .org-table-search-bar {
-    padding: 8px 8px 8px 8px;
-    border-top-left-radius: 14px;
-    border-top-right-radius: 14px;
-  }
   .org-search {
     font-size: 13px;
     padding: 8px 16px 8px 32px;
     max-width: 320px;
     border-radius: 12px;
   }
-  .org-table-container {
-    padding: 0 8px 8px 8px;
-    border-bottom-left-radius: 14px;
-    border-bottom-right-radius: 14px;
-  }
-  .org-table th,
-  .org-table td {
-    font-size: 12px;
-    padding: 8px 4px;
-  }
-  .rounded-th-left {
-    border-top-left-radius: 14px;
-    border-bottom-left-radius: 14px;
-  }
-  .rounded-th-right {
-    border-top-right-radius: 14px;
-    border-bottom-right-radius: 14px;
-  }
 }
 @media (max-width: 900px) {
-  .org-table-outer {
-    margin: 4px;
-    max-width: 100%;
-  }
-  .org-table-card {
-    border-radius: 10px;
-  }
-  .org-table-search-bar {
-    padding: 8px 4px 8px 4px;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-  }
-  .org-table-container {
-    padding: 0 4px 4px 4px;
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
-  }
-  .org-table th,
-  .org-table td {
-    font-size: 11px;
-    padding: 6px 2px;
-  }
   .org-search {
     font-size: 11px;
     padding: 6px 10px 6px 28px;

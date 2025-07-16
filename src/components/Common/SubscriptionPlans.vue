@@ -16,6 +16,20 @@
             </div>
             <div class="subscription-plans-options">
               <div class="plan-card">
+                <div class="plan-card-header">
+                  <span class="plan-card-name">Basic</span>
+                </div>
+                <div class="plan-card-price">
+                  $250 <span class="plan-card-period">/month</span>
+                </div>
+                <button
+                  class="btn btn-primary"
+                  @click="$router.push({ name: 'BillingDetails' })"
+                >
+                  Current Plan
+                </button>
+              </div>
+              <div class="plan-card">
                 <span class="plan-card-badge">Save 2 Months</span>
                 <div class="plan-card-header">
                   <span class="plan-card-name">Standard</span>
@@ -29,15 +43,6 @@
                 >
                   Get Started
                 </button>
-              </div>
-              <div class="plan-card">
-                <div class="plan-card-header">
-                  <span class="plan-card-name">Basic</span>
-                </div>
-                <div class="plan-card-price">
-                  $250 <span class="plan-card-period">/month</span>
-                </div>
-                <button class="btn btn-primary t">Current Plan</button>
               </div>
             </div>
             <div class="subscription-plans-footer">
@@ -338,7 +343,7 @@ export default {
 .plan-card {
   background: #fff;
   border-radius: 12px;
-  border: 1.5px solid #e3eaf3; /* light border by default */
+  border: 2.5px solid #e3eaf3; /* set border thickness to match hover */
   min-width: 260px;
   min-height: 260px;
   width: 260px;
@@ -355,9 +360,8 @@ export default {
 }
 .plan-card:hover,
 .plan-card:focus-within {
-  border: 2.5px solid #0074c2;
+  border-color: #0074c2; /* only change color, not thickness */
   background: #f5faff;
-
   z-index: 2;
 }
 .plan-card-header {
@@ -374,7 +378,7 @@ export default {
   font-size: 1.6rem; /* increased size */
   font-weight: 600; /* bolder */
   color: #222;
-  margin-top: 18px;
+  margin-top: -18px; /* move label up into purple space */
   margin-bottom: 0;
   z-index: 2;
 }
@@ -538,29 +542,95 @@ export default {
 @media (max-width: 900px) {
   .purchase-modal-content {
     flex-direction: column;
-    padding: 18px 2vw 18px 2vw;
+    padding: 0;
     align-items: stretch;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  .purchase-modal-left,
+  .purchase-modal-right {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    margin: 0;
+    border-radius: 12px;
+    padding: 16px 12px 0 12px;
+    box-sizing: border-box;
+    display: block;
+  }
+  .purchase-modal-right {
+    padding: 8px 12px 12px 12px;
+  }
+}
+@media (max-width: 600px) {
+  .purchase-modal {
+    width: 95vw;
+    max-width: 420px;
+    min-width: 0;
+    margin: 0 auto;
+    border-radius: 12px;
+    box-sizing: border-box;
+    max-height: 98vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0;
+  }
+  .purchase-modal-content {
+    flex-direction: column;
+    padding: 0 0 8px 0;
+    align-items: stretch;
+    gap: 0;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
   }
   .purchase-modal-left,
   .purchase-modal-right {
     max-width: 100%;
     min-width: 0;
-    margin: 0 0 18px 0;
-    border-radius: 14px;
-    padding: 18px 8px;
-  }
-  .purchase-modal-right {
-    padding: 18px 8px;
-  }
-}
-@media (max-width: 600px) {
-  .purchase-modal-content {
-    padding: 8px 2vw 8px 2vw;
-  }
-  .purchase-modal-left,
-  .purchase-modal-right {
-    padding: 12px 2vw;
+    margin: 0;
     border-radius: 10px;
+    padding: 16px 12px 0 12px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .purchase-modal-right {
+    padding: 8px 12px 12px 12px;
+  }
+  .purchase-modal-form .input-group,
+  .purchase-modal-form .input-row {
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+  .purchase-modal-form input,
+  .purchase-modal-form select {
+    width: 100%;
+    font-size: 1rem;
+  }
+  .payment-method-row {
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+  .plan-info-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .plan-info-summary,
+  .plan-info-benefits,
+  .plan-info-note {
+    width: 100%;
+  }
+  .promo-input,
+  .btn.btn-primary,
+  .confirm-btn {
+    width: 100%;
+    box-sizing: border-box;
   }
 }
 .purchase-modal-title,

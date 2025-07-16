@@ -50,19 +50,30 @@
               <div class="schedule-demo-field schedule-demo-schedule-field">
                 <FormLabel>Schedule</FormLabel>
                 <div class="schedule-demo-schedule-inputs">
-                  <FormInput
-                    v-model="date"
-                    type="date"
-                    placeholder="MM/DD/YYYY"
-                  />
-                  <FormInput
-                    v-model="time"
-                    type="time"
-                    placeholder="00:00"
-                  />
+                  <div class="form-box">
+                    <div class="form-input-noicon-wrap">
+                      <FormInput
+                        v-model="date"
+                        type="date"
+                        placeholder="MM/DD/YYYY"
+                        class="form-input"
+                      />
+                    </div>
+                  </div>
+                  <div class="form-box">
+                    <div class="form-input-noicon-wrap">
+                      <FormInput
+                        v-model="time"
+                        type="time"
+                        placeholder="00:00"
+                        class="form-input"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             </FormRow>
+            <!-- Button moved outside FormRow for proper right alignment -->
             <div class="schedule-demo-actions">
               <button
                 type="submit"
@@ -180,15 +191,30 @@ export default {
   outline: none;
   transition: border 0.2s;
 }
+/* Schedule input wrappers to match class training style */
 .schedule-demo-schedule-inputs {
   display: flex;
-  gap: 18px;
+  gap: 8px;
   width: 100%;
 }
-.schedule-demo-schedule-inputs input[type='date'],
-.schedule-demo-schedule-inputs input[type='time'] {
+.schedule-demo-schedule-inputs .form-box {
   flex: 1 1 0;
   min-width: 0;
+  background: #f6f6f6;
+  border-radius: 9px;
+
+  height: 48px;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  position: relative;
+}
+.schedule-demo-schedule-inputs .form-input-noicon-wrap {
+  width: 100%;
+}
+.schedule-demo-schedule-inputs input.form-input[type='date'],
+.schedule-demo-schedule-inputs input.form-input[type='time'] {
+  width: 100%;
   background: #fafafa;
   border: 1.5px solid #e0e0e0;
   border-radius: 8px;
@@ -199,8 +225,8 @@ export default {
   transition: border 0.2s;
   box-sizing: border-box;
 }
-.schedule-demo-schedule-inputs input[type='date']::placeholder,
-.schedule-demo-schedule-inputs input[type='time']::placeholder {
+.schedule-demo-schedule-inputs input.form-input[type='date']::placeholder,
+.schedule-demo-schedule-inputs input.form-input[type='time']::placeholder {
   color: #888;
   opacity: 1;
 }
@@ -237,6 +263,29 @@ export default {
   .schedule-demo-row {
     flex-direction: column !important;
     gap: 12px;
+  }
+  .schedule-demo-schedule-inputs {
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+  .schedule-demo-schedule-inputs .form-box {
+    height: auto;
+    min-width: 0;
+    width: 100%;
+    padding: 0 4px;
+    border-radius: 7px;
+    font-size: 15px;
+    box-sizing: border-box;
+  }
+  .schedule-demo-schedule-inputs input.form-input[type='date'],
+  .schedule-demo-schedule-inputs input.form-input[type='time'] {
+    width: 100%;
+    min-width: 0;
+    padding: 8px 8px 8px 36px;
+    font-size: 15px;
+    border-radius: 7px;
+    box-sizing: border-box;
   }
 }
 </style>

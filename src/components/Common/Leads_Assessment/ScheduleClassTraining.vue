@@ -62,6 +62,7 @@
               </div>
             </div>
           </FormRow>
+          <!-- Button moved outside FormRow for proper right alignment -->
           <div class="schedule-demo-actions">
             <button
               type="submit"
@@ -179,7 +180,7 @@ export default {
 }
 .schedule-demo-schedule-inputs {
   display: flex;
-  gap: 18px;
+  gap: 8px;
   width: 100%;
 }
 .schedule-demo-schedule-inputs .form-box {
@@ -210,6 +211,13 @@ export default {
   transition: border 0.2s;
   box-sizing: border-box;
 }
+/* Match Schedule Demo button alignment and spacing */
+.schedule-demo-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+
 @media (max-width: 1400px) {
   .schedule-demo-outer {
     margin: 12px;

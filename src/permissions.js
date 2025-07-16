@@ -26,6 +26,7 @@ export const PERMISSIONS = {
       '/assessments/:assessmentId/summary',
       '/user-permission',
       '/subscriptions/plans',
+      '/organizations/billing-details',
       '/profile',
     ],
 
@@ -43,6 +44,7 @@ export const PERMISSIONS = {
       '/assessments/:assessmentId/summary',
       '/get-notification',
       '/subscriptions/plans',
+      '/organizations/billing-details',
       '/profile',
     ],
     
@@ -56,6 +58,7 @@ export const PERMISSIONS = {
       '/assessments/:assessmentId/summary',
       '/get-notification',
       '/subscriptions/plans',
+      '/organizations/billing-details',
       '/profile',
     ],
 
@@ -73,6 +76,7 @@ export const PERMISSIONS = {
       '/assessments/:assessmentId/summary',
       '/get-notification',
       '/subscriptions/plans',
+      '/organizations/billing-details',
       '/profile',
     ],
 
@@ -86,6 +90,7 @@ export const PERMISSIONS = {
       '/assessments/:assessmentId/summary',
       '/get-notification',
       '/subscriptions/plans',
+      '/organizations/billing-details',
       '/profile',
     ],
 

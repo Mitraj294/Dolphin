@@ -24,8 +24,8 @@
         </button>
       </div>
     </div>
-    <div class="assessments-table-container">
-      <table class="assessments-table">
+    <div class="table-container">
+      <table class="table">
         <thead>
           <tr>
             <th>Assessments</th>
@@ -208,44 +208,6 @@ export default {
   background: #e6f0fa;
 }
 
-.assessments-table-container {
-  padding: 0 24px 24px 24px;
-  margin-top: 0; /* Remove top margin */
-  background: #fff;
-  border-bottom-left-radius: 24px;
-  border-bottom-right-radius: 24px;
-  box-sizing: border-box;
-}
-.assessments-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  background: transparent;
-}
-.assessments-table th {
-  background: #f5f5f5;
-  color: #888;
-  font-weight: 600;
-  font-size: 16px;
-  padding: 18px 12px;
-  text-align: left;
-  border-bottom: 1.5px solid #eee;
-  border-top: none;
-}
-.assessments-table th:first-child {
-  border-top-left-radius: 99px;
-  border-bottom-left-radius: 99px;
-}
-.assessments-table th:last-child {
-  border-top-right-radius: 99px;
-  border-bottom-right-radius: 99px;
-}
-.assessments-table td {
-  background: #fff;
-  font-size: 16px;
-  padding: 22px 12px;
-  border-bottom: 1px solid #f0f0f0;
-}
 .assessment-name-cell {
   text-align: left;
 }
@@ -427,11 +389,6 @@ export default {
     border-top-left-radius: 14px;
     border-top-right-radius: 14px;
   }
-  .assessments-table-container {
-    padding: 0 8px 8px 8px;
-    border-bottom-left-radius: 14px;
-    border-bottom-right-radius: 14px;
-  }
 }
 @media (max-width: 900px) {
   .assessments-card {
@@ -442,11 +399,6 @@ export default {
     padding: 8px 4px 0 4px;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
-  }
-  .assessments-table-container {
-    padding: 0 4px 4px 4px;
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
   }
 }
 @media (max-width: 600px) {

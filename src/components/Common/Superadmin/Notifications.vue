@@ -1,9 +1,9 @@
 <template>
   <MainLayout>
     <div class="page">
-      <div class="notifications-table-outer">
-        <div class="notifications-table-card">
-          <div class="notifications-table-header-bar">
+      <div class="table-outer">
+        <div class="table-card">
+          <div class="table-header-bar">
             <button
               class="btn btn-primary"
               @click="showSendModal = true"
@@ -11,13 +11,13 @@
               <img
                 src="@/assets/images/SendNotification.svg"
                 alt="Send"
-                class="user-permission-add-btn-icon"
+                class="notifications-add-btn-icon"
               />
               Send Notification
             </button>
           </div>
-          <div class="notifications-table-container">
-            <table class="notifications-table">
+          <div class="table-container">
+            <table class="table">
               <TableHeader
                 :columns="[
                   { label: 'Notification Title', key: 'title' },
@@ -81,12 +81,12 @@
             </button>
             <div class="modal-title">Send Notifications</div>
             <div class="modal-desc">
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry.
+              Send a notification to selected organizations, admins, or groups.
+              You can also schedule it for later.
             </div>
             <textarea
               class="modal-textarea"
-              placeholder="Type here"
+              placeholder="Type your notification here..."
             ></textarea>
             <div class="modal-row">
               <div class="modal-field">
@@ -261,143 +261,15 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 @import '@/assets/global.css';
-/* --- Layout and spacing to match Leads/OrganizationTable --- */
-.notifications-table-outer {
-  width: 100%;
-  max-width: 1400px;
-  margin: 64px auto 64px auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-sizing: border-box;
-  padding: 0 16px;
-}
-.notifications-table-card {
-  width: 100%;
-  background: #fff;
-  border-radius: 24px;
-  border: 1px solid #ebebeb;
-  box-shadow: 0 2px 16px 0 rgba(33, 150, 243, 0.04);
-  overflow: visible;
-  margin: 0 auto;
-  box-sizing: border-box;
-}
-.notifications-table-header-bar {
-  padding: 24px 24px 24px 24px;
-  background: #fff;
-  border-top-left-radius: 24px;
-  border-top-right-radius: 24px;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-end;
-}
-@media (max-width: 1400px) {
-  .notifications-table-header-bar {
-    padding: 12px 8px 12px 8px;
-    border-top-left-radius: 14px;
-    border-top-right-radius: 14px;
-  }
-}
-@media (max-width: 900px) {
-  .notifications-table-header-bar {
-    padding: 12px 8px 12px 8px;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-  }
-}
-.notifications-table-container {
-  width: 100%;
-  overflow-x: auto;
-  box-sizing: border-box;
-  padding: 0 24px 24px 24px;
-  background: #fff;
-  border-bottom-left-radius: 24px;
-  border-bottom-right-radius: 24px;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-.notifications-table-container::-webkit-scrollbar {
-  display: none;
-}
-.notifications-table {
-  min-width: 800px;
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  margin-bottom: 8px;
-  background: transparent;
-  margin-left: 0;
-  margin-right: 0;
-  table-layout: auto;
-  border: none;
-  margin-top: 0;
-}
-.notifications-table th,
-.notifications-table td {
-  padding: 18px 12px;
-  text-align: left;
-  font-size: 15px;
-  border-bottom: 1.5px solid #f0f0f0;
-  background: #fff;
-  font-family: 'Inter', Arial, sans-serif;
-  font-weight: 400;
-  line-height: 22px;
-}
-.notifications-table th {
-  background: #f8f8f8;
-  font-weight: 600;
-  color: #888;
-  position: relative;
-  vertical-align: middle;
-  min-width: 100px;
-  border-bottom: 1.5px solid #ebebeb;
-}
-.notifications-table th.rounded-th-left {
-  border-top-left-radius: 24px;
-  border-bottom-left-radius: 24px;
-  overflow: hidden;
-  background: #f8f8f8;
-  padding-left: 20px !important;
-}
-.notifications-table td:first-child {
-  padding-left: 20px !important;
-}
-.notifications-table th.rounded-th-right {
-  border-top-right-radius: 24px;
-  border-bottom-right-radius: 24px;
-  overflow: hidden;
-  background: #f8f8f8;
-}
-.notifications-table td {
-  color: #222;
-  background: #fff;
-}
+</style>
+<style scoped>
 .no-data {
   text-align: center;
   color: #888;
   font-size: 16px;
   padding: 32px 0;
-}
-
-.page {
-  padding: 0 32px 32px 32px;
-  display: flex;
-  background-color: #fff;
-  justify-content: center;
-  box-sizing: border-box;
-}
-@media (max-width: 1400px) {
-  .page {
-    padding: 16px;
-  }
-}
-@media (max-width: 900px) {
-  .page {
-    padding: 4px;
-  }
 }
 
 .notifications-add-btn-icon {
@@ -503,22 +375,7 @@ export default {
   display: flex;
   gap: 8px;
 }
-.btn.btn-primary {
-  border-radius: 22px;
-  background: #0164a5;
-  color: #fff;
-  font-size: 17px;
-  font-weight: 500;
-  padding: 10px 32px;
-  border: none;
-  cursor: pointer;
-  transition: background 0.2s;
 
-  align-self: flex-end;
-}
-.btn.btn-primary:hover {
-  background: #005fa3;
-}
 .schedule-demo-field {
   flex: 1 1 0;
   min-width: 0;
@@ -585,11 +442,23 @@ export default {
     max-width: 98vw;
   }
 }
-.user-permission-add-btn-icon {
-  width: 18px;
-  height: 18px;
-  margin-right: 6px;
-  display: inline-block;
-  vertical-align: middle;
+.page {
+  padding: 0 32px 32px 32px;
+  display: flex;
+  background-color: #fff;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1400px) {
+  .page {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 900px) {
+  .page {
+    padding: 4px;
+  }
 }
 </style>

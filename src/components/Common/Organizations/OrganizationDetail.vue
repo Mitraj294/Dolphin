@@ -163,32 +163,32 @@ export default {
 <style scoped>
 .org-detail-outer {
   width: 100%;
-  max-width: 1400px;
+  max-width: 1200px;
   min-width: 0;
-  margin: 64px auto 64px auto;
+  margin: 48px auto 48px auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   box-sizing: border-box;
   background: none !important;
-  padding: 0;
+  padding: 0 8px;
 }
 
 .org-detail-main-card {
   width: 100%;
-  max-width: 1400px;
+  max-width: 1200px;
   min-width: 0;
   background: #fff;
-  border-radius: 24px;
+  border-radius: 20px;
   border: 1px solid #ebebeb;
   box-sizing: border-box;
   overflow: visible;
   box-shadow: 0 2px 16px 0 rgba(33, 150, 243, 0.04);
   margin: 0 auto;
-  padding: 32px 32px 24px 32px;
+  padding: 24px 20px 20px 20px;
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 24px;
   position: relative;
 }
 
@@ -204,20 +204,23 @@ export default {
 .org-detail-main-cols {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 20px;
   width: 100%;
   justify-content: center;
   align-items: stretch;
   margin-bottom: 0;
+  padding-left: 16px;
+  padding-right: 16px;
+  box-sizing: border-box;
 }
 .org-detail-main-cols-group {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 32px;
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
   width: 100%;
+  align-items: stretch;
 }
 .org-detail-main-cols-group--row {
-  /* No need for flex-direction, handled by grid */
   margin-top: 0;
   margin-bottom: 0;
 }
@@ -230,6 +233,7 @@ export default {
   flex-direction: column;
   box-sizing: border-box;
   margin: 0;
+  height: 100%;
 }
 
 .org-detail-section-title {
@@ -244,20 +248,21 @@ export default {
 }
 
 .org-detail-list-card--box {
-  border-radius: 20px;
+  border-radius: 16px;
   background: #f8f8f8;
-  padding: 24px 32px; /* Reduced padding for tighter look */
+  padding: 18px 24px;
   display: flex;
   flex-direction: column;
-  gap: 10px; /* Slightly less gap between rows */
-  font-size: 18px;
-  margin: 10px;
+  gap: 8px;
+  font-size: 17px;
+  margin: 0;
   box-sizing: border-box;
   width: 100%;
   min-width: 0;
   max-width: 100%;
-  min-height: 270px;
+  min-height: 180px;
   justify-content: flex-start;
+  height: 100%;
 }
 
 .org-detail-list-row {
@@ -488,30 +493,24 @@ export default {
   .org-detail-outer {
     margin: 12px;
     max-width: 100%;
+    padding: 0 4px;
   }
   .org-detail-main-card {
     max-width: 100%;
     border-radius: 14px;
-    padding: 18px 8px 12px 8px;
+    padding: 12px 4px 8px 4px;
   }
   .org-detail-main-cols {
-    gap: 32px; /* Also increase gap for tablet */
+    gap: 12px;
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+  .org-detail-list-card--box {
+    padding: 12px 10px;
   }
   .org-detail-main-cols-group {
-    grid-template-columns: 1fr;
-    gap: 18px;
-  }
-  .org-detail-main-cols-group--row {
-    margin-bottom: 18px;
-  }
-  .org-detail-box--half.org-detail-box-flex,
-  .org-detail-box--half.org-detail-box-algo.org-detail-box-flex {
     flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-    width: 100%;
-    margin-bottom: 12px;
-    padding-bottom: 8px;
+    gap: 12px;
   }
 }
 
@@ -519,53 +518,31 @@ export default {
   .org-detail-outer {
     margin: 4px;
     max-width: 100%;
+    padding: 0 2px;
   }
   .org-detail-main-card {
-    padding: 8px 2vw 8px 2vw;
-    border-radius: 10px;
+    padding: 4px 0 4px 0;
+    border-radius: 8px;
   }
   .org-detail-main-cols {
-    flex-direction: column;
-    gap: 0; /* No gap needed for stacked layout */
+    gap: 6px;
+    padding-left: 2px;
+    padding-right: 2px;
   }
   .org-detail-main-cols-group {
     flex-direction: column;
-    gap: 0;
-    width: 100%;
-    margin-bottom: 18px;
+    gap: 6px;
   }
-  .org-detail-main-cols-group--row {
-    flex-direction: column;
-    gap: 0;
-    width: 100%;
-    margin-bottom: 18px;
+  .org-detail-col {
+    padding-left: 12px;
+    padding-right: 12px;
+    box-sizing: border-box;
   }
-  .org-detail-box--half.org-detail-box-flex,
-  .org-detail-box--half.org-detail-box-algo.org-detail-box-flex {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-    width: 100%;
-    margin-bottom: 12px;
-    padding-bottom: 8px;
-  }
-  .org-detail_box {
-    padding: 12px 8px;
-    margin-bottom: 12px;
-  }
-  .org-detail-box-action,
-  .org-detail-box-action-algo {
-    justify-content: flex-start;
-    min-width: 0;
-    margin-top: 8px;
-  }
-  .org-detail-box-label {
-    font-size: 14px;
-    margin-bottom: 2px;
-  }
-  .org-detail-box-value {
+  .org-detail-list-card--box {
+    padding: 8px 8px;
+    border-radius: 8px;
     font-size: 15px;
-    margin-bottom: 10px;
+    min-height: 120px;
   }
 }
 </style>

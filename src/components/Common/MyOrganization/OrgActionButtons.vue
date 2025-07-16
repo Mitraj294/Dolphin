@@ -1,5 +1,5 @@
 <template>
-  <div class="my-org-table-header">
+  <div class="table-header-bar">
     <div class="my-org-action-buttons">
       <button
         class="my-org-secondary"
@@ -248,16 +248,6 @@ export default {
 </script>
 
 <style scoped>
-.my-org-table-header {
-  padding: 24px 24px 24px 24px;
-  background: #fff;
-  border-top-left-radius: 24px;
-  border-top-right-radius: 24px;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: flex-end;
-}
 .my-org-action-buttons {
   display: flex;
   gap: 12px;

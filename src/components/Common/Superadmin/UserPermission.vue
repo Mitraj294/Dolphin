@@ -1,9 +1,9 @@
 <template>
   <MainLayout>
     <div class="page">
-      <div class="user-permission-table-outer">
-        <div class="user-permission-table-card">
-          <div class="user-permission-table-header-bar">
+      <div class="table-outer">
+        <div class="table-card">
+          <div class="table-header-bar">
             <button class="btn btn-primary">
               <img
                 src="@/assets/images/Add.svg"
@@ -13,8 +13,8 @@
               Add New
             </button>
           </div>
-          <div class="user-permission-table-container">
-            <table class="user-permission-table">
+          <div class="table-container">
+            <table class="table">
               <TableHeader
                 :columns="[
                   { label: 'Name', key: 'name' },
@@ -32,33 +32,35 @@
                   <td>{{ user.name }}</td>
                   <td>{{ user.email }}</td>
                   <td>{{ user.role }}</td>
-                  <td class="actions">
-                    <button
-                      class="icon-btn"
-                      title="Edit"
-                    >
-                      <img
-                        src="@/assets/images/EditBlack.svg"
-                        alt="Edit"
-                      />
-                    </button>
-                    <button
-                      class="icon-btn"
-                      title="Delete"
-                    >
-                      <img
-                        src="@/assets/images/Delete icon.svg"
-                        alt="Delete"
-                      />
-                    </button>
-                    <button class="impersonate-btn">
-                      <img
-                        src="@/assets/images/Impersonate.svg"
-                        alt="Impersonate"
-                        class="impersonate-icon"
-                      />
-                      Impersonate
-                    </button>
+                  <td class="actions actions-scroll">
+                    <div class="actions-row">
+                      <button
+                        class="icon-btn"
+                        title="Edit"
+                      >
+                        <img
+                          src="@/assets/images/EditBlack.svg"
+                          alt="Edit"
+                        />
+                      </button>
+                      <button
+                        class="icon-btn"
+                        title="Delete"
+                      >
+                        <img
+                          src="@/assets/images/Delete icon.svg"
+                          alt="Delete"
+                        />
+                      </button>
+                      <button class="btn-view">
+                        <img
+                          src="@/assets/images/Impersonate.svg"
+                          alt="Impersonate"
+                          class="btn-view-icon"
+                        />
+                        Impersonate
+                      </button>
+                    </div>
                   </td>
                 </tr>
               </tbody>
@@ -159,240 +161,64 @@ export default {
 </script>
 
 <style scoped>
-/* --- Layout and spacing to match Leads.vue/OrganizationTable.vue --- */
-.user-permission-table-outer {
-  width: 100%;
-  max-width: 1400px;
-  margin: 64px auto 64px auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-sizing: border-box;
+.actions-scroll {
+  max-width: 220px;
+  overflow-x: auto;
 }
-.user-permission-table-card {
-  width: 100%;
-  background: #fff;
-  border-radius: 24px;
-  border: 1px solid #ebebeb;
-  box-shadow: 0 2px 16px 0 rgba(33, 150, 243, 0.04);
-  overflow: visible;
-  margin: 0 auto;
-  box-sizing: border-box;
-  min-width: 0;
-  max-width: 1400px;
-}
-.user-permission-table-header-bar {
-  padding: 24px 24px 24px 24px;
-  background: #fff;
-  border-top-left-radius: 24px;
-  border-top-right-radius: 24px;
+.actions-row {
   display: flex;
   flex-direction: row;
-  align-items: center;
-  justify-content: flex-end;
-}
-@media (max-width: 1400px) {
-  .user-permission-table-header-bar {
-    padding: 12px 8px 12px 8px;
-    border-top-left-radius: 14px;
-    border-top-right-radius: 14px;
-  }
-}
-@media (max-width: 900px) {
-  .user-permission-table-header-bar {
-    padding: 12px 8px 12px 8px;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-  }
-}
-.user-permission-table-container {
-  width: 100%;
-  overflow-x: auto;
-  box-sizing: border-box;
-  padding: 0 24px 24px 24px;
-  background: #fff;
-  border-bottom-left-radius: 24px;
-  border-bottom-right-radius: 24px;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-.user-permission-table-container::-webkit-scrollbar {
-  display: none;
-}
-.user-permission-table {
-  min-width: 800px;
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  margin-bottom: 8px;
-  background: transparent;
-  margin-left: 0;
-  margin-right: 0;
-  table-layout: auto;
-  border: none;
-  margin-top: 0;
-}
-.user-permission-table th,
-.user-permission-table td {
-  padding: 18px 12px;
-  text-align: left;
-  font-size: 15px;
-  border-bottom: 1.5px solid #f0f0f0;
-  background: #fff;
-  font-family: 'Inter', Arial, sans-serif;
-  font-weight: 400;
-  line-height: 22px;
-}
-.user-permission-table td:first-child {
-  padding-left: 20px !important;
-}
-.user-permission-table th {
-  background: #f8f8f8;
-  font-weight: 600;
-  color: #888;
-  position: relative;
-  vertical-align: middle;
-  min-width: 100px;
-  border-bottom: 1.5px solid #ebebeb;
-}
-.rounded-th-left {
-  border-top-left-radius: 24px;
-  border-bottom-left-radius: 24px;
-  overflow: hidden;
-  background: #f8f8f8;
-}
-.rounded-th-right {
-  border-top-right-radius: 24px;
-  border-bottom-right-radius: 24px;
-  overflow: hidden;
-  background: #f8f8f8;
-}
-.actions {
-  display: flex;
-  align-items: center;
   gap: 8px;
+  min-width: 220px;
 }
 .icon-btn {
-  background: none;
-  border: none;
-  margin-right: 8px;
-  cursor: pointer;
-  padding: 4px;
-  border-radius: 6px;
-  transition: background 0.18s;
-  display: flex;
+  display: inline-flex;
   align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  margin: 0;
+  background: #fff;
+  border: none; /* Remove border */
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border 0.2s, box-shadow 0.2s;
 }
 .icon-btn img {
   width: 18px;
   height: 18px;
   display: block;
 }
-.icon-btn:hover,
-.icon-btn:focus {
-  background: #f0f0f0;
+.icon-btn:hover {
+  border: 1.5px solid #a1a1a1;
+  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.08);
 }
+
+/* Impersonate button style */
 .impersonate-btn {
-  background: #f5f5f5;
-  border: none;
-  border-radius: 999px;
-  padding: 10px 24px 10px 14px;
-  font-size: 1.08rem;
-  color: #222;
-  font-weight: 400;
-  cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
-  box-shadow: none;
-  transition: background 0.18s, color 0.18s, font-size 0.18s, padding 0.18s;
+  gap: 6px;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 0 12px;
+  height: 32px;
+  font-size: 14px;
+  color: #222;
+  cursor: pointer;
+  font-weight: 500;
+  transition: border 0.2s, box-shadow 0.2s;
 }
-.impersonate-btn:hover,
-.impersonate-btn:focus {
-  background: #e6f0fa;
-  color: #0164a5;
-  outline: none;
-}
-.impersonate-icon {
+.impersonate-btn img.impersonate-icon {
   width: 18px;
   height: 18px;
-  margin-right: 4px;
   display: block;
 }
-@media (max-width: 1400px) {
-  .user-permission-table-outer {
-    margin: 12px;
-    max-width: 100%;
-  }
-  .user-permission-table-card {
-    border-radius: 14px;
-    max-width: 100%;
-  }
-  .user-permission-table-header-bar {
-    padding: 12px 8px 12px 8px;
-    border-top-left-radius: 14px;
-    border-top-right-radius: 14px;
-  }
-  .user-permission-table-container {
-    padding: 0 8px 8px 8px;
-    border-bottom-left-radius: 14px;
-    border-bottom-right-radius: 14px;
-  }
-  .user-permission-table th,
-  .user-permission-table td {
-    font-size: 12px;
-    padding: 8px 4px;
-  }
-  .user-permission-table th {
-    height: 40px;
-    line-height: 40px;
-    padding: 0 4px;
-  }
-  .rounded-th-left {
-    border-top-left-radius: 14px;
-    border-bottom-left-radius: 14px;
-  }
-  .rounded-th-right {
-    border-top-right-radius: 14px;
-    border-bottom-right-radius: 14px;
-  }
-}
-@media (max-width: 900px) {
-  .user-permission-table-outer {
-    margin: 4px;
-    max-width: 100%;
-  }
-  .user-permission-table-card {
-    border-radius: 10px;
-  }
-  .user-permission-table-header-bar {
-    padding: 12px 8px 12px 8px;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-  }
-  .user-permission-table-container {
-    padding: 0 4px 4px 4px;
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
-  }
-  .user-permission-table th,
-  .user-permission-table td {
-    font-size: 11px;
-    padding: 6px 2px;
-  }
-  .user-permission-table th {
-    height: 36px;
-    line-height: 36px;
-    padding: 0 2px;
-  }
-  .rounded-th-left {
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
-  }
-  .rounded-th-right {
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
-  }
+.impersonate-btn:hover {
+  border: 1.5px solid #0074c2;
+  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.08);
 }
 
 .user-permission-add-btn-icon {
