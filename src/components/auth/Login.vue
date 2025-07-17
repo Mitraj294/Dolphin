@@ -103,54 +103,28 @@ export default {
     togglePassword() {
       this.showPassword = !this.showPassword;
     },
-    handleLogin() {
-      if (this.email === 'meet@gmail.com' && this.password === 'meet123') {
-        localStorage.setItem('role', 'superadmin');
-        localStorage.setItem('name', 'Meet');
-        localStorage.setItem('email', 'meet@gmail.com');
-        this.$router.push({ name: 'Dashboard' });
-        return;
+    async handleLogin() {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: this.email,
+            password: this.password,
+          }),
+        });
+        const data = await response.json();
+        if (response.ok) {
+          localStorage.setItem('role', data.user.role);
+          localStorage.setItem('name', data.user.name);
+          localStorage.setItem('email', data.user.email);
+          this.$router.push({ name: 'Dashboard' });
+        } else {
+          alert('Login failed: ' + (data.error || JSON.stringify(data)));
+        }
+      } catch (error) {
+        alert('Login error: ' + error);
       }
-
-      if (this.email === 'raj@gmail.com' && this.password === 'raj123') {
-        localStorage.setItem('role', 'organizationadmin');
-        localStorage.setItem('name', 'Raj');
-        localStorage.setItem('email', 'raj@gmail.com');
-        this.$router.push({ name: 'Dashboard' });
-        return;
-      }
-
-      if (this.email === 'harsh@gmail.com' && this.password === 'harsh123') {
-        localStorage.setItem('role', 'salesperson');
-        localStorage.setItem('name', 'Harsh');
-        localStorage.setItem('email', 'harsh@gmail.com');
-        this.$router.push({ name: 'Dashboard' });
-        return;
-      }
-
-      if (this.email === 'kirtan@gmail.com' && this.password === 'kirtan123') {
-        localStorage.setItem('role', 'Dolphinadmin');
-        localStorage.setItem('name', 'Kirtan');
-        localStorage.setItem('email', 'kirtan@gmail.com');
-        this.$router.push({ name: 'Dashboard' });
-        return;
-      }
-
-      if (this.email === 'niket@gmail.com' && this.password === 'niket123') {
-        localStorage.setItem('role', 'user');
-        localStorage.setItem('name', 'Niket');
-        localStorage.setItem('email', 'niket@gmail.com');
-        this.$router.push({ name: 'Dashboard' });
-        return;
-      }
-
-      let savedRole = localStorage.getItem('role') || 'user';
-      let savedName =
-        localStorage.getItem('name') || this.email.split('@')[0] || 'User';
-      localStorage.setItem('role', savedRole);
-      localStorage.setItem('name', savedName);
-      localStorage.setItem('email', this.email);
-      this.$router.push({ name: 'Dashboard' });
     },
   },
 };

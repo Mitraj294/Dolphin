@@ -1,8 +1,16 @@
 <template>
   <div class="login-bg">
     <!-- Background SVGs -->
-    <img src="@/assets/images/Lines.svg" alt="Lines" class="bg-lines" />
-    <img src="@/assets/images/Image.svg" alt="Illustration" class="bg-illustration" />
+    <img
+      src="@/assets/images/Lines.svg"
+      alt="Lines"
+      class="bg-lines"
+    />
+    <img
+      src="@/assets/images/Image.svg"
+      alt="Illustration"
+      class="bg-illustration"
+    />
     <!-- Register Card -->
     <div class="login-card">
       <h2 class="login-title">Create Account</h2>
@@ -12,13 +20,23 @@
           <span class="icon">
             <i class="fas fa-user"></i>
           </span>
-          <input type="text" v-model="name" placeholder="Name" required />
+          <input
+            type="text"
+            v-model="name"
+            placeholder="Name"
+            required
+          />
         </div>
         <div class="input-group email-group">
           <span class="icon">
             <i class="fas fa-envelope"></i>
           </span>
-          <input type="email" v-model="email" placeholder="Email ID" required />
+          <input
+            type="email"
+            v-model="email"
+            placeholder="Email ID"
+            required
+          />
         </div>
         <div class="input-group password-group">
           <span class="icon">
@@ -30,7 +48,10 @@
             placeholder="Password"
             required
           />
-          <span class="icon right" @click="togglePassword">
+          <span
+            class="icon right"
+            @click="togglePassword"
+          >
             <i :class="showPassword ? 'fas fa-eye' : 'fas fa-eye-slash'"></i>
           </span>
         </div>
@@ -44,18 +65,51 @@
             placeholder="Confirm Password"
             required
           />
-          <span class="icon right" @click="toggleConfirmPassword">
-            <i :class="showConfirmPassword ? 'fas fa-eye' : 'fas fa-eye-slash'"></i>
+          <span
+            class="icon right"
+            @click="toggleConfirmPassword"
+          >
+            <i
+              :class="showConfirmPassword ? 'fas fa-eye' : 'fas fa-eye-slash'"
+            ></i>
           </span>
         </div>
-        <button class="login-btn" type="submit">Register</button>
+        <div class="input-group role-group">
+          <span class="icon">
+            <i class="fas fa-user-tag"></i>
+          </span>
+          <select
+            v-model="role"
+            required
+          >
+            <option value="superadmin">Super Admin</option>
+            <option value="organizationadmin">Organization Admin</option>
+            <option value="salesperson">Salesperson</option>
+            <option value="dolphinadmin">Dolphin Admin</option>
+            <option value="user">User</option>
+          </select>
+        </div>
+        <button
+          class="login-btn"
+          type="submit"
+        >
+          Register
+        </button>
       </form>
       <div class="switch-auth">
         <span>Already registered?</span>
-        <router-link to="/" class="switch-link">Login</router-link>
+        <router-link
+          to="/"
+          class="switch-link"
+          >Login</router-link
+        >
       </div>
       <div class="footer">
-        <img src="@/assets/images/Logo.svg" alt="Dolphin Logo" class="footer-logo" />
+        <img
+          src="@/assets/images/Logo.svg"
+          alt="Dolphin Logo"
+          class="footer-logo"
+        />
         <div class="copyright">©2025 Dolphin | All Rights Reserved</div>
       </div>
     </div>
@@ -71,9 +125,10 @@ export default {
       email: '',
       password: '',
       confirmPassword: '',
+      role: 'user',
       showPassword: false,
-      showConfirmPassword: false
-    }
+      showConfirmPassword: false,
+    };
   },
   methods: {
     togglePassword() {
@@ -82,19 +137,38 @@ export default {
     toggleConfirmPassword() {
       this.showConfirmPassword = !this.showConfirmPassword;
     },
-    handleRegister() {
+    async handleRegister() {
       if (this.password !== this.confirmPassword) {
         alert('Passwords do not match!');
         return;
       }
-      // Mock: Registration logic (replace with real logic later)
-      localStorage.setItem('userName', this.name);
-      localStorage.setItem('userEmail', this.email);
-      localStorage.setItem('userRole', 'Super Admin'); // Change as needed
-      this.$router.push('/dashboard');
-    }
-  }
-}
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: this.name,
+            email: this.email,
+            password: this.password,
+            role: this.role,
+          }),
+        });
+        const data = await response.json();
+        if (response.ok) {
+          localStorage.setItem('userName', data.user.name);
+          localStorage.setItem('userEmail', data.user.email);
+          localStorage.setItem('userRole', data.user.role);
+          alert('Registration successful!');
+          this.$router.push('/dashboard');
+        } else {
+          alert('Registration failed: ' + JSON.stringify(data));
+        }
+      } catch (error) {
+        alert('Registration error: ' + error);
+      }
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -102,7 +176,7 @@ export default {
   min-height: 100vh;
   height: 100vh;
   width: 100vw;
-  background: #F4F9FF;
+  background: #f4f9ff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -141,7 +215,7 @@ export default {
 }
 
 .login-card {
-  background: #FFFFFF;
+  background: #ffffff;
   box-shadow: 8px 8px 8px 2px rgba(0, 0, 0, 0.1);
   border-radius: 30px;
   display: flex;
@@ -162,7 +236,7 @@ export default {
   font-size: 2rem;
   line-height: 2.5rem;
   letter-spacing: 0.02em;
-  color: #0F0F0F;
+  color: #0f0f0f;
   margin: 0 0 8px 0;
   text-align: center;
 }
@@ -189,7 +263,7 @@ form {
 .input-group {
   display: flex;
   align-items: center;
-  background: #F6F6F6;
+  background: #f6f6f6;
   border-radius: 9px;
   margin-bottom: 24px;
   padding: 0 18px;
@@ -230,7 +304,7 @@ form {
   width: 100%;
   max-width: 505px;
   height: 55px;
-  background: #0164A5;
+  background: #0164a5;
   color: #fff;
   border: none;
   border-radius: 27.68px;
@@ -245,7 +319,7 @@ form {
   transition: background 0.2s;
 }
 .login-btn:hover {
-  background: #1690D1;
+  background: #1690d1;
 }
 
 .switch-auth {
@@ -259,13 +333,13 @@ form {
   font-family: 'Helvetica Neue LT Std', Arial, sans-serif;
 }
 .switch-link {
-  color: #0164A5;
+  color: #0164a5;
   text-decoration: underline;
   cursor: pointer;
   font-weight: 500;
 }
 .switch-link:hover {
-  color: #1690D1;
+  color: #1690d1;
 }
 
 .footer {
@@ -280,7 +354,7 @@ form {
   object-fit: contain;
   margin-bottom: 10px;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
 }
 .copyright {
   color: #787878;
