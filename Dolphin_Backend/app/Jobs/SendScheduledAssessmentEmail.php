@@ -56,6 +56,12 @@ class SendScheduledAssessmentEmail implements ShouldQueue
                 $scheduled->sent_at = now();
                 $scheduled->save();
             }
+
+            // Older schema uses a boolean `sent` column. Set it if present so the UI reflects processed items.
+            if (Schema::hasColumn('scheduled_emails', 'sent')) {
+                $scheduled->sent = true;
+                $scheduled->save();
+            }
         } catch (\Exception $e) {
             Log::error('Failed to process scheduled email id=' . $scheduled->id . ' error=' . $e->getMessage());
         }
