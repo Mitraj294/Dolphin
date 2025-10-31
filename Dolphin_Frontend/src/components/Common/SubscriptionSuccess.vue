@@ -172,7 +172,7 @@ const isLoading = ref(false);
 const formatDate = (dateStr) => {
   if (!dateStr) return null;
   const d = new Date(dateStr);
-  return isNaN(d.getTime())
+  return Number.isNaN(d.getTime())
     ? dateStr
     : d.toLocaleDateString('en-US', {
         year: 'numeric',
@@ -183,8 +183,8 @@ const formatDate = (dateStr) => {
 
 const API_BASE_URL = computed(() => {
   return (
-    (typeof window !== 'undefined' &&
-      (window.__env?.VUE_APP_API_BASE_URL || window.VUE_APP_API_BASE_URL)) ||
+    (globalThis.window !== undefined &&
+      (globalThis.__env?.VUE_APP_API_BASE_URL || globalThis.VUE_APP_API_BASE_URL)) ||
     ''
   );
 });
@@ -202,8 +202,8 @@ const shouldShowPlanSummary = computed(
 const formattedAmount = computed(() => {
   const amount = subscription.value?.plan_amount || planAmount.value;
   if (!amount) return '';
-  const n = parseFloat(String(amount).replace(/,/g, ''));
-  if (!isFinite(n)) return amount;
+  const n = Number.parseFloat(String(amount).replaceAll(',', ''));
+  if (!Number.isFinite(n)) return amount;
   const amountStr = n % 1 === 0 ? n.toFixed(0) : n.toFixed(2);
   return `${amountStr}`;
 });
@@ -240,8 +240,8 @@ const planPeriodDisplay = computed(() => {
 
   const amount = subscription.value?.plan_amount || planAmount.value;
   if (amount) {
-    const n = parseFloat(String(amount).replace(/[,\s]/g, ''));
-    if (isFinite(n)) return n >= 1000 ? 'Annual' : 'Month';
+    const n = Number.parseFloat(String(amount).replaceAll(/[,\s]/g, ''));
+    if (Number.isFinite(n)) return n >= 1000 ? 'Annual' : 'Month';
   }
   return 'Month';
 });

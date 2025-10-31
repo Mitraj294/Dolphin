@@ -208,7 +208,7 @@ export default {
       if (!dt) return '—';
       try {
         const d = new Date(dt);
-        if (isNaN(d.getTime())) return dt;
+        if (Number.isNaN(d.getTime())) return dt;
         const day = d.getDate();
         const months = [
           'Jan',

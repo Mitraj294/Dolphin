@@ -387,12 +387,12 @@ export default {
     notificationsMap() {
       const map = new Map();
       try {
-        (this.notifications || []).forEach((n) => {
+        for (const n of (this.notifications || [])) {
           if (n && n.notifiable_id) map.set(Number(n.notifiable_id), n);
-        });
+        }
       } catch (err) {
         // Defensive: do not throw if the prop is malformed; return empty map instead
-        // eslint-disable-next-line no-console
+
         console.warn('notificationsMap parse error', err);
       }
       return map;
@@ -405,16 +405,16 @@ export default {
 
       const combined = [...orgs];
       const ids = new Set(orgs.map((o) => Number(o.id)));
-      admins.forEach((a) => {
+      for (const a of admins) {
         const aid = Number(a.id);
         if (!ids.has(aid)) combined.push(a);
-      });
+      }
 
-      combined.forEach((r) => {
+      for (const r of combined) {
         const rid = Number(r.id);
         const notif = this.notificationsMap.get(rid);
         r.read_at = notif ? notif.read_at : r.read_at || null;
-      });
+      }
 
       return combined;
     },
@@ -425,7 +425,7 @@ export default {
       const announcement = this.announcementEffective;
       if (!announcement) return [];
 
-      (announcement.organizations || []).forEach((org) => {
+      for (const org of (announcement.organizations || [])) {
         const userId = org.user_id ?? org.user?.id ?? null;
         const orgName = org.name ?? org.organization_name ?? '';
         const email = org.contact_email ?? org.admin_email ?? null;
@@ -445,7 +445,7 @@ export default {
             read_at: read_at,
           });
         }
-      });
+      }
 
       return Array.from(recipients.values());
     },
@@ -456,7 +456,7 @@ export default {
       const announcement = this.announcementEffective;
       if (!announcement) return [];
 
-      (announcement.admins || []).forEach((admin) => {
+      for (const admin of (announcement.admins || [])) {
         if (admin && admin.id && !recipients.has(admin.id)) {
           const notif = this.notificationsMap.get(Number(admin.id));
           recipients.set(admin.id, {
@@ -468,7 +468,7 @@ export default {
             read_at: notif ? notif.read_at : null,
           });
         }
-      });
+      }
 
       return Array.from(recipients.values());
     },
@@ -542,7 +542,9 @@ export default {
         };
 
         const d = toLocalDate(dt);
-        if (!d || isNaN(d.getTime())) return dt;
+        if (!d || Number.isNaN(d.getTime())) {
+          return dt;
+        }
 
         const day = String(d.getDate()).padStart(2, '0');
         const months = [
@@ -568,7 +570,7 @@ export default {
         hr = hr || 12;
         return `${day} ${mon},${yr} ${hr}:${min} ${ampm}`;
       } catch (err) {
-        // eslint-disable-next-line no-console
+
         console.warn('formatDateTime failed', err);
         return dt;
       }
@@ -589,7 +591,7 @@ export default {
 
 .status-green {
   color: #fff;
-  background: #28a745;
+  background: #218838;
   font-weight: 600;
   font-size: 18px;
   padding: 4px 16px;
@@ -600,7 +602,7 @@ export default {
 }
 
 .status-yellow {
-  color: #fff;
+  color: #000;
   background: #f7c948;
   font-weight: 600;
   font-size: 18px;
@@ -613,7 +615,7 @@ export default {
 
 .status-red {
   color: #fff;
-  background: #e74c3c;
+  background: #c82333;
   font-weight: 600;
   font-size: 18px;
   padding: 4px 16px;

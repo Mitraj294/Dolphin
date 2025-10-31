@@ -339,7 +339,7 @@ export default {
     canImpersonate(user) {
       // Only superadmins can impersonate, not themselves or other superadmins
       const storage = require('@/services/storage').default;
-      const myId = parseInt(storage.get('userId') || '0');
+  const myId = Number.parseInt(storage.get('userId') || '0', 10);
       return (
         this.isSuperAdmin && user.role !== 'superadmin' && user.id !== myId
       );
@@ -395,7 +395,7 @@ export default {
             }
             // Notify other parts of the app (same-window) that auth info changed
             try {
-              window.dispatchEvent(new Event('auth-updated'));
+              globalThis.dispatchEvent(new Event('auth-updated'));
             } catch (e) {
               console.error('Error dispatching auth-updated event', e);
             }
@@ -437,7 +437,7 @@ export default {
       storage.remove('superEmail');
       this.$router.go(0);
       try {
-        window.dispatchEvent(new Event('auth-updated'));
+        globalThis.dispatchEvent(new Event('auth-updated'));
       } catch (e) {
         console.error('Error dispatching auth-updated event', e);
       }

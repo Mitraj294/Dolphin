@@ -463,7 +463,9 @@ const handleChangePassword = async () => {
       life: 3000,
     });
     // Reset form
-    Object.keys(passwordForm).forEach((key) => (passwordForm[key] = ''));
+    for (const key of Object.keys(passwordForm)) {
+      passwordForm[key] = '';
+    }
   } catch (err) {
     const errorMessage =
       err.response?.data?.error || 'Failed to change password.';
@@ -496,7 +498,7 @@ const confirmDeleteAccount = () => {
           life: 3000,
         });
         storage.clear();
-        setTimeout(() => (window.location.href = '/login'), 1500);
+        setTimeout(() => (globalThis.location.href = '/login'), 1500);
       } catch (err) {
         console.log(err);
         toast.add({

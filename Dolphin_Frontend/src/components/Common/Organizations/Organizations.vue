@@ -14,5 +14,3 @@ export default {
   components: { MainLayout, OrganizationTable },
 };
 </script>
-
-<style></style>

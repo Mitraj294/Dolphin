@@ -356,7 +356,7 @@ export default {
 
       if (val !== null && val !== '' && typeof val !== 'number') {
         const num = Number(val);
-        if (!isNaN(num)) {
+        if (!Number.isNaN(num)) {
           this.form.country_id = num;
           val = num;
         }
@@ -387,7 +387,7 @@ export default {
       let val = this.form.state_id;
       if (val !== null && val !== '' && typeof val !== 'number') {
         const num = Number(val);
-        if (!isNaN(num)) {
+        if (!Number.isNaN(num)) {
           this.form.state_id = num;
           val = num;
         }
@@ -570,7 +570,7 @@ export default {
 }
 .form-input:disabled {
   background: #f0f0f0;
-  color: #aaa;
+  color: #6b6b6b;
 }
 .form-input-icon {
   position: absolute;
@@ -619,7 +619,7 @@ export default {
 
 .org-edit-cancel {
   background: #f5f5f5;
-  color: #888;
+  color: #6b6b6b;
   border: none;
   border-radius: 24px;
   padding: 10px 32px;

@@ -5,36 +5,18 @@
         <div class="graph-section">
           <div class="org-admin-graphs-title">Hidden Culture</div>
           <div class="graph-controls">
-            <Dropdown
-              :options="orgTypeOptions"
-              v-model="orgType"
-            />
-            <Dropdown
-              :options="quarterOptions"
-              v-model="orgQuarter"
-            />
+            <Dropdown :options="orgTypeOptions" v-model="orgType" />
+            <Dropdown :options="quarterOptions" v-model="orgQuarter" />
           </div>
-          <Bar
-            :data="hiddenCultureChartData"
-            :options="chartOptions"
-          />
+          <Bar :data="hiddenCultureChartData" :options="chartOptions" />
         </div>
         <div class="graph-section">
           <div class="org-admin-graphs-title">Current State Graph</div>
           <div class="graph-controls">
-            <Dropdown
-              :options="deptTypeOptions"
-              v-model="deptType"
-            />
-            <Dropdown
-              :options="quarterOptions"
-              v-model="deptQuarter"
-            />
+            <Dropdown :options="deptTypeOptions" v-model="deptType" />
+            <Dropdown :options="quarterOptions" v-model="deptQuarter" />
           </div>
-          <Bar
-            :data="currentStateChartData"
-            :options="chartOptions"
-          />
+          <Bar :data="currentStateChartData" :options="chartOptions" />
         </div>
       </div>
     </div>
@@ -42,7 +24,7 @@
 </template>
 
 <script setup>
-import { Bar } from 'vue-chartjs';
+import { Bar } from "vue-chartjs";
 import {
   Chart,
   BarElement,
@@ -50,42 +32,42 @@ import {
   LinearScale,
   Tooltip,
   Legend,
-} from 'chart.js';
-import { ref } from 'vue';
-import Dropdown from '@/components/Common/Common_UI/Dropdown.vue';
+} from "chart.js";
+import { ref } from "vue";
+import Dropdown from "@/components/Common/Common_UI/Dropdown.vue";
 
 Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
-const orgType = ref('Entire Organization');
-const orgQuarter = ref('Q4-2024');
-const deptType = ref('Single Department');
-const deptQuarter = ref('Q2-2024');
+const orgType = ref("Entire Organization");
+const orgQuarter = ref("Q4-2024");
+const deptType = ref("Single Department");
+const deptQuarter = ref("Q2-2024");
 
 const orgTypeOptions = [
-  { label: 'Entire Organization', value: 'Entire Organization' },
-  { label: 'Single Department', value: 'Single Department' },
+  { label: "Entire Organization", value: "Entire Organization" },
+  { label: "Single Department", value: "Single Department" },
 ];
 const deptTypeOptions = [
-  { label: 'Single Department', value: 'Single Department' },
-  { label: 'Entire Organization', value: 'Entire Organization' },
+  { label: "Single Department", value: "Single Department" },
+  { label: "Entire Organization", value: "Entire Organization" },
 ];
 
 const quarterOptions = [
-  { label: 'Q1-2025', value: 'Q1-2025' },
-  { label: 'Q2-2025', value: 'Q2-2025' },
-  { label: 'Q3-2025', value: 'Q3-2025' },
-  { label: 'Q4-2025', value: 'Q4-2025' },
+  { label: "Q1-2025", value: "Q1-2025" },
+  { label: "Q2-2025", value: "Q2-2025" },
+  { label: "Q3-2025", value: "Q3-2025" },
+  { label: "Q4-2025", value: "Q4-2025" },
 ];
 
 const hiddenCultureData = [60, 100, 40, 40, 20, 60];
 const currentStateData = [80, 40, 60, 20, 30, 50];
 
 const hiddenCultureChartData = {
-  labels: ['Info 1', 'Info 2', 'Info 3', 'Info 4', 'Info 5', 'Info 6'],
+  labels: ["Info 1", "Info 2", "Info 3", "Info 4", "Info 5", "Info 6"],
   datasets: [
     {
-      label: 'Hidden Culture',
-      backgroundColor: '#0164A5',
+      label: "Hidden Culture",
+      backgroundColor: "#0164A5",
       data: hiddenCultureData,
       barPercentage: 0.7,
       categoryPercentage: 0.7,
@@ -94,11 +76,11 @@ const hiddenCultureChartData = {
 };
 
 const currentStateChartData = {
-  labels: ['Info 1', 'Info 2', 'Info 3', 'Info 4', 'Info 5', 'Info 6'],
+  labels: ["Info 1", "Info 2", "Info 3", "Info 4", "Info 5", "Info 6"],
   datasets: [
     {
-      label: 'Current State',
-      backgroundColor: '#0164A5',
+      label: "Current State",
+      backgroundColor: "#0164A5",
       data: currentStateData,
       barPercentage: 0.7,
       categoryPercentage: 0.7,

@@ -119,14 +119,21 @@
                 </button>
               </div>
             </div>
-
             <div
               v-if="paginatedNotifications.length === 0"
               class="no-data"
             >
-              <span v-if="tab === 'unread'"
-                >No unread notifications found.</span
-              >
+              <span v-if="selectedDate">
+              <span v-if="tab === 'unread'">
+                No unread notifications found for
+                <strong>{{ (new Date(selectedDate)).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }) }}</strong>.
+              </span>
+              <span v-else>
+                No notification found for
+                <strong>{{ (new Date(selectedDate)).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }) }}</strong>.
+              </span>
+              </span>
+              <span v-else-if="tab === 'unread'">No unread notifications found.</span>
               <span v-else>No notification found.</span>
             </div>
           </div>
@@ -237,7 +244,7 @@ export default {
         const notificationsArr = this._extractNotifications(response);
 
         const storedUserId = storage.get('userId') || storage.get('user_id');
-        const currentUserId = storedUserId ? parseInt(storedUserId, 10) : 0;
+        const currentUserId = storedUserId ? Number.parseInt(storedUserId, 10) : 0;
 
         const mapped = notificationsArr
           .filter((n) => this._isNotificationForUser(n, currentUserId))
@@ -270,11 +277,11 @@ export default {
       if (role === 'superadmin') {
         const storedUserIdParam =
           storage.get('userId') || storage.get('user_id');
-        const uid = storedUserIdParam ? parseInt(storedUserIdParam, 10) : 0;
+        const uid = storedUserIdParam ? Number.parseInt(storedUserIdParam, 10) : 0;
         if (uid) {
           return `/api/notifications?notifiable_type=${encodeURIComponent(
-            'App\\Models\\User'
-          )}&notifiable_id=${uid}`;
+              String.raw`App\Models\User`
+            )}&notifiable_id=${uid}`;
         }
         return '/api/notifications';
       }
@@ -309,14 +316,14 @@ export default {
 
     _isNotificationForUser(n, currentUserId) {
       if (!currentUserId) return true;
-      if (parseInt(n.notifiable_id, 10) === currentUserId) return true;
+      if (Number.parseInt(n.notifiable_id, 10) === currentUserId) return true;
       if (!n.data) return false;
       try {
         const d = typeof n.data === 'string' ? JSON.parse(n.data) : n.data;
         return (
-          (d.user_id && parseInt(d.user_id, 10) === currentUserId) ||
-          (d.userId && parseInt(d.userId, 10) === currentUserId) ||
-          (d.recipient_id && parseInt(d.recipient_id, 10) === currentUserId)
+          (d.user_id && Number.parseInt(d.user_id, 10) === currentUserId) ||
+          (d.userId && Number.parseInt(d.userId, 10) === currentUserId) ||
+          (d.recipient_id && Number.parseInt(d.recipient_id, 10) === currentUserId)
         );
       } catch (e) {
         console.error('Error parsing notification data:', e);
@@ -406,7 +413,7 @@ export default {
     formatDate(dateStr) {
       // Format MySQL datetime to 'MMM DD, YYYY at hh:mm A'
       const d = new Date(dateStr);
-      if (isNaN(d)) return dateStr;
+      if (Number.isNaN(d)) return dateStr;
       const options = {
         month: 'short',
         day: '2-digit',
@@ -442,8 +449,8 @@ export default {
           console.error('Error updating notification count:', e);
         }
         // Broadcast events for in-window and cross-tab listeners
-        window.dispatchEvent(new Event('notification-updated'));
-        window.dispatchEvent(new Event('storage'));
+  globalThis.dispatchEvent(new Event('notification-updated'));
+  globalThis.dispatchEvent(new Event('storage'));
       } catch (error) {
         console.error('Error marking all as read:', error);
         if (this.$notify) {
@@ -476,8 +483,8 @@ export default {
           } catch (e) {
             console.error('Error updating notification count:', e);
           }
-          window.dispatchEvent(new Event('notification-updated'));
-          window.dispatchEvent(new Event('storage'));
+          globalThis.dispatchEvent(new Event('notification-updated'));
+          globalThis.dispatchEvent(new Event('storage'));
         } catch (error) {
           console.error('Failed to mark notification as read:', error);
           if (this.$notify) {
@@ -516,11 +523,11 @@ export default {
         : 0;
       storage.set('notificationCount', String(unreadCount));
       // Broadcast a storage event for cross-tab listeners
-      window.dispatchEvent(new Event('storage'));
+      globalThis.dispatchEvent(new Event('storage'));
       // Broadcast a domain event for in-window subscribers (Navbar)
-      window.dispatchEvent(new Event('notification-updated'));
+      globalThis.dispatchEvent(new Event('notification-updated'));
       // Provide direct count payload for listeners to avoid refetch flicker
-      window.dispatchEvent(
+      globalThis.dispatchEvent(
         new CustomEvent('notification-count-sync', {
           detail: { count: unreadCount },
         })

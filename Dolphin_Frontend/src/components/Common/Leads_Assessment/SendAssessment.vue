@@ -207,7 +207,12 @@ export default {
      */
     updateRegistrationLink() {
       if (this.to) {
-        const base = `${window.location.origin}/register`;
+        const origin =
+          (typeof globalThis !== 'undefined' &&
+            globalThis.location &&
+            globalThis.location.origin) ||
+          '';
+        const base = `${origin}/register`;
         const params = new URLSearchParams();
         params.set('email', this.to);
         if (this.leadId) params.set('lead_id', String(this.leadId));

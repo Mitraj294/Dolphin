@@ -449,12 +449,12 @@ export default {
             /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?$/
           );
           if (m) {
-            const year = parseInt(m[1], 10);
-            const month = parseInt(m[2], 10) - 1;
-            const day = parseInt(m[3], 10);
-            const hour = parseInt(m[4], 10);
-            const minute = parseInt(m[5], 10);
-            const second = parseInt(m[6], 10) || 0;
+            const year = Number.parseInt(m[1], 10);
+            const month = Number.parseInt(m[2], 10) - 1;
+            const day = Number.parseInt(m[3], 10);
+            const hour = Number.parseInt(m[4], 10);
+            const minute = Number.parseInt(m[5], 10);
+            const second = Number.parseInt(m[6], 10) || 0;
             const utcMillis = Date.UTC(year, month, day, hour, minute, second);
             d = new Date(utcMillis);
           } else d = new Date(dateStr);
@@ -463,7 +463,9 @@ export default {
         console.warn('Date parse error:', e);
         d = new Date(dateStr);
       }
-      if (!d || isNaN(d.getTime())) return dateStr || '';
+      if (!d || Number.isNaN(d.getTime())) {
+        return dateStr || '';
+      }
 
       const dayOfMonth = String(d.getDate()).padStart(2, '0');
       const months = [
@@ -1092,6 +1094,6 @@ export default {
   }
 }
 .form-box{
-  padding: 0 !important;;
+  padding: 0 !important;
 }
 </style>

@@ -411,12 +411,12 @@ export default {
 }
 .form-input:disabled {
   background: #f0f0f0;
-  color: #aaa;
+  color: #666;
 }
 .form-input-icon {
   position: absolute;
   left: 12px;
-  color: #888;
+  color: #666;
   font-size: 18px;
   display: flex;
   align-items: center;
@@ -427,7 +427,7 @@ export default {
 .input-eye {
   position: absolute;
   right: 12px;
-  color: #888;
+  color: #666;
   font-size: 18px;
   cursor: pointer;
   z-index: 3;
@@ -460,7 +460,7 @@ export default {
 
 .org-edit-cancel {
   background: #f5f5f5;
-  color: #888;
+  color: #444;
   border: none;
   border-radius: 24px;
   padding: 10px 32px;

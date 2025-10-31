@@ -413,7 +413,7 @@ export default {
       let val = this.form.country_id;
       if (val !== null && val !== '' && typeof val !== 'number') {
         const num = Number(val);
-        if (!isNaN(num)) {
+        if (!Number.isNaN(num)) {
           this.form.country_id = num;
           val = num;
         }
@@ -435,7 +435,7 @@ export default {
       let val = this.form.state_id;
       if (val !== null && val !== '' && typeof val !== 'number') {
         const num = Number(val);
-        if (!isNaN(num)) {
+        if (!Number.isNaN(num)) {
           this.form.state_id = num;
           val = num;
         }
@@ -593,12 +593,14 @@ export default {
 }
 .form-input:disabled {
   background: #f0f0f0;
-  color: #aaa;
+  /* Increase contrast for disabled text */
+  color: #6b6b6b;
 }
 .form-input-icon {
   position: absolute;
   left: 12px;
-  color: #888;
+  /* Darker icon color for sufficient contrast */
+  color: #6b6b6b;
   font-size: 18px;
   display: flex;
   align-items: center;
@@ -609,7 +611,7 @@ export default {
 .input-eye {
   position: absolute;
   right: 12px;
-  color: #888;
+  color: #6b6b6b;
   font-size: 18px;
   cursor: pointer;
   z-index: 3;
@@ -642,7 +644,7 @@ export default {
 
 .org-edit-cancel {
   background: #f5f5f5;
-  color: #888;
+  color: #6b6b6b;
   border: none;
   border-radius: 24px;
   padding: 10px 32px;

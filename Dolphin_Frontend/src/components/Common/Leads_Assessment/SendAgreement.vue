@@ -263,10 +263,10 @@ export default {
           '';
         // Replace # placeholder links with real plans link
         const plansLink = 'http://127.0.0.1:8080/subscriptions/plans';
-        const bodyWithLinks = String(this.templateContent).replace(
-          /href=(['"])#(?:0)?\1/g,
-          (match, quote) => `href=${quote}${plansLink}${quote}`
-        );
+          const bodyWithLinks = String(this.templateContent).replaceAll(
+            /href=(["'])#(?:0)?\1/g,
+            `href=$1${plansLink}$1`
+          );
 
         const payload = {
           to: this.to,

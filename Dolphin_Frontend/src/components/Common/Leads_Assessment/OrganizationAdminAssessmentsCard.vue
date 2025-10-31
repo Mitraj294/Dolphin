@@ -449,11 +449,11 @@ export default {
           this.assessments = this.assessments.map((a) =>
             a.id === updated.id ? updated : a
           );
-        } catch (refreshErr) {
+        } catch (error_) {
           // If single refresh fails, fall back to full refresh (best-effort)
           console.warn(
             '[AssessmentsCard] Failed to refresh single schedule, falling back to full refresh.',
-            refreshErr
+            error_
           );
           await this.initializeComponent();
         }
@@ -509,7 +509,7 @@ export default {
         timeStr || '00:00:00'
       ).trim()}`;
       const date = new Date(dateTimeString);
-      return isNaN(date.getTime()) ? null : date;
+  return Number.isNaN(date.getTime()) ? null : date;
     },
     _showToast(severity, summary, detail, life = 3500) {
       this.toast.add({ severity, summary, detail, life });

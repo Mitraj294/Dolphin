@@ -402,7 +402,7 @@ export default {
 .assessment-table th {
   background: #f8f8f8;
   font-weight: 600;
-  color: #888;
+  color: #333;
   position: relative;
   vertical-align: middle;
   min-width: 100px;

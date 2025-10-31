@@ -360,7 +360,7 @@ function getAuthHeaders() {
 function formatContractDate(input) {
   try {
     const d = new Date(input);
-    if (isNaN(d.getTime())) return input;
+    if (Number.isNaN(d.getTime())) return input;
 
     const day = String(d.getDate()).padStart(2, '0');
     const monthShort = d
@@ -376,7 +376,7 @@ function formatContractDate(input) {
 function formatLastContacted(input) {
   try {
     const d = new Date(input);
-    if (isNaN(d.getTime())) return input;
+    if (Number.isNaN(d.getTime())) return input;
 
     const day = String(d.getDate()).padStart(2, '0');
     const monthShort = d
@@ -397,7 +397,7 @@ function parseContractInput(input) {
   if (!input) return null;
   try {
     const d = new Date(input);
-    if (isNaN(d.getTime())) return null;
+    if (Number.isNaN(d.getTime())) return null;
     return d.toISOString().slice(0, 19).replace('T', ' ');
   } catch {
     return null;
@@ -409,7 +409,7 @@ function parseLastContactedInput(input) {
   try {
     // Use UTC conversion to ensure difference from parseContractInput
     const d = new Date(input);
-    if (isNaN(d.getTime())) return null;
+    if (Number.isNaN(d.getTime())) return null;
     // Build YYYY-MM-DD HH:MM:SS in UTC
     const y = d.getUTCFullYear();
     const m = String(d.getUTCMonth() + 1).padStart(2, '0');
@@ -689,7 +689,7 @@ export default {
     errorText(field) {
       if (!this.errors) return null;
       // try snake_case
-      const snake = field.replace(/[A-Z]/g, (m) => `_${m.toLowerCase()}`);
+      const snake = field.replaceAll(/[A-Z]/g, (m) => `_${m.toLowerCase()}`);
       if (this.errors[snake] && this.errors[snake].length)
         return this.errors[snake][0];
       if (this.errors[field] && this.errors[field].length)
@@ -846,7 +846,7 @@ export default {
 
 .org-edit-cancel {
   background: #f5f5f5;
-  color: #888;
+  color: #333;
   border: none;
   border-radius: 24px;
   padding: 10px 32px;

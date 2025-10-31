@@ -292,7 +292,7 @@ const isExpired = computed(() => {
     billingPlan.value?.subscription_end;
   if (!end) return false;
   const parsed = new Date(end);
-  if (isNaN(parsed.getTime())) return false;
+  if (Number.isNaN(parsed.getTime())) return false;
   return parsed < new Date();
 });
 

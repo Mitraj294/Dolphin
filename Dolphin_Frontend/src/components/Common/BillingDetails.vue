@@ -324,7 +324,7 @@ export default {
     formatDate(dateStr) {
       if (!dateStr) return '';
       const d = new Date(dateStr);
-      if (isNaN(d)) return '';
+      if (Number.isNaN(d)) return '';
       return d.toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'short',

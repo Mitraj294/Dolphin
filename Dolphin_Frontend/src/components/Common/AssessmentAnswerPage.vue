@@ -93,7 +93,7 @@ export default {
     try {
       const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
       const res = await axios.get(
-        `${API_BASE_URL}/api/assessment/answer/${token}`
+        `${API_BASE_URL}/api/assessments/answer/${token}`
       );
       this.assessment = res.data.assessment;
       this.group_id = res.data.group ? res.data.group.id : null;
@@ -143,7 +143,7 @@ export default {
           member_id: this.member_id,
         };
         await axios.post(
-          `${API_BASE_URL}/api/assessment/answer/${token}`,
+          `${API_BASE_URL}/api/assessments/answer/${token}`,
           payload
         );
 

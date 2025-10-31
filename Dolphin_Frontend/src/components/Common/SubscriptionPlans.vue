@@ -243,7 +243,7 @@ export default {
 
         const rawAmount = res.data?.amount ?? res.data?.plan_amount ?? null;
         if (rawAmount !== null && rawAmount !== undefined) {
-          const parsed = parseFloat(String(rawAmount).replace(/,/g, ''));
+          const parsed = Number.parseFloat(String(rawAmount).replaceAll(',', ''));
           this.userPlan = Number.isFinite(parsed) ? Math.round(parsed) : null;
         } else {
           this.userPlan = null;
@@ -276,7 +276,7 @@ export default {
         );
 
         if (res.data && res.data.url) {
-          window.location.href = res.data.url;
+          globalThis.location.href = res.data.url;
         } else {
           // Handle error
         }
@@ -297,14 +297,14 @@ export default {
       if (this.isGuestView) {
         // Add guest params but exclude null/undefined values to avoid overriding valid priceId
         const filteredGuestParams = {};
-        Object.keys(this.guestParams).forEach(key => {
+        for (const key of Object.keys(this.guestParams)) {
           if (this.guestParams[key] !== null && this.guestParams[key] !== undefined) {
             // Don't override the priceId we already set
             if (key !== 'price_id') {
               filteredGuestParams[key] = this.guestParams[key];
             }
           }
-        });
+        }
         Object.assign(payload, filteredGuestParams);
       }
       return payload;
@@ -342,8 +342,8 @@ export default {
   // Lifecycle Hooks
 
   mounted() {
-    console.log('SubscriptionPlans mounted, URL:', window.location.href);
-    const qs = new URLSearchParams(window.location.search);
+    console.log('SubscriptionPlans mounted, URL:', globalThis.location.href);
+    const qs = new URLSearchParams(globalThis.location.search);
     console.log('URL search params:', qs.toString());
     
     const hasGuestParams = [

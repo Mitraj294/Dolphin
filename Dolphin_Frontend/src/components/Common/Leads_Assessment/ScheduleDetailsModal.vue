@@ -1,17 +1,7 @@
 <template>
-  <div
-    class="modal-overlay"
-    @click.self="$emit('close')"
-  >
-    <div
-      class="modal-card"
-      v-if="scheduleDetails"
-      style="max-width: 900px; width: 90%"
-    >
-      <button
-        class="modal-close"
-        @click="$emit('close')"
-      >
+  <div class="modal-overlay" @click.self="$emit('close')">
+    <div class="modal-card" v-if="scheduleDetails" style="max-width: 900px; width: 90%">
+      <button class="modal-close" @click="$emit('close')">
         &times;
       </button>
       <div class="modal-title">Scheduled Assessment Details</div>
@@ -21,55 +11,39 @@
       </div>
       <div class="notifications-controls">
         <div class="notifications-tabs">
-          <button
-            :class="[
-              'notifications-tab-btn-left',
-              { active: tab === 'Group Wise' },
-            ]"
-            @click="tab = 'Group Wise'"
-          >
+          <button :class="[
+            'notifications-tab-btn-left',
+            { active: tab === 'Group Wise' },
+          ]" @click="tab = 'Group Wise'">
             Group Wise
           </button>
-          <button
-            :class="[
-              'notifications-tab-btn-right',
-              { active: tab === 'Member Wise' },
-            ]"
-            @click="tab = 'Member Wise'"
-            min-width="320px"
-          >
+          <button :class="[
+            'notifications-tab-btn-right',
+            { active: tab === 'Member Wise' },
+          ]" @click="tab = 'Member Wise'" min-width="320px">
             Member Wise
           </button>
         </div>
       </div>
       <div v-if="tab === 'Group Wise'">
         <br />
-        <div
-          class="modal-title schedule-header"
-          style="font-size: 20px; font-weight: 450"
-        >
+        <div class="modal-title schedule-header" style="font-size: 20px; font-weight: 450">
           <div class="schedule-header-left">
             <div>
-              <div
-                class="schedule-assessment-name"
-                style="
+              <div class="schedule-assessment-name" style="
                   display: inline-block;
                   vertical-align: middle;
                   max-width: 520px;
                   margin-right: 12px;
-                "
-              >
+                ">
                 {{ scheduleDetails.assessment.name }}
               </div>
               -
-              <div
-                class="schedule-assessment-name"
-                style="
+              <div class="schedule-assessment-name" style="
                   display: inline-block;
                   vertical-align: middle;
                   margin-left: 12px;
-                "
-              >
+                ">
                 {{
                   formatLocalDateTime(
                     scheduleDetails.schedule.date,
@@ -81,25 +55,16 @@
           </div>
 
           <div class="schedule-header-right">
-            <span
-              v-if="scheduleStatus === 'sent'"
-              :class="['status-green', { active: scheduleStatus === 'sent' }]"
-            >
+            <span v-if="scheduleStatus === 'sent'" :class="['status-green', { active: scheduleStatus === 'sent' }]">
               Sent
             </span>
-            <span
-              v-if="scheduleStatus === 'scheduled'"
-              :class="[
-                'status-yellow',
-                { active: scheduleStatus === 'scheduled' },
-              ]"
-            >
+            <span v-if="scheduleStatus === 'scheduled'" :class="[
+              'status-yellow',
+              { active: scheduleStatus === 'scheduled' },
+            ]">
               Scheduled
             </span>
-            <span
-              v-if="scheduleStatus === 'failed'"
-              :class="['status-red', { active: scheduleStatus === 'failed' }]"
-            >
+            <span v-if="scheduleStatus === 'failed'" :class="['status-red', { active: scheduleStatus === 'failed' }]">
               Failed
             </span>
           </div>
@@ -107,54 +72,33 @@
 
         <div v-if="scheduleDetails && scheduleDetails.schedule">
           <div class="detail-row">
-            <div
-              class="detail-table"
-              style="
+            <div class="detail-table" style="
                 width: 100% !important;
                 max-width: 800px !important;
                 margin: 0 !important;
-              "
-            >
-              <div
-                class="recipient-table-wrap"
-                style="
+              ">
+              <div class="recipient-table-wrap" style="
                   overflow-x: auto;
                   -webkit-overflow-scrolling: touch;
                   width: 100%;
-                "
-              >
+                ">
                 <div class="table-scroll">
-                  <table
-                    v-if="groupedEmails && groupedEmails.length"
-                    class="recipient-table compact"
-                    style="width: 100%; min-width: 500px"
-                  >
-                    <TableHeader
-                      :columns="[
-                        { label: 'Group', key: 'group', minWidth: '200px' },
-                        { label: 'Members', key: 'members', minWidth: '200px' },
-                        { label: 'Email', key: 'email', minWidth: '200px' },
-                        {
-                          label: 'Member Roles',
-                          key: 'member_roles',
-                          minWidth: '200px',
-                        },
-                      ]"
-                    />
+                  <table v-if="groupedEmails && groupedEmails.length" class="recipient-table compact"
+                    style="width: 100%; min-width: 500px">
+                    <TableHeader :columns="[
+                      { label: 'Group', key: 'group', minWidth: '200px' },
+                      { label: 'Members', key: 'members', minWidth: '200px' },
+                      { label: 'Email', key: 'email', minWidth: '200px' },
+                      {
+                        label: 'Member Roles',
+                        key: 'member_roles',
+                        minWidth: '200px',
+                      },
+                    ]" />
                     <tbody>
-                      <template
-                        v-for="(g, gi) in groupedEmails"
-                        :key="'group-' + gi"
-                      >
-                        <tr
-                          v-for="(e, ei) in g.items"
-                          :key="'email-' + gi + '-' + ei"
-                        >
-                          <td
-                            v-if="ei === 0"
-                            :rowspan="g.items.length"
-                            class="group-cell"
-                          >
+                      <template v-for="(g, gi) in groupedEmails" :key="'group-' + gi">
+                        <tr v-for="(e, ei) in g.items" :key="'email-' + gi + '-' + ei">
+                          <td v-if="ei === 0" :rowspan="g.items.length" class="group-cell">
                             {{ g.name || 'Ungrouped' }}
                           </td>
                           <td style="padding: 0px 8px !important">
@@ -178,25 +122,22 @@
                                 ? memberDetailMap[e.member_id].rolesDisplay
                                 : Array.isArray(e.memberRoles) &&
                                   e.memberRoles.length
-                                ? e.memberRoles
+                                  ? e.memberRoles
                                     .map((r) => (r && r.name) || r)
                                     .join(', ')
-                                : Array.isArray(e.member_role_ids) &&
-                                  e.member_role_ids.length
-                                ? e.member_role_ids
-                                    .map((r) => (r && r.name) || r)
-                                    .join(', ')
-                                : e.member_role) || ''
+                                  : Array.isArray(e.member_role_ids) &&
+                                    e.member_role_ids.length
+                                    ? e.member_role_ids
+                                      .map((r) => (r && r.name) || r)
+                                      .join(', ')
+                                    : e.member_role) || ''
                             }}
                           </td>
                         </tr>
                       </template>
                     </tbody>
                   </table>
-                  <div
-                    v-else
-                    class="no-data"
-                  >
+                  <div v-else class="no-data">
                     <em>No groups found for this schedule.</em>
                   </div>
                 </div>
@@ -211,32 +152,23 @@
 
       <div v-else-if="tab === 'Member Wise'">
         <br />
-        <div
-          class="modal-title schedule-header"
-          style="font-size: 20px; font-weight: 450"
-        >
+        <div class="modal-title schedule-header" style="font-size: 20px; font-weight: 450">
           <div class="schedule-header-left">
             <div>
-              <div
-                class="schedule-assessment-name"
-                style="
+              <div class="schedule-assessment-name" style="
                   display: inline-block;
                   vertical-align: middle;
                   max-width: 520px;
                   margin-right: 12px;
-                "
-              >
+                ">
                 {{ scheduleDetails.assessment.name }}
               </div>
               -
-              <div
-                class="schedule-assessment-name"
-                style="
+              <div class="schedule-assessment-name" style="
                   display: inline-block;
                   vertical-align: middle;
                   margin-left: 12px;
-                "
-              >
+                ">
                 {{
                   formatLocalDateTime(
                     scheduleDetails.schedule.date,
@@ -248,73 +180,50 @@
           </div>
 
           <div class="schedule-header-right">
-            <span
-              v-if="scheduleStatus === 'sent'"
-              :class="['status-green', { active: scheduleStatus === 'sent' }]"
-            >
+            <span v-if="scheduleStatus === 'sent'" :class="['status-green', { active: scheduleStatus === 'sent' }]">
               Sent
             </span>
-            <span
-              v-if="scheduleStatus === 'scheduled'"
-              :class="[
-                'status-yellow',
-                { active: scheduleStatus === 'scheduled' },
-              ]"
-            >
+            <span v-if="scheduleStatus === 'scheduled'" :class="[
+              'status-yellow',
+              { active: scheduleStatus === 'scheduled' },
+            ]">
               Scheduled
             </span>
-            <span
-              v-if="scheduleStatus === 'failed'"
-              :class="['status-red', { active: scheduleStatus === 'failed' }]"
-            >
+            <span v-if="scheduleStatus === 'failed'" :class="['status-red', { active: scheduleStatus === 'failed' }]">
               Failed
             </span>
           </div>
         </div>
         <div class="detail-row">
-          <div
-            class="detail-table"
-            style="
+          <div class="detail-table" style="
               width: 100% !important;
               max-width: 800px !important;
               margin: 0 !important;
-            "
-          >
-            <div
-              class="recipient-table-wrap"
-              style="
+            ">
+            <div class="recipient-table-wrap" style="
                 overflow-x: auto;
                 -webkit-overflow-scrolling: touch;
                 width: 100%;
-              "
-            >
+              ">
               <div class="table-scroll">
-                <table
-                  v-if="memberWiseRows && memberWiseRows.length"
-                  class="recipient-table compact"
-                  style="width: 100%; min-width: 500px"
-                >
-                  <TableHeader
-                    :columns="[
-                      {
-                        label: 'Member Name',
-                        key: 'name',
-                        minWidth: '200px',
-                      },
-                      { label: 'Email', key: 'email', minWidth: '200px' },
-                      { label: 'Groups', key: 'groups', minWidth: '200px' },
-                      {
-                        label: 'Member Roles',
-                        key: 'rolesDisplay',
-                        minWidth: '200px',
-                      },
-                    ]"
-                  />
+                <table v-if="memberWiseRows && memberWiseRows.length" class="recipient-table compact"
+                  style="width: 100%; min-width: 500px">
+                  <TableHeader :columns="[
+                    {
+                      label: 'Member Name',
+                      key: 'name',
+                      minWidth: '200px',
+                    },
+                    { label: 'Email', key: 'email', minWidth: '200px' },
+                    { label: 'Groups', key: 'groups', minWidth: '200px' },
+                    {
+                      label: 'Member Roles',
+                      key: 'rolesDisplay',
+                      minWidth: '200px',
+                    },
+                  ]" />
                   <tbody>
-                    <tr
-                      v-for="m in memberWiseRows"
-                      :key="'memberwise-' + m.id"
-                    >
+                    <tr v-for="m in memberWiseRows" :key="'memberwise-' + m.id">
                       <td>{{ m.name }}</td>
                       <td>{{ m.email }}</td>
                       <td>
@@ -326,10 +235,7 @@
                     </tr>
                   </tbody>
                 </table>
-                <div
-                  v-else
-                  class="no-data"
-                >
+                <div v-else class="no-data">
                   <em>No members found for Member Wise view.</em>
                 </div>
               </div>
@@ -371,87 +277,9 @@ export default {
   computed: {
     memberDetailMap() {
       const map = {};
-
-      // Priority 1: Use enhanced data from `members_with_details` if available
-      if (this.scheduleDetails && this.scheduleDetails.members_with_details) {
-        this.scheduleDetails.members_with_details.forEach((m) => {
-          const rolesDisplay =
-            Array.isArray(m.member_roles) && m.member_roles.length
-              ? m.member_roles.map((r) => r.name || r).join(', ')
-              : '';
-
-          map[m.id] = {
-            name: m.name || 'Unknown',
-            email: m.email || '',
-            memberRoles: m.member_roles || [],
-            rolesDisplay,
-          };
-        });
-      }
-
-      // Priority 2: Fallback to `groups_with_members` data
-      if (this.scheduleDetails && this.scheduleDetails.groups_with_members) {
-        this.scheduleDetails.groups_with_members.forEach((group) => {
-          if (group.members && Array.isArray(group.members)) {
-            group.members.forEach((m) => {
-              if (!map[m.id]) {
-                const rolesDisplay =
-                  Array.isArray(m.member_roles) && m.member_roles.length
-                    ? m.member_roles.map((r) => r.name || r).join(', ')
-                    : '';
-
-                map[m.id] = {
-                  name: m.name || 'Unknown',
-                  email: m.email || '',
-                  memberRoles: m.member_roles || [],
-                  rolesDisplay,
-                };
-              }
-            });
-          }
-        });
-      }
-
-      // Priority 3: Fallback to legacy `allMembers` prop for backward compatibility
-      if (Object.keys(map).length === 0) {
-        (this.allMembers || []).forEach((m) => {
-          const first = (m.first_name || m.name || '').toString().trim();
-          const last = (m.last_name || '').toString().trim();
-          let name = first;
-          if (last) name = name ? `${name} ${last}` : last;
-          if (!name) name = m.email || `Member ${m.id}`;
-
-          let memberRoles = [];
-          if (Array.isArray(m.memberRoles) && m.memberRoles.length) {
-            memberRoles = m.memberRoles.map((r) =>
-              typeof r === 'object' ? r : { id: r, name: String(r) }
-            );
-          } else if (
-            Array.isArray(m.member_role_ids) &&
-            m.member_role_ids.length
-          ) {
-            memberRoles = m.member_role_ids.map((id) => ({
-              id,
-              name: String(id),
-            }));
-          } else {
-            memberRoles = [];
-          }
-
-          const rolesDisplay =
-            memberRoles.length > 0
-              ? memberRoles.map((r) => r.name || r).join(', ')
-              : m.member_role || '';
-
-          map[m.id] = {
-            name,
-            email: m.email || '',
-            memberRoles,
-            rolesDisplay,
-          };
-        });
-      }
-
+      this.fillMemberMapFromEnhanced(map);
+      this.fillMemberMapFromGroups(map);
+      if (Object.keys(map).length === 0) this.fillMemberMapFromAllMembers(map);
       return map;
     },
     filteredEmails() {
@@ -477,14 +305,14 @@ export default {
 
         const [year, month, day] = datePart
           .split('-')
-          .map((value) => Number(value));
+          .map(Number);
         if ([year, month, day].some(Number.isNaN)) {
           return null;
         }
 
         const [hour = 0, minute = 0, second = 0] = (schedule.time || '00:00:00')
           .split(':')
-          .map((value) => Number(value));
+          .map(Number);
 
         const timestamp = Date.UTC(
           Number(year),
@@ -529,14 +357,14 @@ export default {
 
           const [year, month, day] = datePart
             .split('-')
-            .map((value) => Number(value));
+            .map(Number);
           if ([year, month, day].some(Number.isNaN)) {
             return false;
           }
 
           const [hour = 0, minute = 0, second = 0] = timePart
             .split(':')
-            .map((value) => Number(value));
+            .map(Number);
 
           const timestamp = Date.UTC(
             Number(year),
@@ -561,91 +389,11 @@ export default {
     },
     groupedEmails() {
       const list = this.filteredEmails || [];
-      const schedule =
-        (this.scheduleDetails && this.scheduleDetails.schedule) || null;
-      const map = new Map();
-
-      const parseArrayField = (v) => {
-        if (!v) return [];
-        if (Array.isArray(v)) return v.map(Number);
-        try {
-          const p = JSON.parse(v);
-          return Array.isArray(p) ? p.map(Number) : [];
-        } catch (e) {
-          // eslint-disable-next-line no-console
-          console.warn('Failed to parse array field:', e);
-          return v
-            .toString()
-            .replace(/\[|\]|\s+/g, '')
-            .split(',')
-            .filter(Boolean)
-            .map(Number);
-        }
-      };
-
-      const scheduleGroupIds = schedule
-        ? parseArrayField(schedule.group_ids)
-        : [];
-
-      if (scheduleGroupIds.length) {
-        scheduleGroupIds.forEach((gid) => {
-          const gobj = (this.allGroups || []).find(
-            (gg) => Number(gg.id) === gid
-          );
-          const gname = (gobj && (gobj.name || gobj.group)) || `Group ${gid}`;
-          const items = [];
-
-          list.forEach((e) => {
-            const egids = new Set();
-            if (e.group_id) egids.add(Number(e.group_id));
-            if (e.group_ids)
-              parseArrayField(e.group_ids).forEach((id) => egids.add(id));
-            if (egids.has(gid)) items.push(e);
-          });
-
-          let groupMemberIds = [];
-          if (gobj && Array.isArray(gobj.members) && gobj.members.length) {
-            groupMemberIds = gobj.members.map((m) =>
-              Number(m.id || m.member_id || m)
-            );
-          } else {
-            groupMemberIds = (this.allMembers || [])
-              .filter((m) => {
-                const mgids = Array.isArray(m.group_ids) ? m.group_ids : [];
-                return (
-                  mgids.some((mgid) => Number(mgid) === gid) ||
-                  Number(m.group_id) === gid
-                );
-              })
-              .map((m) => Number(m.id));
-          }
-
-          (groupMemberIds || []).forEach((mid) => {
-            if (!items.some((i) => Number(i.member_id) === mid)) {
-              items.push({ member_id: mid });
-            }
-          });
-
-          map.set(gid, { id: gid, name: gname, items: items.filter(Boolean) });
-        });
-        return Array.from(map.values());
-      }
-
-      list.forEach((e) => {
-        const gid = e.group_id || e.group || 'ungrouped';
-        const gname =
-          e.group_name ||
-          e.group ||
-          (gid === 'ungrouped' ? 'Ungrouped' : `Group ${gid}`);
-        if (!map.has(gid)) map.set(gid, { id: gid, name: gname, items: [] });
-        map.get(gid).items.push(e);
-      });
-
-      Array.from(map.values()).forEach((v) => {
-        v.items = (v.items || []).filter(Boolean);
-      });
-
-      return Array.from(map.values());
+      const schedule = (this.scheduleDetails && this.scheduleDetails.schedule) || null;
+      const scheduleGroupIds = schedule ? this.parseIdArray(schedule.group_ids) : [];
+      return scheduleGroupIds.length
+        ? this.groupedByScheduleGroupIds(list, scheduleGroupIds)
+        : this.groupedByExistingList(list);
     },
     memberWiseRows() {
       const rows = [];
@@ -658,10 +406,13 @@ export default {
         try {
           const p = JSON.parse(v);
           return Array.isArray(p) ? p.map(Number) : [];
-        } catch {}
-        return v
+        } catch { }
+        const cleaned = v
           .toString()
-          .replace(/\[|\]|\s+/g, '')
+          .replaceAll('[', '')
+          .replaceAll(']', '')
+          .replaceAll(/\s+/g, '');
+        return cleaned
           .split(',')
           .filter(Boolean)
           .map(Number);
@@ -674,7 +425,7 @@ export default {
         .filter(Boolean);
       const uniqueIds = new Set(memberIds.length ? memberIds : emailMemberIds);
 
-      uniqueIds.forEach((mid) => {
+      for (const mid of uniqueIds) {
         const detail = this.memberDetailMap[mid] || {
           name: `Member ${mid}`,
           email: '',
@@ -714,19 +465,159 @@ export default {
           groups: groupNames,
           rolesDisplay: detail.rolesDisplay || '',
         });
-      });
+      }
 
       return rows;
     },
   },
   methods: {
+    // ---- Helpers for memberDetailMap ----
+    fillMemberMapFromEnhanced(map) {
+      const details = this.scheduleDetails;
+      const list = details && details.members_with_details;
+      if (!Array.isArray(list) || list.length === 0) return;
+      for (const m of list) {
+        const rolesDisplay =
+          Array.isArray(m.member_roles) && m.member_roles.length
+            ? m.member_roles.map((r) => r.name || r).join(', ')
+            : '';
+        map[m.id] = {
+          name: m.name || 'Unknown',
+          email: m.email || '',
+          memberRoles: m.member_roles || [],
+          rolesDisplay,
+        };
+      }
+    },
+    fillMemberMapFromGroups(map) {
+      const details = this.scheduleDetails;
+      const groups = details && details.groups_with_members;
+      if (!Array.isArray(groups) || groups.length === 0) return;
+      for (const group of groups) {
+        this.fillGroupMembersIntoMap(group, map);
+      }
+    },
+    fillGroupMembersIntoMap(group, map) {
+      if (!group || !Array.isArray(group.members) || !group.members.length) return;
+      for (const m of group.members) {
+        if (map[m.id]) continue;
+        const rolesDisplay =
+          Array.isArray(m.member_roles) && m.member_roles.length
+            ? m.member_roles.map((r) => r.name || r).join(', ')
+            : '';
+        map[m.id] = {
+          name: m.name || 'Unknown',
+          email: m.email || '',
+          memberRoles: m.member_roles || [],
+          rolesDisplay,
+        };
+      }
+    },
+    fillMemberMapFromAllMembers(map) {
+      const list = this.allMembers || [];
+      for (const m of list) {
+        const { name, memberRoles, rolesDisplay } = this.computeNameAndRoles(m);
+        map[m.id] = { name, email: m.email || '', memberRoles, rolesDisplay };
+      }
+    },
+    computeNameAndRoles(m) {
+      const first = (m.first_name || m.name || '').toString().trim();
+      const last = (m.last_name || '').toString().trim();
+      let name = first;
+      if (last) name = name ? `${name} ${last}` : last;
+      if (!name) name = m.email || `Member ${m.id}`;
+
+      let memberRoles = [];
+      if (Array.isArray(m.memberRoles) && m.memberRoles.length) {
+        memberRoles = m.memberRoles.map((r) =>
+          typeof r === 'object' ? r : { id: r, name: String(r) }
+        );
+      } else if (Array.isArray(m.member_role_ids) && m.member_role_ids.length) {
+        memberRoles = m.member_role_ids.map((id) => ({ id, name: String(id) }));
+      }
+      const rolesDisplay =
+        memberRoles.length > 0
+          ? memberRoles.map((r) => r.name || r).join(', ')
+          : m.member_role || '';
+      return { name, memberRoles, rolesDisplay };
+    },
+
+    // ---- Helpers for groupedEmails ----
+    parseIdArray(v) {
+      if (!v) return [];
+      if (Array.isArray(v)) return v.map(Number);
+      try {
+        const p = JSON.parse(v);
+        return Array.isArray(p) ? p.map(Number) : [];
+      } catch (e) {
+        console.warn('Failed to parse array field:', e);
+        const cleaned = v
+          .toString()
+          .replaceAll('[', '')
+          .replaceAll(']', '')
+          .replaceAll(/\s+/g, '');
+        return cleaned
+          .split(',')
+          .filter(Boolean)
+          .map(Number);
+      }
+    },
+    groupedByScheduleGroupIds(list, scheduleGroupIds) {
+      const map = new Map();
+      for (const gid of scheduleGroupIds) {
+        const gobj = (this.allGroups || []).find((gg) => Number(gg.id) === gid);
+        const gname = (gobj && (gobj.name || gobj.group)) || `Group ${gid}`;
+        const items = this.buildItemsForGroup(list, gid);
+        const memberIds = this.getGroupMemberIds(gobj, gid);
+        for (const mid of memberIds) {
+          if (!items.some((i) => Number(i.member_id) === mid)) items.push({ member_id: mid });
+        }
+        map.set(gid, { id: gid, name: gname, items: items.filter(Boolean) });
+      }
+      return Array.from(map.values());
+    },
+    buildItemsForGroup(list, gid) {
+      const items = [];
+      for (const e of list) {
+        const egids = new Set();
+        if (e.group_id) egids.add(Number(e.group_id));
+        if (e.group_ids) for (const id of this.parseIdArray(e.group_ids)) egids.add(id);
+        if (egids.has(gid)) items.push(e);
+      }
+      return items;
+    },
+    getGroupMemberIds(gobj, gid) {
+      if (gobj && Array.isArray(gobj.members) && gobj.members.length) {
+        return gobj.members.map((m) => Number(m.id || m.member_id || m));
+      }
+      return (this.allMembers || [])
+        .filter((m) => {
+          const mgids = Array.isArray(m.group_ids) ? m.group_ids : [];
+          return mgids.some((mgid) => Number(mgid) === gid) || Number(m.group_id) === gid;
+        })
+        .map((m) => Number(m.id));
+    },
+    groupedByExistingList(list) {
+      const map = new Map();
+      for (const e of list) {
+        const gid = e.group_id || e.group || 'ungrouped';
+        const gname =
+          e.group_name || e.group || (gid === 'ungrouped' ? 'Ungrouped' : `Group ${gid}`);
+        if (!map.has(gid)) map.set(gid, { id: gid, name: gname, items: [] });
+        map.get(gid).items.push(e);
+      }
+      for (const v of map.values()) {
+        v.items = (v.items || []).filter(Boolean);
+      }
+      return Array.from(map.values());
+    },
     formatLocalDateTime(dateStr, timeStr) {
       if (!dateStr) return '';
       try {
         const { year, month, day } = this.parseDateString(dateStr);
         const { hour, minute, second } = this.parseTimeString(timeStr);
         const dt = new Date(year, month, day, hour, minute, second);
-        return isNaN(dt.getTime())
+        return Number.isNaN(dt.getTime())
           ? `${dateStr} ${timeStr || ''}`.trim()
           : this.formatDisplayTime(dt);
       } catch {
@@ -744,14 +635,15 @@ export default {
           month: Number(dmatch[2]) - 1,
           day: Number(dmatch[3]),
         };
+      } else {
+        const alt = new Date(dateStr);
+        if (Number.isNaN(alt.getTime())) throw new Error('Invalid date');
+        return {
+          year: alt.getFullYear(),
+          month: alt.getMonth(),
+          day: alt.getDate(),
+        };
       }
-      const alt = new Date(dateStr);
-      if (isNaN(alt.getTime())) throw new Error('Invalid date');
-      return {
-        year: alt.getFullYear(),
-        month: alt.getMonth(),
-        day: alt.getDate(),
-      };
     },
     parseTimeString(timeStr) {
       const tmatch = (timeStr || '')
@@ -805,6 +697,7 @@ export default {
   border-top-right-radius: 24px;
   box-sizing: border-box;
 }
+
 .notifications-tabs {
   display: flex;
   border-radius: 32px;
@@ -813,6 +706,7 @@ export default {
   min-width: 240px;
   height: 36px;
 }
+
 .notifications-tab-btn-left,
 .notifications-tab-btn-right {
   border: none;
@@ -835,6 +729,7 @@ export default {
   cursor: pointer;
   box-sizing: border-box;
 }
+
 .notifications-tab-btn-left.active {
   background: #f6f6f6;
   border: 1.5px solid #dcdcdc;
@@ -843,6 +738,7 @@ export default {
   font-weight: 500;
   z-index: 1;
 }
+
 .notifications-tab-btn-right.active {
   background: #f6f6f6;
   border: 1.5px solid #dcdcdc;
