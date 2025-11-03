@@ -7,17 +7,8 @@
         <div class="left-illustration"></div>
         <div class="thankyou-card">
           <div class="check-circle">
-            <svg
-              width="56"
-              height="56"
-              viewBox="0 0 56 56"
-            >
-              <circle
-                cx="28"
-                cy="28"
-                r="28"
-                fill="#2ecc40"
-              />
+            <svg width="56" height="56" viewBox="0 0 56 56">
+              <circle cx="28" cy="28" r="28" fill="#2ecc40" />
               <polyline
                 points="18,30 26,38 38,20"
                 fill="none"
@@ -50,10 +41,10 @@
 </template>
 
 <script>
-import Navbar from '@/components/layout/Navbar.vue';
-import Sidebar from '@/components/layout/Sidebar.vue';
+import Navbar from "@/components/layout/Navbar.vue";
+import Sidebar from "@/components/layout/Sidebar.vue";
 export default {
-  name: 'ThankYou',
+  name: "ThankYou",
   components: { Sidebar, Navbar },
 };
 </script>
@@ -101,19 +92,19 @@ export default {
   color: #111;
   margin-bottom: 16px;
   margin-top: 0;
-  font-family: 'Helvetica Neue LT Std', Arial, sans-serif;
+  font-family: "Helvetica Neue LT Std", Arial, sans-serif;
 }
 .thankyou-desc {
   color: #888;
   font-size: 1.08rem;
   margin-bottom: 18px;
-  font-family: 'Helvetica Neue LT Std', Arial, sans-serif;
+  font-family: "Helvetica Neue LT Std", Arial, sans-serif;
 }
 .thankyou-touch {
   color: #444;
   font-size: 1.08rem;
   margin-bottom: 24px;
-  font-family: 'Helvetica Neue LT Std', Arial, sans-serif;
+  font-family: "Helvetica Neue LT Std", Arial, sans-serif;
 }
 .thankyou-footer {
   display: flex;
@@ -132,7 +123,7 @@ export default {
 .copyright {
   color: #787878;
   font-size: 14px;
-  font-family: 'Inter', Arial, sans-serif;
+  font-family: "Inter", Arial, sans-serif;
   text-align: center;
   margin-top: 2px;
 }

@@ -15,10 +15,7 @@
             Edit Organization : {{ form.organization_name }}
           </div>
 
-          <form
-            class="lead-capture-form"
-            @submit.prevent="updateDetails"
-          >
+          <form class="lead-capture-form" @submit.prevent="updateDetails">
             <FormRow>
               <div>
                 <FormLabel>Organization Name</FormLabel>
@@ -69,10 +66,7 @@
                   ]"
                   required
                 />
-                <FormLabel
-                  v-if="errors.source"
-                  class="error-message"
-                >
+                <FormLabel v-if="errors.source" class="error-message">
                   {{ errors.source[0] }}
                 </FormLabel>
               </div>
@@ -89,10 +83,7 @@
                     ...countries.map((c) => ({ value: c.id, text: c.name })),
                   ]"
                 />
-                <FormLabel
-                  v-if="errors.country_id"
-                  class="error-message"
-                >
+                <FormLabel v-if="errors.country_id" class="error-message">
                   {{ errors.country_id[0] }}
                 </FormLabel>
               </div>
@@ -107,10 +98,7 @@
                     ...states.map((s) => ({ value: s.id, text: s.name })),
                   ]"
                 />
-                <FormLabel
-                  v-if="errors.state_id"
-                  class="error-message"
-                >
+                <FormLabel v-if="errors.state_id" class="error-message">
                   {{ errors.state_id[0] }}
                 </FormLabel>
               </div>
@@ -127,10 +115,7 @@
                     })),
                   ]"
                 />
-                <FormLabel
-                  v-if="errors.city_id"
-                  class="error-message"
-                >
+                <FormLabel v-if="errors.city_id" class="error-message">
                   {{ errors.city_id[0] }}
                 </FormLabel>
               </div>
@@ -143,10 +128,7 @@
                   icon="fas fa-map-marker-alt"
                   placeholder="Enter address"
                 />
-                <FormLabel
-                  v-if="errors.address"
-                  class="error-message"
-                >
+                <FormLabel v-if="errors.address" class="error-message">
                   {{ errors.address[0] }}
                 </FormLabel>
               </div>
@@ -158,10 +140,7 @@
                   icon="fas fa-map-pin"
                   placeholder="Enter PIN code"
                 />
-                <FormLabel
-                  v-if="errors.zip"
-                  class="error-message"
-                >
+                <FormLabel v-if="errors.zip" class="error-message">
                   {{ errors.zip[0] }}
                 </FormLabel>
               </div>
@@ -172,10 +151,7 @@
             <FormRow>
               <div>
                 <FormLabel>Contract Start</FormLabel>
-                <div
-                  class="disabled-clickable"
-                  @click="onDisabledClick"
-                >
+                <div class="disabled-clickable" @click="onDisabledClick">
                   <FormInput
                     v-model="form.contractStart"
                     icon="fas fa-calendar-alt"
@@ -185,10 +161,7 @@
               </div>
               <div>
                 <FormLabel>Contract End</FormLabel>
-                <div
-                  class="disabled-clickable"
-                  @click="onDisabledClick"
-                >
+                <div class="disabled-clickable" @click="onDisabledClick">
                   <FormInput
                     v-model="form.contractEnd"
                     icon="fas fa-calendar-alt"
@@ -198,10 +171,7 @@
               </div>
               <div>
                 <FormLabel>Last Contacted</FormLabel>
-                <div
-                  class="disabled-clickable"
-                  @click="onDisabledClick"
-                >
+                <div class="disabled-clickable" @click="onDisabledClick">
                   <FormInput
                     v-model="form.lastContacted"
                     icon="fas fa-history"
@@ -222,10 +192,7 @@
                   icon="fas fa-user"
                   placeholder="Enter first name"
                 />
-                <FormLabel
-                  v-if="errors.first_name"
-                  class="error-message"
-                >
+                <FormLabel v-if="errors.first_name" class="error-message">
                   {{ errors.first_name[0] }}
                 </FormLabel>
               </div>
@@ -236,10 +203,7 @@
                   icon="fas fa-user"
                   placeholder="Enter last name"
                 />
-                <FormLabel
-                  v-if="errors.last_name"
-                  class="error-message"
-                >
+                <FormLabel v-if="errors.last_name" class="error-message">
                   {{ errors.last_name[0] }}
                 </FormLabel>
               </div>
@@ -251,10 +215,7 @@
                   type="email"
                   placeholder="Admin email"
                 />
-                <FormLabel
-                  v-if="errors.admin_email"
-                  class="error-message"
-                >
+                <FormLabel v-if="errors.admin_email" class="error-message">
                   {{ errors.admin_email[0] }}
                 </FormLabel>
               </div>
@@ -267,10 +228,7 @@
                   icon="fas fa-phone"
                   placeholder="Admin phone"
                 />
-                <FormLabel
-                  v-if="errors.admin_phone"
-                  class="error-message"
-                >
+                <FormLabel v-if="errors.admin_phone" class="error-message">
                   {{ errors.admin_phone[0] }}
                 </FormLabel>
               </div>
@@ -287,10 +245,7 @@
                     })),
                   ]"
                 />
-                <FormLabel
-                  v-if="errors.sales_person_id"
-                  class="error-message"
-                >
+                <FormLabel v-if="errors.sales_person_id" class="error-message">
                   {{ errors.sales_person_id[0] }}
                 </FormLabel>
               </div>
@@ -303,10 +258,7 @@
                   type="number"
                   disabled
                 />
-                <FormLabel
-                  v-if="errors.certified_staff"
-                  class="error-message"
-                >
+                <FormLabel v-if="errors.certified_staff" class="error-message">
                   {{ errors.certified_staff[0] }}
                 </FormLabel>
               </div>
@@ -319,10 +271,7 @@
               >
                 Cancel
               </button>
-              <button
-                type="submit"
-                class="org-edit-update"
-              >
+              <button type="submit" class="org-edit-update">
                 Update Details
               </button>
             </div>
@@ -334,23 +283,23 @@
 </template>
 
 <script>
-import MainLayout from '@/components/layout/MainLayout.vue';
 import {
-  FormRow,
-  FormLabel,
-  FormInput,
   FormDropdown,
-} from '@/components/Common/Common_UI/Form';
-import { orgSizeOptions, findUsOptions } from '@/utils/formUtils';
-import axios from 'axios';
-import storage from '@/services/storage.js';
+  FormInput,
+  FormLabel,
+  FormRow,
+} from "@/components/Common/Common_UI/Form";
+import MainLayout from "@/components/layout/MainLayout.vue";
+import storage from "@/services/storage.js";
+import { findUsOptions, orgSizeOptions } from "@/utils/formUtils";
+import axios from "axios";
 
 const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
 
 //  Utility: API Helpers
 
 function getAuthHeaders() {
-  const authToken = storage.get('authToken');
+  const authToken = storage.get("authToken");
   return authToken ? { Authorization: `Bearer ${authToken}` } : {};
 }
 
@@ -362,9 +311,9 @@ function formatContractDate(input) {
     const d = new Date(input);
     if (Number.isNaN(d.getTime())) return input;
 
-    const day = String(d.getDate()).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, "0");
     const monthShort = d
-      .toLocaleString('en-GB', { month: 'short' })
+      .toLocaleString("en-GB", { month: "short" })
       .toUpperCase();
     const year = d.getFullYear();
     return `${day} ${monthShort},${year}`;
@@ -378,14 +327,14 @@ function formatLastContacted(input) {
     const d = new Date(input);
     if (Number.isNaN(d.getTime())) return input;
 
-    const day = String(d.getDate()).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, "0");
     const monthShort = d
-      .toLocaleString('en-GB', { month: 'short' })
+      .toLocaleString("en-GB", { month: "short" })
       .toUpperCase();
     const year = d.getFullYear();
     let hours = d.getHours();
-    const minutes = String(d.getMinutes()).padStart(2, '0');
-    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const minutes = String(d.getMinutes()).padStart(2, "0");
+    const ampm = hours >= 12 ? "PM" : "AM";
     hours = hours % 12 || 12;
     return `${day} ${monthShort},${year} ${hours}:${minutes} ${ampm}`;
   } catch {
@@ -398,7 +347,7 @@ function parseContractInput(input) {
   try {
     const d = new Date(input);
     if (Number.isNaN(d.getTime())) return null;
-    return d.toISOString().slice(0, 19).replace('T', ' ');
+    return d.toISOString().slice(0, 19).replace("T", " ");
   } catch {
     return null;
   }
@@ -412,11 +361,11 @@ function parseLastContactedInput(input) {
     if (Number.isNaN(d.getTime())) return null;
     // Build YYYY-MM-DD HH:MM:SS in UTC
     const y = d.getUTCFullYear();
-    const m = String(d.getUTCMonth() + 1).padStart(2, '0');
-    const day = String(d.getUTCDate()).padStart(2, '0');
-    const hh = String(d.getUTCHours()).padStart(2, '0');
-    const mm = String(d.getUTCMinutes()).padStart(2, '0');
-    const ss = String(d.getUTCSeconds()).padStart(2, '0');
+    const m = String(d.getUTCMonth() + 1).padStart(2, "0");
+    const day = String(d.getUTCDate()).padStart(2, "0");
+    const hh = String(d.getUTCHours()).padStart(2, "0");
+    const mm = String(d.getUTCMinutes()).padStart(2, "0");
+    const ss = String(d.getUTCSeconds()).padStart(2, "0");
     return `${y}-${m}-${day} ${hh}:${mm}:${ss}`;
   } catch {
     return null;
@@ -431,37 +380,37 @@ function mapOrganizationToForm(found) {
   const userDetails = user.user_details || {};
 
   return {
-    organization_name: found.organization_name || '',
-    organization_size: found.organization_size || '',
-    source: found.source || found.find_us || userDetails.find_us || '',
-    address: found.address || userDetails.address || '',
-    zip: found.zip || userDetails.zip || '',
+    organization_name: found.organization_name || "",
+    organization_size: found.organization_size || "",
+    source: found.source || found.find_us || userDetails.find_us || "",
+    address: found.address || userDetails.address || "",
+    zip: found.zip || userDetails.zip || "",
     country_id: found.country_id || userDetails.country_id || null,
     state_id: found.state_id || userDetails.state_id || null,
     city_id: found.city_id || userDetails.city_id || null,
     contractStart: found.contract_start
       ? formatContractDate(found.contract_start)
-      : '',
+      : "",
     contractEnd: found.contract_end
       ? formatContractDate(found.contract_end)
-      : '',
+      : "",
     firstName:
       user.first_name ||
       found.first_name ||
-      (found.main_contact || '').split(' ')[0] ||
-      '',
+      (found.main_contact || "").split(" ")[0] ||
+      "",
     lastName:
       user.last_name ||
       found.last_name ||
-      (found.main_contact || '').split(' ').slice(1).join(' ') ||
-      '',
-    adminEmail: user.email || found.admin_email || '',
-    adminPhone: userDetails.phone || found.admin_phone || '',
+      (found.main_contact || "").split(" ").slice(1).join(" ") ||
+      "",
+    adminEmail: user.email || found.admin_email || "",
+    adminPhone: userDetails.phone || found.admin_phone || "",
     sales_person_id: found.sales_person_id || null,
     lastContacted: found.last_contacted
       ? formatLastContacted(found.last_contacted)
-      : '',
-    certifiedStaff: found.certified_staff || userDetails.certified_staff || '0',
+      : "",
+    certifiedStaff: found.certified_staff || userDetails.certified_staff || "0",
   };
 }
 
@@ -489,36 +438,36 @@ function mapFormToPayload(form) {
 }
 
 export default {
-  name: 'OrganizationEdit',
+  name: "OrganizationEdit",
   components: { MainLayout, FormRow, FormLabel, FormInput, FormDropdown },
 
   data() {
     return {
       form: {
-        organization_name: '',
-        organization_size: '',
-        source: '',
-        address: '',
-        zip: '',
+        organization_name: "",
+        organization_size: "",
+        source: "",
+        address: "",
+        zip: "",
         country_id: null,
         state_id: null,
         city_id: null,
-        contractStart: '',
-        contractEnd: '',
-        firstName: '',
-        lastName: '',
-        adminEmail: '',
-        adminPhone: '',
+        contractStart: "",
+        contractEnd: "",
+        firstName: "",
+        lastName: "",
+        adminEmail: "",
+        adminPhone: "",
         sales_person_id: null,
-        lastContacted: '',
-        certifiedStaff: '',
+        lastContacted: "",
+        certifiedStaff: "",
       },
       errors: {},
       orgId: null,
       countries: [],
-      organization_size: '',
+      organization_size: "",
       orgSizeOptions: orgSizeOptions,
-      find_us: '',
+      find_us: "",
       findUsOptions: findUsOptions,
       states: [],
       cities: [],
@@ -535,11 +484,11 @@ export default {
       const name =
         this.form.organization_name ||
         this.$route.params.organization_name ||
-        '';
+        "";
       if (this.$root && this.$root.$emit) {
         this.$root.$emit(
-          'page-title-override',
-          name ? `Edit organization : ${name}` : 'Edit organization'
+          "page-title-override",
+          name ? `Edit organization : ${name}` : "Edit organization"
         );
       }
     });
@@ -563,8 +512,8 @@ export default {
 
         // Ensure top-level v-models (organization_size, find_us) used by the template
         // are populated from the mapped form so the dropdowns show the current values.
-        this.organization_size = this.form.organization_size || '';
-        this.find_us = this.form.source || '';
+        this.organization_size = this.form.organization_size || "";
+        this.find_us = this.form.source || "";
 
         // Resolve location names to IDs
         if (!this.form.country_id) {
@@ -605,7 +554,7 @@ export default {
           await this.fetchSalesPersons();
         }
       } catch (e) {
-        console.error('Failed to fetch organization details', e);
+        console.error("Failed to fetch organization details", e);
       }
     },
 
@@ -624,9 +573,9 @@ export default {
         this.errors = {};
         if (!this.orgId) {
           this.$toast?.add({
-            severity: 'error',
-            summary: 'Update Failed',
-            detail: 'Organization not found.',
+            severity: "error",
+            summary: "Update Failed",
+            detail: "Organization not found.",
             life: 3500,
           });
           return;
@@ -649,16 +598,16 @@ export default {
         );
 
         this.$toast?.add({
-          severity: 'success',
-          summary: 'Updated',
-          detail: 'Organization updated successfully.',
+          severity: "success",
+          summary: "Updated",
+          detail: "Organization updated successfully.",
           life: 3500,
         });
 
-        this.$root?.$emit('page-title-override', null);
+        this.$root?.$emit("page-title-override", null);
         this.$router.push(`/organizations/${this.orgId}`);
       } catch (e) {
-        console.error('Failed to update organization', e);
+        console.error("Failed to update organization", e);
         // If validation errors from backend (Laravel returns 422 with errors object)
         if (e.response && e.response.status === 422 && e.response.data) {
           this.errors = e.response.data.errors || {};
@@ -666,10 +615,10 @@ export default {
           const firstField = Object.keys(this.errors)[0];
           const firstMsg = this.errors[firstField]
             ? this.errors[firstField][0]
-            : 'Validation failed';
+            : "Validation failed";
           this.$toast?.add({
-            severity: 'error',
-            summary: 'Validation Error',
+            severity: "error",
+            summary: "Validation Error",
             detail: firstMsg,
             life: 6000,
           });
@@ -677,9 +626,9 @@ export default {
         }
 
         this.$toast?.add({
-          severity: 'error',
-          summary: 'Update Failed',
-          detail: 'Failed to update organization.',
+          severity: "error",
+          summary: "Update Failed",
+          detail: "Failed to update organization.",
           life: 4500,
         });
       }
@@ -731,10 +680,10 @@ export default {
         });
         const users = (res.data && res.data.users) || [];
         this.salesPersons = users.filter((u) =>
-          (u.roles || []).some((r) => r.name === 'salesperson')
+          (u.roles || []).some((r) => r.name === "salesperson")
         );
       } catch (e) {
-        console.warn('Failed to fetch sales persons', e);
+        console.warn("Failed to fetch sales persons", e);
         this.salesPersons = [];
       }
     },

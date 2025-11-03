@@ -102,18 +102,20 @@ class AssessmentScheduleController extends Controller
             $groupsWithMembers = [];
             if (!empty($assessmentSchedule->group_ids)) {
                 $groups = \App\Models\Group::whereIn('id', $assessmentSchedule->group_ids)
-                    ->with(['members' => function($query) { $query->with('memberRoles'); }])
+                    ->with(['members' => function ($query) {
+                        $query->with('memberRoles');
+                    }])
                     ->get();
                 foreach ($groups as $group) {
                     $groupsWithMembers[] = [
                         'id' => $group->id,
                         'name' => $group->name,
-                        'members' => $group->members->map(function($member) {
+                        'members' => $group->members->map(function ($member) {
                             return [
                                 'id' => $member->id,
                                 'name' => trim(($member->first_name ?? '') . ' ' . ($member->last_name ?? '')) ?: 'Unknown',
                                 'email' => $member->email,
-                                'member_roles' => $member->memberRoles->map(function($role) {
+                                'member_roles' => $member->memberRoles->map(function ($role) {
                                     return ['id' => $role->id, 'name' => $role->name];
                                 })
                             ];
@@ -133,8 +135,12 @@ class AssessmentScheduleController extends Controller
                         'id' => $member->id,
                         'name' => trim(($member->first_name ?? '') . ' ' . ($member->last_name ?? '')) ?: 'Unknown',
                         'email' => $member->email,
-                        'groups' => $member->groups->map(function($g) { return ['id' => $g->id, 'name' => $g->name]; }),
-                        'member_roles' => $member->memberRoles->map(function($r) { return ['id' => $r->id, 'name' => $r->name]; })
+                        'groups' => $member->groups->map(function ($g) {
+                            return ['id' => $g->id, 'name' => $g->name];
+                        }),
+                        'member_roles' => $member->memberRoles->map(function ($r) {
+                            return ['id' => $r->id, 'name' => $r->name];
+                        })
                     ];
                 }
             }
@@ -148,7 +154,6 @@ class AssessmentScheduleController extends Controller
                 'groups_with_members' => $groupsWithMembers,
                 'members_with_details' => $membersWithDetails,
             ], 200);
-
         } catch (\Exception $e) {
             Log::error('Error scheduling assessment:', ['error' => $e->getMessage()]);
             return response()->json(['message' => 'An unexpected error occurred while scheduling the assessment.'], 500);

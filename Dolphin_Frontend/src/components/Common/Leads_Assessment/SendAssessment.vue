@@ -10,7 +10,10 @@
           </div>
 
           <!-- Assessment send form -->
-          <form class="send-assessment-form" @submit.prevent="handleSendAssessment">
+          <form
+            class="send-assessment-form"
+            @submit.prevent="handleSendAssessment"
+          >
             <FormRow>
               <!-- Recipient Email -->
               <div class="send-assessment-field">
@@ -50,7 +53,7 @@
                   class="btn btn-primary"
                   :disabled="sending"
                 >
-                  {{ sending ? 'Sending...' : 'Send Assessment' }}
+                  {{ sending ? "Sending..." : "Send Assessment" }}
                 </button>
               </div>
             </div>
@@ -63,33 +66,37 @@
 
 <script>
 // Layout and Form UI imports
-import MainLayout from '@/components/layout/MainLayout.vue';
-import { FormInput, FormRow, FormLabel } from '@/components/Common/Common_UI/Form';
-import Editor from '@tinymce/tinymce-vue';
-import axios from 'axios';
+import {
+  FormInput,
+  FormLabel,
+  FormRow,
+} from "@/components/Common/Common_UI/Form";
+import MainLayout from "@/components/layout/MainLayout.vue";
+import Editor from "@tinymce/tinymce-vue";
+import axios from "axios";
 
 // TinyMCE core and plugins (self-hosted)
-import 'tinymce/tinymce';
-import 'tinymce/themes/silver';
-import 'tinymce/icons/default';
-import 'tinymce/models/dom';
-import 'tinymce/plugins/advlist';
-import 'tinymce/plugins/autolink';
-import 'tinymce/plugins/lists';
-import 'tinymce/plugins/link';
-import 'tinymce/plugins/image';
-import 'tinymce/plugins/charmap';
-import 'tinymce/plugins/preview';
-import 'tinymce/plugins/anchor';
-import 'tinymce/plugins/searchreplace';
-import 'tinymce/plugins/visualblocks';
-import 'tinymce/plugins/code';
-import 'tinymce/plugins/fullscreen';
-import 'tinymce/plugins/insertdatetime';
-import 'tinymce/plugins/media';
-import 'tinymce/plugins/table';
-import 'tinymce/plugins/wordcount';
-import 'tinymce/plugins/help';
+import "tinymce/icons/default";
+import "tinymce/models/dom";
+import "tinymce/plugins/advlist";
+import "tinymce/plugins/anchor";
+import "tinymce/plugins/autolink";
+import "tinymce/plugins/charmap";
+import "tinymce/plugins/code";
+import "tinymce/plugins/fullscreen";
+import "tinymce/plugins/help";
+import "tinymce/plugins/image";
+import "tinymce/plugins/insertdatetime";
+import "tinymce/plugins/link";
+import "tinymce/plugins/lists";
+import "tinymce/plugins/media";
+import "tinymce/plugins/preview";
+import "tinymce/plugins/searchreplace";
+import "tinymce/plugins/table";
+import "tinymce/plugins/visualblocks";
+import "tinymce/plugins/wordcount";
+import "tinymce/themes/silver";
+import "tinymce/tinymce";
 
 /**
 
@@ -101,57 +108,70 @@ import 'tinymce/plugins/help';
 
  */
 export default {
-  name: 'SendAssessment',
+  name: "SendAssessment",
   components: { MainLayout, Editor, FormInput, FormRow, FormLabel },
   data() {
     return {
-      leadId: null,               // ID of the lead (from route, query, or backend)
-      to: '',                     // Recipient email
-      recipientName: '',          // Recipient name
-      subject: 'Complete Your Registration', // Default subject
-      templateContent: '',        // Email body (HTML)
-      sending: false,             // Email sending state
-      registrationLink: '',       // Registration link for invite
+      leadId: null, // ID of the lead (from route, query, or backend)
+      to: "", // Recipient email
+      recipientName: "", // Recipient name
+      subject: "Complete Your Registration", // Default subject
+      templateContent: "", // Email body (HTML)
+      sending: false, // Email sending state
+      registrationLink: "", // Registration link for invite
 
       // TinyMCE configuration (self-hosted, free plugins only)
       tinymceConfigSelfHosted: {
         height: 500,
-        base_url: '/tinymce',
-        suffix: '.min',
-        skin_url: '/tinymce/skins/ui/oxide',
-        content_css: '/tinymce/skins/content/default/content.css',
-        menubar: 'edit view insert format tools table help',
+        base_url: "/tinymce",
+        suffix: ".min",
+        skin_url: "/tinymce/skins/ui/oxide",
+        content_css: "/tinymce/skins/content/default/content.css",
+        menubar: "edit view insert format tools table help",
         plugins: [
-          'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-          'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-          'insertdatetime', 'media', 'table', 'wordcount', 'help',
+          "advlist",
+          "autolink",
+          "lists",
+          "link",
+          "image",
+          "charmap",
+          "preview",
+          "anchor",
+          "searchreplace",
+          "visualblocks",
+          "code",
+          "fullscreen",
+          "insertdatetime",
+          "media",
+          "table",
+          "wordcount",
+          "help",
         ],
         toolbar:
-          'undo redo | formatselect | ' +
-          'bold italic underline strikethrough | ' +
-          'alignleft aligncenter alignright alignjustify | ' +
-          'bullist numlist outdent indent | ' +
-          'link image table | ' +
-          'code preview fullscreen | help',
-        valid_elements: '*[*]',
+          "undo redo | formatselect | " +
+          "bold italic underline strikethrough | " +
+          "alignleft aligncenter alignright alignjustify | " +
+          "bullist numlist outdent indent | " +
+          "link image table | " +
+          "code preview fullscreen | help",
+        valid_elements: "*[*]",
         cleanup: false,
         convert_urls: false,
         remove_script_host: false,
         relative_urls: false,
         block_formats:
-          'Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6; Preformatted=pre',
+          "Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6; Preformatted=pre",
         branding: false,
         statusbar: false,
         elementpath: false,
-        resize: 'both',
+        resize: "both",
         promotion: false,
         content_style:
-          'body { font-family: Arial, sans-serif; font-size: 14px; margin: 20px; }',
-        license_key: 'gpl',
+          "body { font-family: Arial, sans-serif; font-size: 14px; margin: 20px; }",
+        license_key: "gpl",
       },
     };
   },
-
 
   // Lifecycle: On mount, load initial lead data if available
 
@@ -160,7 +180,6 @@ export default {
     this.leadId = leadId;
     if (leadId) this.loadInitialLeadData(leadId);
   },
-
 
   // Watchers: If recipient email changes, re-fetch server template
 
@@ -172,7 +191,6 @@ export default {
     },
   },
 
-
   // Methods
 
   methods: {
@@ -182,8 +200,8 @@ export default {
     async loadInitialLeadData(leadId) {
       try {
         const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
-        const storage = require('@/services/storage').default;
-        const token = storage.get('authToken');
+        const storage = require("@/services/storage").default;
+        const token = storage.get("authToken");
         const res = await axios.get(`${API_BASE_URL}/api/leads/${leadId}`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
@@ -192,13 +210,15 @@ export default {
         const leadDefaultTemplate = res.data?.defaultTemplate;
         if (leadObj && leadDefaultTemplate) {
           this.leadId = leadObj.id || this.leadId;
-          this.to = leadObj.email || '';
-          this.recipientName = `${leadObj.first_name || ''} ${leadObj.last_name || ''}`.trim();
+          this.to = leadObj.email || "";
+          this.recipientName = `${leadObj.first_name || ""} ${
+            leadObj.last_name || ""
+          }`.trim();
           this.templateContent = String(leadDefaultTemplate);
         }
       } catch (e) {
-        console.error('Failed to load initial lead data:', e);
-        this.templateContent = '<p>Error: Could not load lead data.</p>';
+        console.error("Failed to load initial lead data:", e);
+        this.templateContent = "<p>Error: Could not load lead data.</p>";
       }
     },
 
@@ -208,17 +228,17 @@ export default {
     updateRegistrationLink() {
       if (this.to) {
         const origin =
-          (typeof globalThis !== 'undefined' &&
+          (typeof globalThis !== "undefined" &&
             globalThis.location &&
             globalThis.location.origin) ||
-          '';
+          "";
         const base = `${origin}/register`;
         const params = new URLSearchParams();
-        params.set('email', this.to);
-        if (this.leadId) params.set('lead_id', String(this.leadId));
+        params.set("email", this.to);
+        if (this.leadId) params.set("lead_id", String(this.leadId));
         this.registrationLink = `${base}?${params.toString()}`;
       } else {
-        this.registrationLink = '';
+        this.registrationLink = "";
       }
     },
 
@@ -238,16 +258,17 @@ export default {
           `${API_BASE_URL}/api/email-template/lead-registration`,
           { params }
         );
-        let html = res?.data ? String(res.data) : '';
+        let html = res?.data ? String(res.data) : "";
         // Only use the .email-container inner HTML for the editor
         const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        const container = doc.querySelector('.email-container');
+        const doc = parser.parseFromString(html, "text/html");
+        const container = doc.querySelector(".email-container");
         if (container) html = container.innerHTML;
         this.templateContent = html;
       } catch (e) {
-        console.error('Failed to fetch server template:', e?.message || e);
-        this.templateContent = '<p>Error: Could not load the email template.</p>';
+        console.error("Failed to fetch server template:", e?.message || e);
+        this.templateContent =
+          "<p>Error: Could not load the email template.</p>";
       }
     },
 
@@ -265,17 +286,17 @@ export default {
           payload
         );
         this.$toast.add({
-          severity: 'success',
-          summary: 'Assessment Sent',
-          detail: 'Assessment email sent successfully!',
+          severity: "success",
+          summary: "Assessment Sent",
+          detail: "Assessment email sent successfully!",
           life: 3500,
         });
       } catch (error) {
         const detail = this.formatSendErrorDetail(error);
-        console.error('Send Assessment Error:', error);
+        console.error("Send Assessment Error:", error);
         this.$toast.add({
-          severity: 'error',
-          summary: 'Send Error',
+          severity: "error",
+          summary: "Send Error",
           detail,
           life: 3500,
         });
@@ -290,10 +311,11 @@ export default {
     computeRecipientName() {
       return (
         this.recipientName ||
-        (this.$route.params && (this.$route.params.contact || this.$route.params.name)) ||
+        (this.$route.params &&
+          (this.$route.params.contact || this.$route.params.name)) ||
         this.$route.query.contact ||
         this.$route.query.name ||
-        ''
+        ""
       );
     },
 
@@ -319,10 +341,10 @@ export default {
      * Format email sending error for toast notification.
      */
     formatSendErrorDetail(error) {
-      let detail = 'Failed to send assessment email.';
+      let detail = "Failed to send assessment email.";
       if (error?.response?.data) {
         const data = error.response.data;
-        if (typeof data === 'string') {
+        if (typeof data === "string") {
           detail += ` ${data}`;
         } else if (data.error) {
           detail += ` ${data.error}`;
@@ -334,7 +356,7 @@ export default {
       } else if (error?.message) {
         detail += ` ${error.message}`;
       } else {
-        detail += ' An unknown error occurred.';
+        detail += " An unknown error occurred.";
       }
       return detail;
     },
@@ -343,7 +365,7 @@ export default {
      * TinyMCE editor init callback.
      */
     onTinyMCEInit(event, editor) {
-      console.log('TinyMCE initialized:', editor);
+      console.log("TinyMCE initialized:", editor);
     },
   },
 };

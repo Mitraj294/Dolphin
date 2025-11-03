@@ -1,8 +1,8 @@
 <x-mail::message>
-# New Announcement
+    # New Announcement
 
-{{ $content }}
+    {{ $content }}
 
-Thanks,<br>
-Dolphin Admin
+    Thanks,<br>
+    Dolphin Admin
 </x-mail::message>

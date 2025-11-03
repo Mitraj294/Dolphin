@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Jobs;
 
 use Illuminate\Bus\Queueable;
@@ -37,11 +38,12 @@ class SendScheduledAssessmentEmail implements ShouldQueue
             return;
         }
 
- 
+
 
         // For local testing: log the intended email content and mark as sent
         try {
-            $logMsg = sprintf("ScheduledEmail id=%d recipient=%s assessment=%d group=%d member=%d\nSubject: %s\nBody: %s",
+            $logMsg = sprintf(
+                "ScheduledEmail id=%d recipient=%s assessment=%d group=%d member=%d\nSubject: %s\nBody: %s",
                 $scheduled->id,
                 $scheduled->recipient_email,
                 $scheduled->assessment_id,

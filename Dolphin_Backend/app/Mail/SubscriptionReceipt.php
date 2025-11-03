@@ -28,8 +28,7 @@ class SubscriptionReceipt extends Mailable
         $subject = 'Your Dolphin receipt' . (isset($this->subscription['invoice_number']) ? ' — Invoice #' . $this->subscription['invoice_number'] : '');
 
         return $this->subject($subject)
-                    ->view('mail.subscription_receipt')
-                    ->with(['subscription' => $this->subscription]);
+            ->view('mail.subscription_receipt')
+            ->with(['subscription' => $this->subscription]);
     }
 }
-

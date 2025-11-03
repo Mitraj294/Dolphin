@@ -5,14 +5,14 @@ use App\Http\Controllers\TestNotificationController;
 
 $FRONTEND_URL = env('FRONTEND_URL');
 Route::get('/', function () {
-        // Show a small server-side status page so visiting port 8000
-        // gives a meaningful response in development.
-        $frontend = env('FRONTEND_URL', 'http://127.0.0.1:8080');
+    // Show a small server-side status page so visiting port 8000
+    // gives a meaningful response in development.
+    $frontend = env('FRONTEND_URL', 'http://127.0.0.1:8080');
     $laravel = app()->version();
     $php = PHP_VERSION;
     $env = env('APP_ENV', 'local');
     $debug = env('APP_DEBUG', true) ? 'true' : 'false';
-        $html = <<<HTML
+    $html = <<<HTML
 <!doctype html>
 <html>
     <head>
@@ -44,7 +44,7 @@ Route::get('/', function () {
 </html>
 HTML;
 
-        return response($html, 200)->header('Content-Type', 'text/html');
+    return response($html, 200)->header('Content-Type', 'text/html');
 });
 
 // Debug route to send a test subscription receipt notification
@@ -66,5 +66,3 @@ Route::get('/login', function () {
     $frontend = env('FRONTEND_URL');
     return redirect($frontend . '/login');
 })->name('login');
-
-

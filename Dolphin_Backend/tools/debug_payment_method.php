@@ -17,23 +17,23 @@ try {
     // Get the Stripe subscription
     $subscription = \Stripe\Subscription::retrieve('sub_1S4ytZPnfSZSgS1XbSpT27t8');
     echo "Subscription default_payment_method: " . ($subscription->default_payment_method ?? 'NULL') . "\n";
-    
+
     // Get the customer
     $customer = \Stripe\Customer::retrieve($subscription->customer);
     echo "Customer default_source: " . ($customer->default_source ?? 'NULL') . "\n";
     echo "Customer invoice_settings.default_payment_method: " . ($customer->invoice_settings->default_payment_method ?? 'NULL') . "\n";
-    
+
     // Get latest invoice
     $invoices = \Stripe\Invoice::all(['customer' => $subscription->customer, 'limit' => 1]);
     if (count($invoices->data) > 0) {
         $invoice = $invoices->data[0];
         echo "Latest invoice ID: " . $invoice->id . "\n";
         echo "Invoice payment_intent: " . ($invoice->payment_intent ?? 'NULL') . "\n";
-        
+
         if ($invoice->payment_intent) {
             $paymentIntent = \Stripe\PaymentIntent::retrieve($invoice->payment_intent);
             echo "PaymentIntent payment_method: " . ($paymentIntent->payment_method ?? 'NULL') . "\n";
-            
+
             if ($paymentIntent->payment_method) {
                 $pm = \Stripe\PaymentMethod::retrieve($paymentIntent->payment_method);
                 echo "Payment method type: " . $pm->type . "\n";
@@ -43,7 +43,7 @@ try {
                 }
             }
         }
-        
+
         // Check charges on payment intent
         if ($invoice->payment_intent) {
             $charges = \Stripe\Charge::all(['payment_intent' => $invoice->payment_intent]);
@@ -57,7 +57,6 @@ try {
             }
         }
     }
-    
 } catch (\Exception $e) {
     echo "Error: " . $e->getMessage() . "\n";
 }

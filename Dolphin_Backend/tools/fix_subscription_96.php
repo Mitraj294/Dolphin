@@ -20,21 +20,21 @@ try {
         echo "Subscription not found!\n";
         exit(1);
     }
-    
+
     echo "Current data: payment_method_type=" . ($subscription->payment_method_type ?? 'NULL') . "\n";
-    
+
     // Get the Stripe subscription
     $stripeSubscription = \Stripe\Subscription::retrieve($subscription->stripe_subscription_id);
-    
+
     if ($stripeSubscription->default_payment_method) {
         // Retrieve payment method details
         $paymentMethod = \Stripe\PaymentMethod::retrieve($stripeSubscription->default_payment_method);
-        
+
         $updateData = [
             'default_payment_method_id' => $paymentMethod->id,
             'payment_method_type' => $paymentMethod->type,
         ];
-        
+
         if ($paymentMethod->type === 'card' && $paymentMethod->card) {
             $updateData['payment_method_brand'] = $paymentMethod->card->brand;
             $updateData['payment_method_last4'] = $paymentMethod->card->last4;
@@ -42,20 +42,18 @@ try {
         } else {
             $updateData['payment_method'] = ucfirst($paymentMethod->type);
         }
-        
+
         // Update the subscription
         $subscription->update($updateData);
-        
+
         echo "✓ Updated subscription 96 with {$paymentMethod->type}";
         if ($paymentMethod->type === 'card') {
             echo " ({$paymentMethod->card->brand} ****{$paymentMethod->card->last4})";
         }
         echo "\n";
-        
     } else {
         echo "No default payment method found on subscription\n";
     }
-    
 } catch (\Exception $e) {
     echo "Error: " . $e->getMessage() . "\n";
 }

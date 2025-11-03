@@ -19,9 +19,16 @@ return new class extends Migration
         // Drop test-only columns from organizations table to match dolphin_db
         if (Schema::hasTable('organizations')) {
             $columnsToCheck = [
-                'source', 'address1', 'address2', 
-                'country_id', 'state_id', 'city_id', 'zip',
-                'main_contact', 'admin_email', 'admin_phone'
+                'source',
+                'address1',
+                'address2',
+                'country_id',
+                'state_id',
+                'city_id',
+                'zip',
+                'main_contact',
+                'admin_email',
+                'admin_phone'
             ];
 
             $columnsToDrop = [];

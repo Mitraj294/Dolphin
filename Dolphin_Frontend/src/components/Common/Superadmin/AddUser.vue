@@ -5,10 +5,7 @@
       <div class="lead-capture-outer">
         <div class="lead-capture-card">
           <h3 class="lead-capture-card-title">Add User</h3>
-          <form
-            class="lead-capture-form"
-            @submit.prevent="handleAddUser"
-          >
+          <form class="lead-capture-form" @submit.prevent="handleAddUser">
             <FormRow>
               <div>
                 <FormLabel>First Name</FormLabel>
@@ -18,11 +15,9 @@
                   placeholder="Type here"
                   required
                 />
-                <FormLabel
-                  v-if="errors.first_name"
-                  class="error-message1"
-                  >{{ errors.first_name[0] }}</FormLabel
-                >
+                <FormLabel v-if="errors.first_name" class="error-message1">{{
+                  errors.first_name[0]
+                }}</FormLabel>
               </div>
               <div>
                 <FormLabel>Last Name</FormLabel>
@@ -32,11 +27,9 @@
                   placeholder="Type here"
                   required
                 />
-                <FormLabel
-                  v-if="errors.last_name"
-                  class="error-message1"
-                  >{{ errors.last_name[0] }}</FormLabel
-                >
+                <FormLabel v-if="errors.last_name" class="error-message1">{{
+                  errors.last_name[0]
+                }}</FormLabel>
               </div>
               <div>
                 <FormLabel>Email</FormLabel>
@@ -48,10 +41,7 @@
                   required
                 />
                 <div>
-                  <FormLabel
-                    v-if="errors.email"
-                    class="error-message1"
-                  >
+                  <FormLabel v-if="errors.email" class="error-message1">
                     {{
                       Array.isArray(errors.email)
                         ? errors.email[0]
@@ -70,11 +60,9 @@
                   placeholder="Type here"
                   required
                 />
-                <FormLabel
-                  v-if="errors.phone"
-                  class="error-message1"
-                  >{{ errors.phone[0] }}</FormLabel
-                >
+                <FormLabel v-if="errors.phone" class="error-message1">{{
+                  errors.phone[0]
+                }}</FormLabel>
               </div>
               <div>
                 <FormLabel>Country</FormLabel>
@@ -88,11 +76,9 @@
                   ]"
                   required
                 />
-                <FormLabel
-                  v-if="errors.country_id"
-                  class="error-message1"
-                  >{{ errors.country_id[0] }}</FormLabel
-                >
+                <FormLabel v-if="errors.country_id" class="error-message1">{{
+                  errors.country_id[0]
+                }}</FormLabel>
               </div>
               <div>
                 <FormLabel>Select User Role</FormLabel>
@@ -104,11 +90,9 @@
                     ...roleOptions,
                   ]"
                   required
-                /><FormLabel
-                  v-if="errors.role"
-                  class="error-message1"
-                  >{{ errors.role[0] }}</FormLabel
-                >
+                /><FormLabel v-if="errors.role" class="error-message1">{{
+                  errors.role[0]
+                }}</FormLabel>
               </div>
             </FormRow>
             <div v-if="form.role === 'organizationadmin'">
@@ -163,12 +147,8 @@
               >
                 Cancel
               </button>
-              <button
-                type="submit"
-                class="org-edit-update"
-                :disabled="loading"
-              >
-                {{ loading ? 'Adding...' : 'Add User' }}
+              <button type="submit" class="org-edit-update" :disabled="loading">
+                {{ loading ? "Adding..." : "Add User" }}
               </button>
             </div>
           </form>
@@ -179,20 +159,20 @@
 </template>
 
 <script>
-import MainLayout from '@/components/layout/MainLayout.vue';
 import {
-  FormRow,
-  FormLabel,
-  FormInput,
-  FormDropdown,
   FormBox,
-} from '@/components/Common/Common_UI/Form';
-import Toast from 'primevue/toast';
-import { useToast } from 'primevue/usetoast';
-import axios from 'axios';
-import { orgSizeOptions } from '@/utils/formUtils';
+  FormDropdown,
+  FormInput,
+  FormLabel,
+  FormRow,
+} from "@/components/Common/Common_UI/Form";
+import MainLayout from "@/components/layout/MainLayout.vue";
+import { orgSizeOptions } from "@/utils/formUtils";
+import axios from "axios";
+import Toast from "primevue/toast";
+import { useToast } from "primevue/usetoast";
 export default {
-  name: 'AddUser',
+  name: "AddUser",
   components: {
     MainLayout,
     FormRow,
@@ -211,27 +191,27 @@ export default {
     return {
       loading: false,
       form: {
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: '',
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
         country_id: null,
         role: null,
-        organization_name: '',
-        organization_size: '',
+        organization_name: "",
+        organization_size: "",
       },
       roleOptions: [
-        { value: 'organizationadmin', text: 'Organization Admin' },
-        { value: 'dolphinadmin', text: 'Dolphin Admin' },
-        { value: 'salesperson', text: 'Sales Person' },
-        { value: 'user', text: 'User' },
+        { value: "organizationadmin", text: "Organization Admin" },
+        { value: "dolphinadmin", text: "Dolphin Admin" },
+        { value: "salesperson", text: "Sales Person" },
+        { value: "user", text: "User" },
       ],
       countries: [],
-      organization_size: '',
+      organization_size: "",
       orgSizeOptions: orgSizeOptions,
 
-      successMessage: '',
-      errorMessage: '',
+      successMessage: "",
+      errorMessage: "",
       errors: {},
     };
   },
@@ -245,7 +225,7 @@ export default {
         const res = await axios.get(`${API_BASE_URL}/api/countries`);
         this.countries = res.data || [];
       } catch (e) {
-        console.warn('Failed to fetch countries', e);
+        console.warn("Failed to fetch countries", e);
       }
     },
     onCountryChange(value) {
@@ -258,8 +238,8 @@ export default {
       this.errors = {};
 
       try {
-        const storage = require('@/services/storage').default;
-        const token = storage.get('authToken');
+        const storage = require("@/services/storage").default;
+        const token = storage.get("authToken");
         const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
 
         const payload = {
@@ -280,36 +260,36 @@ export default {
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
           }
         );
 
         // Show success message
         this.toast.add({
-          severity: 'success',
-          summary: 'User Added',
+          severity: "success",
+          summary: "User Added",
           detail: `New user has been created successfully. Password: ${response.data.password}`,
           life: 8000,
         });
 
         // Reset form
         this.form = {
-          firstName: '',
-          lastName: '',
-          email: '',
-          phone: '',
+          firstName: "",
+          lastName: "",
+          email: "",
+          phone: "",
           role: null,
-          organization_name: '',
-          organization_size: '',
+          organization_name: "",
+          organization_size: "",
         };
 
         // Navigate back to user list
-        this.$router.push('/user-permission');
+        this.$router.push("/user-permission");
       } catch (error) {
-        console.error('Error adding user:', error);
+        console.error("Error adding user:", error);
 
-        let errorMessage = 'Failed to add user.';
+        let errorMessage = "Failed to add user.";
         if (error.response && error.response.data) {
           if (error.response.data.message) {
             errorMessage = error.response.data.message;
@@ -320,16 +300,16 @@ export default {
           } else {
             this.errors = {};
           }
-        } else if (error.code === 'ERR_NETWORK') {
+        } else if (error.code === "ERR_NETWORK") {
           errorMessage =
-            'Network error - check if backend server is running and accessible';
+            "Network error - check if backend server is running and accessible";
         } else {
           errorMessage = error.message;
         }
 
         this.toast.add({
-          severity: 'error',
-          summary: 'Error',
+          severity: "error",
+          summary: "Error",
           detail: errorMessage,
           life: 5000,
         });

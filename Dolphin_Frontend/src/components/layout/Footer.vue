@@ -34,9 +34,9 @@
 </template>
 
 <script>
-import '@/assets/global.css';
+import "@/assets/global.css";
 export default {
-  name: 'Footer',
+  name: "Footer",
   props: {
     withPagination: {
       type: Boolean,
@@ -109,7 +109,7 @@ export default {
   margin-bottom: 0;
 }
 .footer-text-vertical {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   font-style: normal;
   font-weight: 400;
   font-size: 16px;

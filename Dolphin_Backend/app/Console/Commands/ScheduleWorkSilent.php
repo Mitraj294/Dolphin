@@ -27,26 +27,26 @@ class ScheduleWorkSilent extends Command
     public function handle()
     {
         $this->info('Starting silent schedule worker...');
-        
+
         $sleep = (int) $this->option('sleep');
-        
+
         while (true) {
             $schedule = $this->laravel->make(Schedule::class);
             $events = $schedule->dueEvents($this->laravel);
-            
+
             if (count($events) > 0) {
                 $this->info('[' . now()->format('Y-m-d H:i:s') . '] Running ' . count($events) . ' scheduled task(s)');
-                
+
                 foreach ($events as $event) {
                     if (! $event->filtersPass($this->laravel)) {
                         continue;
                     }
-                    
+
                     $this->info('Running: ' . $event->description);
                     $event->run($this->laravel);
                 }
             }
-            
+
             sleep($sleep);
         }
     }

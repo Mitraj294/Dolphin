@@ -39,7 +39,7 @@ return new class extends Migration
                     WHERE TABLE_SCHEMA = DATABASE() 
                     AND TABLE_NAME = 'users' 
                     AND COLUMN_NAME = 'created_at'");
-                
+
                 if (!empty($columnType) && strtolower($columnType[0]->DATA_TYPE) === 'timestamp') {
                     // Create temp column, copy data, drop old, rename
                     DB::statement('ALTER TABLE `users` ADD COLUMN `created_at_temp` DATETIME NULL');
@@ -59,7 +59,7 @@ return new class extends Migration
                     WHERE TABLE_SCHEMA = DATABASE() 
                     AND TABLE_NAME = 'users' 
                     AND COLUMN_NAME = 'updated_at'");
-                
+
                 if (!empty($columnType) && strtolower($columnType[0]->DATA_TYPE) === 'timestamp') {
                     DB::statement('ALTER TABLE `users` ADD COLUMN `updated_at_temp` DATETIME NULL');
                     DB::statement('UPDATE `users` SET `updated_at_temp` = `updated_at`');
@@ -78,7 +78,7 @@ return new class extends Migration
                     WHERE TABLE_SCHEMA = DATABASE() 
                     AND TABLE_NAME = 'users' 
                     AND COLUMN_NAME = 'deleted_at'");
-                
+
                 if (!empty($columnType) && strtolower($columnType[0]->DATA_TYPE) === 'timestamp') {
                     DB::statement('ALTER TABLE `users` ADD COLUMN `deleted_at_temp` DATETIME NULL');
                     DB::statement('UPDATE `users` SET `deleted_at_temp` = `deleted_at`');
@@ -114,14 +114,14 @@ return new class extends Migration
 
         // Convert datetime columns back to timestamp
         // (Note: This may lose some precision, but it's a best-effort rollback)
-        
+
         if (Schema::hasColumn('users', 'created_at')) {
             try {
                 $columnType = DB::select("SELECT DATA_TYPE FROM information_schema.COLUMNS 
                     WHERE TABLE_SCHEMA = DATABASE() 
                     AND TABLE_NAME = 'users' 
                     AND COLUMN_NAME = 'created_at'");
-                
+
                 if (!empty($columnType) && strtolower($columnType[0]->DATA_TYPE) === 'datetime') {
                     DB::statement('ALTER TABLE `users` MODIFY COLUMN `created_at` TIMESTAMP NULL');
                 }
@@ -136,7 +136,7 @@ return new class extends Migration
                     WHERE TABLE_SCHEMA = DATABASE() 
                     AND TABLE_NAME = 'users' 
                     AND COLUMN_NAME = 'updated_at'");
-                
+
                 if (!empty($columnType) && strtolower($columnType[0]->DATA_TYPE) === 'datetime') {
                     DB::statement('ALTER TABLE `users` MODIFY COLUMN `updated_at` TIMESTAMP NULL');
                 }
@@ -151,7 +151,7 @@ return new class extends Migration
                     WHERE TABLE_SCHEMA = DATABASE() 
                     AND TABLE_NAME = 'users' 
                     AND COLUMN_NAME = 'deleted_at'");
-                
+
                 if (!empty($columnType) && strtolower($columnType[0]->DATA_TYPE) === 'datetime') {
                     DB::statement('ALTER TABLE `users` MODIFY COLUMN `deleted_at` TIMESTAMP NULL');
                 }

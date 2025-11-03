@@ -10,23 +10,23 @@
 </template>
 
 <script>
-import MainLayout from '@/components/layout/MainLayout.vue';
-import OrganizationAdminAssessmentsCard from './OrganizationAdminAssessmentsCard.vue';
-import UserAssessment from './UserAssessment.vue';
+import MainLayout from "@/components/layout/MainLayout.vue";
+import OrganizationAdminAssessmentsCard from "./OrganizationAdminAssessmentsCard.vue";
+import UserAssessment from "./UserAssessment.vue";
 
 export default {
-  name: 'Assessments',
+  name: "Assessments",
   components: { MainLayout, OrganizationAdminAssessmentsCard, UserAssessment },
   computed: {
     isOrganizationAdmin() {
-      const storage = require('@/services/storage').default;
-      const role = storage.get('role') || 'user';
-      return role === 'organizationadmin';
+      const storage = require("@/services/storage").default;
+      const role = storage.get("role") || "user";
+      return role === "organizationadmin";
     },
     isUser() {
-      const storage = require('@/services/storage').default;
-      const role = storage.get('role') || 'user';
-      return role === 'user';
+      const storage = require("@/services/storage").default;
+      const role = storage.get("role") || "user";
+      return role === "user";
     },
   },
 };

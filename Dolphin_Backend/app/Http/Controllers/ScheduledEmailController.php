@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -47,8 +48,8 @@ class ScheduledEmailController extends Controller
         // Parse send_at as UTC (frontend sends UTC ISO string)
         $sendAtUtc = Carbon::parse($validated['send_at'])->setTimezone('UTC');
 
-    // Only schedule the email and dispatch the job. Token creation and email sending will be handled by the job.
-    $emailBody = $validated['body'] . "\n\n" . 'To answer the assessment, click the link below:';
+        // Only schedule the email and dispatch the job. Token creation and email sending will be handled by the job.
+        $emailBody = $validated['body'] . "\n\n" . 'To answer the assessment, click the link below:';
 
         $scheduledEmail = ScheduledEmail::create([
             'recipient_email' => $validated['recipient_email'],
@@ -113,7 +114,7 @@ class ScheduledEmailController extends Controller
             $emails = [];
             $groupsWithMembers = [];
             $membersWithDetails = [];
-            
+
             if ($schedule) {
                 $result['scheduled'] = true;
                 $result['schedule'] = $schedule;
@@ -172,21 +173,21 @@ class ScheduledEmailController extends Controller
                 // Get groups with their details
                 if (!empty($groupIds)) {
                     $groups = \App\Models\Group::whereIn('id', $groupIds)
-                        ->with(['members' => function($query) {
+                        ->with(['members' => function ($query) {
                             $query->with('memberRoles');
                         }])
                         ->get();
-                    
+
                     foreach ($groups as $group) {
                         $groupsWithMembers[] = [
                             'id' => $group->id,
                             'name' => $group->name,
-                            'members' => $group->members->map(function($member) {
+                            'members' => $group->members->map(function ($member) {
                                 return [
                                     'id' => $member->id,
                                     'name' => trim(($member->first_name ?? '') . ' ' . ($member->last_name ?? '')) ?: 'Unknown',
                                     'email' => $member->email,
-                                    'member_roles' => $member->memberRoles->map(function($role) {
+                                    'member_roles' => $member->memberRoles->map(function ($role) {
                                         return [
                                             'id' => $role->id,
                                             'name' => $role->name
@@ -204,19 +205,19 @@ class ScheduledEmailController extends Controller
                     $members = \App\Models\Member::whereIn('id', $memberIds)
                         ->with(['memberRoles', 'groups'])
                         ->get();
-                    
+
                     foreach ($members as $member) {
                         $membersWithDetails[] = [
                             'id' => $member->id,
                             'name' => trim(($member->first_name ?? '') . ' ' . ($member->last_name ?? '')) ?: 'Unknown',
                             'email' => $member->email,
-                            'groups' => $member->groups->map(function($group) {
+                            'groups' => $member->groups->map(function ($group) {
                                 return [
                                     'id' => $group->id,
                                     'name' => $group->name
                                 ];
                             }),
-                            'member_roles' => $member->memberRoles->map(function($role) {
+                            'member_roles' => $member->memberRoles->map(function ($role) {
                                 return [
                                     'id' => $role->id,
                                     'name' => $role->name

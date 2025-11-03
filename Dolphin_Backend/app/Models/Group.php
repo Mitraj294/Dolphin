@@ -21,7 +21,7 @@ class Group extends Model
     public function users()
     {
         return $this->members()->join('users', 'members.user_id', '=', 'users.id')
-                   ->select('users.*');
+            ->select('users.*');
     }
 
     public function members()

@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../vendor/autoload.php';
+
 use Dolphin_backend\Bootstrap\App;
 use App\Models\Announcement;
 

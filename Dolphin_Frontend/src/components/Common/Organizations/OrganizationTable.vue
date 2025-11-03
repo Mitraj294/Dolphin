@@ -87,8 +87,8 @@
 </template>
 
 <script>
-import Pagination from "@/components/layout/Pagination.vue";
 import TableHeader from "@/components/Common/Common_UI/TableHeader.vue";
+import Pagination from "@/components/layout/Pagination.vue";
 import Toast from "primevue/toast";
 // Import the organization service
 

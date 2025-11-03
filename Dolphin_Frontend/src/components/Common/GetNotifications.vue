@@ -157,10 +157,10 @@
 <script>
 import MainLayout from '@/components/layout/MainLayout.vue';
 import Pagination from '@/components/layout/Pagination.vue';
-import storage from '@/services/storage';
 import authMiddleware from '@/middleware/authMiddleware';
+import storage from '@/services/storage';
 import axios from 'axios';
-import { parseISO, isValid, isSameDay } from 'date-fns';
+import { isSameDay, isValid, parseISO } from 'date-fns';
 
 export default {
   name: 'GetNotification',

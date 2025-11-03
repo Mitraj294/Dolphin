@@ -1,12 +1,6 @@
 <template>
-  <div
-    class="form-box"
-    ref="dropdownRoot"
-  >
-    <span
-      v-if="icon"
-      class="form-input-icon"
-    >
+  <div class="form-box" ref="dropdownRoot">
+    <span v-if="icon" class="form-input-icon">
       <i :class="icon"></i>
     </span>
     <input
@@ -24,15 +18,8 @@
     <span class="form-dropdown-chevron">
       <i class="fas fa-chevron-down"></i>
     </span>
-    <teleport
-      to="body"
-      v-if="showDropdown"
-    >
-      <div
-        ref="dropdownEl"
-        class="dropdown-list"
-        :style="dropdownStyle"
-      >
+    <teleport to="body" v-if="showDropdown">
+      <div ref="dropdownEl" class="dropdown-list" :style="dropdownStyle">
         <input
           class="dropdown-search"
           placeholder="Search"
@@ -45,9 +32,9 @@
           :key="option.value"
           :ref="`dropdownItem${index}`"
           class="dropdown-item"
-          :class="{ 
+          :class="{
             'dropdown-item-focused': index === focusedIndex,
-            'dropdown-item-selected': option.value === modelValue
+            'dropdown-item-selected': option.value === modelValue,
           }"
           @click="selectOption(option)"
           @mouseenter="focusedIndex = index"
@@ -61,12 +48,12 @@
 
 <script>
 export default {
-  name: 'FormDropdown',
+  name: "FormDropdown",
   props: {
     modelValue: [String, Number],
     options: { type: Array, required: false, default: null }, // If not provided, will use slot
-    icon: { type: String, default: '' },
-    placeholder: { type: String, default: 'Select' },
+    icon: { type: String, default: "" },
+    placeholder: { type: String, default: "Select" },
     disabled: { type: Boolean, default: false },
     // allow callers to override horizontal padding in px (left/right)
     paddingLeft: { type: [Number, String], default: 36 },
@@ -75,7 +62,7 @@ export default {
   data() {
     return {
       showDropdown: false,
-      search: '',
+      search: "",
       dropdownStyle: {},
       focusedIndex: -1,
     };
@@ -105,18 +92,18 @@ export default {
         opts = slotNodes
           .filter(
             (node) =>
-              node.type === 'option' &&
+              node.type === "option" &&
               node.props &&
               node.props.value !== undefined
           )
           .map((node) => {
-            let childText = '';
-            if (typeof node.children === 'string') {
+            let childText = "";
+            if (typeof node.children === "string") {
               childText = node.children;
             } else if (Array.isArray(node.children)) {
-              childText = node.children.join('');
+              childText = node.children.join("");
             } else {
-              console.warn('Unsupported slot child type in FormDropdown');
+              console.warn("Unsupported slot child type in FormDropdown");
             }
             return {
               value: node.props.value,
@@ -127,7 +114,7 @@ export default {
 
       if (!this.search) return opts;
       return opts.filter((opt) =>
-        (opt.text || '').toLowerCase().includes(this.search.toLowerCase())
+        (opt.text || "").toLowerCase().includes(this.search.toLowerCase())
       );
     },
   },
@@ -137,9 +124,11 @@ export default {
       this.showDropdown = !this.showDropdown;
       if (this.showDropdown) {
         // Find the index of the currently selected option
-        const selectedIndex = this.filteredOptions.findIndex(opt => opt.value === this.modelValue);
+        const selectedIndex = this.filteredOptions.findIndex(
+          (opt) => opt.value === this.modelValue
+        );
         this.focusedIndex = selectedIndex >= 0 ? selectedIndex : -1;
-        
+
         // update position on open
         this.$nextTick(() => {
           this.updateDropdownPosition();
@@ -155,63 +144,70 @@ export default {
       }
     },
     selectOption(option) {
-      this.$emit('update:modelValue', option.value);
-      this.$emit('change', option.value); // Always emit change event
+      this.$emit("update:modelValue", option.value);
+      this.$emit("change", option.value); // Always emit change event
       this.showDropdown = false;
-      this.search = '';
+      this.search = "";
       this.focusedIndex = -1;
     },
     selectFocusedOption() {
-      if (this.focusedIndex >= 0 && this.focusedIndex < this.filteredOptions.length) {
+      if (
+        this.focusedIndex >= 0 &&
+        this.focusedIndex < this.filteredOptions.length
+      ) {
         this.selectOption(this.filteredOptions[this.focusedIndex]);
       }
     },
     scrollToFocusedItem() {
       if (this.focusedIndex < 0) return;
-      
+
       this.$nextTick(() => {
         const dropdownEl = this.$refs.dropdownEl;
         const itemRefs = this.$refs[`dropdownItem${this.focusedIndex}`];
-        
+
         if (dropdownEl && itemRefs && itemRefs.length > 0) {
           const item = itemRefs[0];
           const dropdownRect = dropdownEl.getBoundingClientRect();
           const itemRect = item.getBoundingClientRect();
-          
+
           // Check if item is above the visible area
           if (itemRect.top < dropdownRect.top) {
             dropdownEl.scrollTop = item.offsetTop;
           }
           // Check if item is below the visible area
           else if (itemRect.bottom > dropdownRect.bottom) {
-            dropdownEl.scrollTop = item.offsetTop - dropdownEl.clientHeight + item.clientHeight;
+            dropdownEl.scrollTop =
+              item.offsetTop - dropdownEl.clientHeight + item.clientHeight;
           }
         }
       });
     },
     handleKeyDown(event) {
       if (this.disabled) return;
-      
+
       switch (event.key) {
-        case 'ArrowDown':
-        case 'Down':
+        case "ArrowDown":
+        case "Down":
           event.preventDefault();
           if (!this.showDropdown) {
             this.toggleDropdown();
           } else {
-            this.focusedIndex = Math.min(this.focusedIndex + 1, this.filteredOptions.length - 1);
+            this.focusedIndex = Math.min(
+              this.focusedIndex + 1,
+              this.filteredOptions.length - 1
+            );
             this.scrollToFocusedItem();
           }
           break;
-        case 'ArrowUp':
-        case 'Up':
+        case "ArrowUp":
+        case "Up":
           event.preventDefault();
           if (this.showDropdown) {
             this.focusedIndex = Math.max(this.focusedIndex - 1, 0);
             this.scrollToFocusedItem();
           }
           break;
-        case 'Enter':
+        case "Enter":
           event.preventDefault();
           if (!this.showDropdown) {
             this.toggleDropdown();
@@ -219,13 +215,13 @@ export default {
             this.selectFocusedOption();
           }
           break;
-        case 'Escape':
+        case "Escape":
           event.preventDefault();
           this.showDropdown = false;
           this.focusedIndex = -1;
           break;
-        case ' ':
-        case 'Spacebar':
+        case " ":
+        case "Spacebar":
           if (!this.showDropdown) {
             event.preventDefault();
             this.toggleDropdown();
@@ -235,23 +231,26 @@ export default {
     },
     handleSearchKeyDown(event) {
       switch (event.key) {
-        case 'ArrowDown':
-        case 'Down':
+        case "ArrowDown":
+        case "Down":
           event.preventDefault();
-          this.focusedIndex = Math.min(this.focusedIndex + 1, this.filteredOptions.length - 1);
+          this.focusedIndex = Math.min(
+            this.focusedIndex + 1,
+            this.filteredOptions.length - 1
+          );
           this.scrollToFocusedItem();
           break;
-        case 'ArrowUp':
-        case 'Up':
+        case "ArrowUp":
+        case "Up":
           event.preventDefault();
           this.focusedIndex = Math.max(this.focusedIndex - 1, 0);
           this.scrollToFocusedItem();
           break;
-        case 'Enter':
+        case "Enter":
           event.preventDefault();
           this.selectFocusedOption();
           break;
-        case 'Escape':
+        case "Escape":
           event.preventDefault();
           this.showDropdown = false;
           this.focusedIndex = -1;
@@ -280,7 +279,7 @@ export default {
       const width = rect.width;
       // apply fixed-positioning so it stays in viewport during scroll
       this.dropdownStyle = {
-        position: 'absolute',
+        position: "absolute",
         top: `${top}px`,
         left: `${left}px`,
         width: `${width}px`,
@@ -289,10 +288,10 @@ export default {
     },
   },
   mounted() {
-    document.addEventListener('mousedown', this.handleClickOutside);
+    document.addEventListener("mousedown", this.handleClickOutside);
     // keep position updated on resize/scroll
-    window.addEventListener('resize', this.updateDropdownPosition);
-    window.addEventListener('scroll', this.updateDropdownPosition, true);
+    window.addEventListener("resize", this.updateDropdownPosition);
+    window.addEventListener("scroll", this.updateDropdownPosition, true);
   },
   watch: {
     showDropdown(newVal) {
@@ -300,19 +299,21 @@ export default {
         this.$nextTick(() => this.updateDropdownPosition());
       } else {
         this.focusedIndex = -1;
-        this.search = '';
+        this.search = "";
       }
     },
     search() {
       // Reset focused index when search changes, but maintain selection if visible
-      const selectedIndex = this.filteredOptions.findIndex(opt => opt.value === this.modelValue);
+      const selectedIndex = this.filteredOptions.findIndex(
+        (opt) => opt.value === this.modelValue
+      );
       this.focusedIndex = selectedIndex >= 0 ? selectedIndex : -1;
     },
   },
   beforeUnmount() {
-    document.removeEventListener('mousedown', this.handleClickOutside);
-    window.removeEventListener('resize', this.updateDropdownPosition);
-    window.removeEventListener('scroll', this.updateDropdownPosition, true);
+    document.removeEventListener("mousedown", this.handleClickOutside);
+    window.removeEventListener("resize", this.updateDropdownPosition);
+    window.removeEventListener("scroll", this.updateDropdownPosition, true);
   },
 };
 </script>

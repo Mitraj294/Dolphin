@@ -58,9 +58,21 @@ class DatabaseSeeder extends Seeder
 
         // assessment questions
         $options = [
-            'Relaxed', 'Persuasive', 'Stable', 'Charismatic', 'Individualistic', 'Optimistic',
-            'Conforming', 'Methodical', 'Serious', 'Friendly', 'Humble', 'Unrestrained',
-            'Competitive', 'Docile', 'Restless',
+            'Relaxed',
+            'Persuasive',
+            'Stable',
+            'Charismatic',
+            'Individualistic',
+            'Optimistic',
+            'Conforming',
+            'Methodical',
+            'Serious',
+            'Friendly',
+            'Humble',
+            'Unrestrained',
+            'Competitive',
+            'Docile',
+            'Restless',
         ];
         DB::table('questions')->insert([
             [

@@ -58,9 +58,7 @@ class Organization extends Model
     public function activeSubscription(): HasOne
     {
         return $this->hasOne(Subscription::class, 'user_id', 'user_id')
-                    ->where('status', 'active')
-                    ->orderBy('subscription_end', 'desc');
+            ->where('status', 'active')
+            ->orderBy('subscription_end', 'desc');
     }
-
-  
 }

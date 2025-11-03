@@ -72,9 +72,9 @@ return new class extends Migration
                 $table->dropUnique('members_email_deleted_at_unique');
             });
         } catch (\Exception $e) {
-         Log::error('Error dropping unique index on members(email, deleted_at)', [
-             'error' => $e->getMessage()
-         ]);
+            Log::error('Error dropping unique index on members(email, deleted_at)', [
+                'error' => $e->getMessage()
+            ]);
         }
 
         try {

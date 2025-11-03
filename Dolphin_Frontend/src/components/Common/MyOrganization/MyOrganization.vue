@@ -7,10 +7,7 @@
             @show-add-group="showAddGroupModal = true"
             @show-add-member="showAddMemberModal = true"
           />
-          <MemberTable
-            :groups="paginatedGroups"
-            @view-group="viewGroup"
-          />
+          <MemberTable :groups="paginatedGroups" @view-group="viewGroup" />
         </div>
         <Pagination
           :pageSize="pageSize"
@@ -38,16 +35,16 @@
 </template>
 
 <script>
-import MainLayout from '../../layout/MainLayout.vue';
-import MemberTable from './MemberTable.vue';
-import OrgActionButtons from './OrgActionButtons.vue';
-import Pagination from '../../layout/Pagination.vue';
-import GroupDetails from './GroupDetails.vue';
-import axios from 'axios';
-import storage from '@/services/storage';
+import storage from "@/services/storage";
+import axios from "axios";
+import MainLayout from "../../layout/MainLayout.vue";
+import Pagination from "../../layout/Pagination.vue";
+import GroupDetails from "./GroupDetails.vue";
+import MemberTable from "./MemberTable.vue";
+import OrgActionButtons from "./OrgActionButtons.vue";
 
 export default {
-  name: 'MyOrganization',
+  name: "MyOrganization",
   components: {
     MainLayout,
     MemberTable,
@@ -86,12 +83,12 @@ export default {
   },
   methods: {
     async loadGroups() {
-      const authToken = storage.get('authToken');
+      const authToken = storage.get("authToken");
       const headers = {};
-      if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
+      if (authToken) headers["Authorization"] = `Bearer ${authToken}`;
       try {
         const response = await axios.get(
-          process.env.VUE_APP_API_BASE_URL + '/api/groups',
+          process.env.VUE_APP_API_BASE_URL + "/api/groups",
           { headers }
         );
         this.groups = response.data;
@@ -101,17 +98,17 @@ export default {
       }
     },
     async loadMembers() {
-      const authToken = storage.get('authToken');
+      const authToken = storage.get("authToken");
       const headers = {};
-      if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
+      if (authToken) headers["Authorization"] = `Bearer ${authToken}`;
       try {
         const response = await axios.get(
-          process.env.VUE_APP_API_BASE_URL + '/api/members',
+          process.env.VUE_APP_API_BASE_URL + "/api/members",
           { headers }
         );
         this.members = response.data;
       } catch (e) {
-        console.error('Failed to load members:', e);
+        console.error("Failed to load members:", e);
         this.members = [];
       }
     },

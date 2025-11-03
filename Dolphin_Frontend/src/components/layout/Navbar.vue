@@ -53,11 +53,9 @@
               />
             </g>
           </svg>
-          <span
-            v-if="notificationCount > 0"
-            class="navbar-badge"
-            >{{ notificationCount }}</span
-          >
+          <span v-if="notificationCount > 0" class="navbar-badge">{{
+            notificationCount
+          }}</span>
         </span>
       </router-link>
       <!-- Make avatar, username, chevron a single clickable button -->
@@ -68,11 +66,9 @@
         @keydown.enter="toggleDropdown"
       >
         <span class="navbar-avatar">{{ displayName.charAt(0) }}</span>
-        <span
-          class="navbar-username"
-          v-show="!isVerySmallScreen"
-          >{{ displayName }}</span
-        >
+        <span class="navbar-username" v-show="!isVerySmallScreen">{{
+          displayName
+        }}</span>
         <img
           v-if="!dropdownOpen"
           src="@/assets/images/VectorDown.svg"
@@ -86,22 +82,10 @@
           class="navbar-chevron"
         />
         <transition name="fade">
-          <div
-            v-if="dropdownOpen"
-            class="navbar-dropdown"
-            ref="dropdown"
-          >
-            <div
-              class="navbar-dropdown-item0"
-              @click="goToProfile"
-            >
+          <div v-if="dropdownOpen" class="navbar-dropdown" ref="dropdown">
+            <div class="navbar-dropdown-item0" @click="goToProfile">
               <i class="fas fa-user"></i>
-              <div
-                class="navbar-dropdown-item"
-                v-if="roleName"
-              >
-                Profile
-              </div>
+              <div class="navbar-dropdown-item" v-if="roleName">Profile</div>
             </div>
             <div
               class="navbar-dropdown-item0"
@@ -131,10 +115,7 @@
                 Manage Subscriptions
               </div>
             </div>
-            <div
-              class="navbar-dropdown-item0"
-              @click="confirmLogout"
-            >
+            <div class="navbar-dropdown-item0" @click="confirmLogout">
               <i class="fas fa-sign-out-alt"></i>
               <div class="navbar-dropdown-item">Logout</div>
             </div>
@@ -146,15 +127,15 @@
 </template>
 
 <script>
-import authMiddleware from '@/middleware/authMiddleware';
-import '@/assets/global.css';
-import storage from '@/services/storage';
-import axios from 'axios';
-import ConfirmDialog from 'primevue/confirmdialog';
-import { useConfirm } from 'primevue/useconfirm';
+import "@/assets/global.css";
+import authMiddleware from "@/middleware/authMiddleware";
+import storage from "@/services/storage";
+import axios from "axios";
+import ConfirmDialog from "primevue/confirmdialog";
+import { useConfirm } from "primevue/useconfirm";
 
 export default {
-  name: 'Navbar',
+  name: "Navbar",
   inheritAttrs: false,
   props: {
     sidebarExpanded: {
@@ -172,10 +153,10 @@ export default {
       roleName: authMiddleware.getRole(),
       isVerySmallScreen: false,
       notificationCount: 0,
-      userFirstName: storage.get('first_name') || '',
-      userLastName: storage.get('last_name') || '',
-      userName: storage.get('userName') || '',
-      userEmail: storage.get('email') || '',
+      userFirstName: storage.get("first_name") || "",
+      userLastName: storage.get("last_name") || "",
+      userName: storage.get("userName") || "",
+      userEmail: storage.get("email") || "",
       leadNameCache: {},
       leadNameFetching: {},
       orgNameCache: {},
@@ -204,16 +185,16 @@ export default {
         (this.userFirstName && this.userFirstName.trim()) ||
         (this.userLastName && this.userLastName.trim())
       ) {
-        return `${this.userFirstName ? this.userFirstName.trim() : ''}${
+        return `${this.userFirstName ? this.userFirstName.trim() : ""}${
           this.userLastName && this.userLastName.trim()
-            ? ' ' + this.userLastName.trim()
-            : ''
+            ? " " + this.userLastName.trim()
+            : ""
         }`.trim();
       }
       if (this.userName && this.userName.trim()) return this.userName.trim();
 
       if (this.userEmail && this.userEmail.trim()) return this.userEmail.trim();
-      return 'User';
+      return "User";
     },
     role() {
       return authMiddleware.getRole();
@@ -222,32 +203,32 @@ export default {
   methods: {
     titleForRoute(routeName) {
       if (!routeName)
-        return this.$route && this.$route.name ? this.$route.name : '';
+        return this.$route && this.$route.name ? this.$route.name : "";
       const simpleMap = {
-        UserPermission: 'Users + Permission',
-        AddUser: 'Add User',
-        ScheduleClassTraining: 'Schedule Classes/Training',
-        SendAssessment: 'Send Assessment', // This was duplicated, but it's fine.
-        SendAgreement: 'Send Agreement/Payment Link',
-        ScheduleDemo: 'Schedule Demo',
-        Assessments: 'Assessments',
-        TrainingResources: 'Training & Resources',
-        Notifications: 'Notification',
-        GetNotification: 'Notification',
-        Organizations: 'Organizations',
-        Leads: 'Leads',
-        ThankYou: 'Thank You',
-        Login: 'Login',
-        LeadCapture: 'Lead Capture',
-        ManageSubscription: 'Manage Subscription',
-        SubscriptionPlans: 'Subscription Plans',
-        MemberListing: 'Member Listing',
-        Members: 'Member Listing',
-        Profile: 'Profile',
+        UserPermission: "Users + Permission",
+        AddUser: "Add User",
+        ScheduleClassTraining: "Schedule Classes/Training",
+        SendAssessment: "Send Assessment", // This was duplicated, but it's fine.
+        SendAgreement: "Send Agreement/Payment Link",
+        ScheduleDemo: "Schedule Demo",
+        Assessments: "Assessments",
+        TrainingResources: "Training & Resources",
+        Notifications: "Notification",
+        GetNotification: "Notification",
+        Organizations: "Organizations",
+        Leads: "Leads",
+        ThankYou: "Thank You",
+        Login: "Login",
+        LeadCapture: "Lead Capture",
+        ManageSubscription: "Manage Subscription",
+        SubscriptionPlans: "Subscription Plans",
+        MemberListing: "Member Listing",
+        Members: "Member Listing",
+        Profile: "Profile",
       };
 
       // Handle special ScheduleDemo case separately to reduce branching
-      if (routeName === 'ScheduleDemo') return this.scheduleDemoTitle();
+      if (routeName === "ScheduleDemo") return this.scheduleDemoTitle();
 
       if (Object.hasOwn(simpleMap, routeName)) return simpleMap[routeName];
 
@@ -264,21 +245,21 @@ export default {
 
       if (handlers[routeName]) return handlers[routeName].call(this);
 
-      return this.$route && this.$route.name ? this.$route.name : '';
+      return this.$route && this.$route.name ? this.$route.name : "";
     },
 
     scheduleDemoTitle() {
       try {
         const mode = this.$route && this.$route.query && this.$route.query.mode;
-        if (mode === 'followup') return 'Schedule Follow up';
+        if (mode === "followup") return "Schedule Follow up";
       } catch (e) {
-        console.debug('Navbar: error checking mode for ScheduleDemo', e);
+        console.debug("Navbar: error checking mode for ScheduleDemo", e);
       }
-      return 'Schedule Demo';
+      return "Schedule Demo";
     },
     handleOrganizationDetailTitle() {
       const organization_name =
-        (this.$route && this.$route.query && this.$route.query.orgName) || '';
+        (this.$route && this.$route.query && this.$route.query.orgName) || "";
       if (organization_name)
         return `Organization Details : ${organization_name} `;
 
@@ -292,15 +273,15 @@ export default {
       if (orgId) {
         const cached = this.orgNameCache[orgId];
         if (cached) return ` Organization Details : ${cached}`;
-        if (this.orgNameFetching[orgId]) return 'Organization Details';
+        if (this.orgNameFetching[orgId]) return "Organization Details";
         if (this.isNavbarAlive) this.fetchOrgName(orgId);
       }
 
-      return 'Organization Details';
+      return "Organization Details";
     },
     handleOrganizationEditTitle() {
       const organization_name =
-        (this.$route && this.$route.query && this.$route.query.orgName) || '';
+        (this.$route && this.$route.query && this.$route.query.orgName) || "";
       if (organization_name) return `Edit Organization : ${organization_name}`;
 
       const orgId =
@@ -312,11 +293,11 @@ export default {
       if (orgId) {
         const cached = this.orgNameCache[orgId];
         if (cached) return `Edit Organization : ${cached}`;
-        if (this.orgNameFetching[orgId]) return 'Edit Organization';
+        if (this.orgNameFetching[orgId]) return "Edit Organization";
         if (this.isNavbarAlive) this.fetchOrgName(orgId);
       }
 
-      return 'Edit Organization';
+      return "Edit Organization";
     },
     handleLeadDetailTitle() {
       const leadId =
@@ -324,12 +305,12 @@ export default {
           ((this.$route.params && this.$route.params.id) ||
             (this.$route.query && this.$route.query.id))) ||
         null;
-      if (!leadId) return 'Lead Detail';
+      if (!leadId) return "Lead Detail";
       const cached = this.leadNameCache[leadId];
       if (cached) return `Lead Detail : ${cached}`;
-      if (this.leadNameFetching[leadId]) return 'Lead Detail';
+      if (this.leadNameFetching[leadId]) return "Lead Detail";
       if (this.isNavbarAlive) this.fetchLeadName(leadId);
-      return 'Lead Detail';
+      return "Lead Detail";
     },
     handleEditLeadTitle() {
       const leadId =
@@ -337,17 +318,17 @@ export default {
           ((this.$route.params && this.$route.params.id) ||
             (this.$route.query && this.$route.query.id))) ||
         null;
-      if (!leadId) return 'Edit Lead';
+      if (!leadId) return "Edit Lead";
 
       const cached = this.leadNameCache[leadId];
       if (cached) return `Edit Lead : ${cached}`;
-      if (this.leadNameFetching[leadId]) return 'Edit Lead';
+      if (this.leadNameFetching[leadId]) return "Edit Lead";
       if (this.isNavbarAlive) this.fetchLeadName(leadId);
-      return 'Edit Lead';
+      return "Edit Lead";
     },
     handleBillingDetailsTitle() {
       const orgName =
-        (this.$route && this.$route.query && this.$route.query.orgName) || '';
+        (this.$route && this.$route.query && this.$route.query.orgName) || "";
       if (orgName) return ` Organization Details :${orgName}`;
 
       const orgId =
@@ -359,11 +340,11 @@ export default {
       if (orgId) {
         const cached = this.orgNameCache[orgId];
         if (cached) return `Organization Details : ${cached}`;
-        if (this.orgNameFetching[orgId]) return 'Organization Details';
+        if (this.orgNameFetching[orgId]) return "Organization Details";
         if (this.isNavbarAlive) this.fetchOrgName(orgId);
       }
 
-      return 'Organization Details';
+      return "Organization Details";
     },
     handleAssessmentSummaryTitle() {
       const assessmentParam =
@@ -372,7 +353,7 @@ export default {
         null;
       if (assessmentParam && assessmentParam.name) {
         console.debug(
-          'Navbar: using assessment from route params for title',
+          "Navbar: using assessment from route params for title",
           assessmentParam
         );
         return `Assessment Summary :  ${assessmentParam.name} `;
@@ -395,17 +376,17 @@ export default {
           console.debug(
             `Navbar: assessment name fetch already in progress for id=${assessmentId}`
           );
-          return 'Assessment Summary';
+          return "Assessment Summary";
         }
         if (this.isNavbarAlive) this.fetchAssessmentName(assessmentId);
-        return 'Assessment Summary';
+        return "Assessment Summary";
       }
 
-      return 'Assessment Summary';
+      return "Assessment Summary";
     },
     handleMyOrganizationTitle() {
-      const orgName = storage.get('organization_name');
-      return `My Organization${orgName ? ': ' + orgName : ''}`;
+      const orgName = storage.get("organization_name");
+      return `My Organization${orgName ? ": " + orgName : ""}`;
     },
     _debounce(fn, wait = 200) {
       let t = null;
@@ -418,15 +399,18 @@ export default {
       try {
         // Fetch unread notifications for authenticated user regardless of local subscription flag.
         // Backend will enforce any additional access controls; frontend should show badge if there are unread items.
-        let token = storage.get('authToken');
-        if (token && typeof token === 'object' && token.token)
+        let token = storage.get("authToken");
+        if (token && typeof token === "object" && token.token)
           token = token.token;
-        if (typeof token !== 'string') token = '';
+        if (typeof token !== "string") token = "";
         const config = token
           ? { headers: { Authorization: `Bearer ${token}` } }
           : {};
-  const API_BASE_URL = process.env.VUE_APP_API_BASE_URL || '';
-  const res = await axios.get(`${API_BASE_URL}/api/notifications/unread`, config);
+        const API_BASE_URL = process.env.VUE_APP_API_BASE_URL || "";
+        const res = await axios.get(
+          `${API_BASE_URL}/api/notifications/unread`,
+          config
+        );
         let unread = 0;
         if (res && res.data) {
           if (Array.isArray(res.data)) unread = res.data.length;
@@ -436,38 +420,41 @@ export default {
             unread = res.data.notifications.filter((n) => !n.read_at).length;
           } else {
             console.warn(
-              'Unexpected response format for unread notifications',
+              "Unexpected response format for unread notifications",
               res.data
             );
           }
         }
         this.notificationCount = unread;
-        storage.set('notificationCount', String(unread));
+        storage.set("notificationCount", String(unread));
       } catch (e) {
-        console.warn('Failed to fetch initial unread count', e);
+        console.warn("Failed to fetch initial unread count", e);
       }
     },
     updateUserInfo() {
-      this.userFirstName = storage.get('first_name') || '';
-      this.userLastName = storage.get('last_name') || '';
-      this.userName = storage.get('userName') || '';
-      this.userEmail = storage.get('email') || '';
+      this.userFirstName = storage.get("first_name") || "";
+      this.userLastName = storage.get("last_name") || "";
+      this.userName = storage.get("userName") || "";
+      this.userEmail = storage.get("email") || "";
     },
     isGuestAccess() {
       const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.has('guest_code') || urlParams.has('guest_token') || 
-             (urlParams.has('lead_id') && urlParams.has('email'));
+      return (
+        urlParams.has("guest_code") ||
+        urlParams.has("guest_token") ||
+        (urlParams.has("lead_id") && urlParams.has("email"))
+      );
     },
     async fetchCurrentUser() {
       // Skip user fetch if this is a guest access scenario
       if (this.isGuestAccess()) {
-        console.log('Navbar: Skipping fetchCurrentUser due to guest access');
+        console.log("Navbar: Skipping fetchCurrentUser due to guest access");
         return;
       }
-      
+
       try {
-        let token = storage.get('authToken');
-        if (token && typeof token === 'object' && token.token)
+        let token = storage.get("authToken");
+        if (token && typeof token === "object" && token.token)
           token = token.token;
         const config = token
           ? { headers: { Authorization: `Bearer ${token}` } }
@@ -481,13 +468,13 @@ export default {
         // persist organization id/name if present on the user object so titles can use it
         if (user.organization_id) {
           const orgIdStr = String(user.organization_id);
-          storage.set('organization_id', orgIdStr);
+          storage.set("organization_id", orgIdStr);
         }
 
         // if API returned an organization name, persist it (single source of truth)
         if (user.organization_name || user.organization) {
           const orgName = user.organization_name || user.organization;
-          storage.set('organization_name', orgName);
+          storage.set("organization_name", orgName);
           // prime simple in-memory cache for current org id if available
           if (user.organization_id)
             this.orgNameCache[String(user.organization_id)] = orgName;
@@ -496,7 +483,7 @@ export default {
         if (this.isNavbarAlive) this.updateUserInfo();
       } catch (e) {
         console.debug(
-          'Navbar: fetchCurrentUser failed',
+          "Navbar: fetchCurrentUser failed",
           e && e.message ? e.message : e
         );
       }
@@ -507,8 +494,8 @@ export default {
       this.leadNameFetching[leadId] = true;
       try {
         const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
-        let token = storage.get('authToken');
-        if (token && typeof token === 'object' && token.token)
+        let token = storage.get("authToken");
+        if (token && typeof token === "object" && token.token)
           token = token.token;
         const config = token
           ? { headers: { Authorization: `Bearer ${token}` } }
@@ -522,13 +509,13 @@ export default {
         if (leadObj) {
           const name =
             (
-              (leadObj.first_name || '') +
-              ' ' +
-              (leadObj.last_name || '')
+              (leadObj.first_name || "") +
+              " " +
+              (leadObj.last_name || "")
             ).trim() ||
             leadObj.contact ||
             leadObj.email ||
-            '';
+            "";
           if (name && this.isNavbarAlive) {
             this.leadNameCache[leadId] = name;
           }
@@ -579,7 +566,7 @@ export default {
           const assessmentName = data.assessment.name;
           if (this.$root && this.$root.$emit) {
             this.$root.$emit(
-              'page-title-override',
+              "page-title-override",
               `Assessment ${assessmentName} Summary`
             );
           }
@@ -588,11 +575,11 @@ export default {
         this.rows = (data.members || []).map((member) => ({
           name:
             member.name ||
-            (member.member_id ? `Member #${member.member_id}` : 'Unknown'),
+            (member.member_id ? `Member #${member.member_id}` : "Unknown"),
           result:
             member.answers && member.answers.length > 0
-              ? 'Submitted'
-              : 'Pending',
+              ? "Submitted"
+              : "Pending",
           assessment: (member.answers || []).map((a) => ({
             question: a.question,
             answer: a.answer,
@@ -606,14 +593,14 @@ export default {
       } catch (e) {
         this.rows = [];
         this.summary = { total_sent: 0, submitted: 0, pending: 0 };
-        console.error('Failed to fetch assessment summary:', e);
+        console.error("Failed to fetch assessment summary:", e);
       }
     },
     _getAuthConfig() {
-      let token = storage.get('authToken');
-      if (token && typeof token === 'object' && token.token)
+      let token = storage.get("authToken");
+      if (token && typeof token === "object" && token.token)
         token = token.token;
-      if (typeof token !== 'string') token = '';
+      if (typeof token !== "string") token = "";
       return token ? { headers: { Authorization: `Bearer ${token}` } } : {};
     },
     async _fetchAssessmentSummary(assessmentId, config) {
@@ -631,7 +618,7 @@ export default {
         `Navbar: cached assessment name for id=${assessmentId} -> ${name}`
       );
       if (this.$root && this.$root.$emit) {
-        this.$root.$emit('page-title-override', `Assessment ${name} Summary`);
+        this.$root.$emit("page-title-override", `Assessment ${name} Summary`);
       }
     },
     async fetchAssessmentName(assessmentId) {
@@ -674,16 +661,16 @@ export default {
       event.stopPropagation();
       this.dropdownOpen = false;
       this.confirm.require({
-        message: 'Are you sure you want to logout?',
-        header: 'Confirm Logout',
-        icon: 'pi pi-sign-out',
-        acceptLabel: 'Yes',
-        rejectLabel: 'Cancel',
+        message: "Are you sure you want to logout?",
+        header: "Confirm Logout",
+        icon: "pi pi-sign-out",
+        acceptLabel: "Yes",
+        rejectLabel: "Cancel",
         acceptProps: {
-          style: 'background-color: red; color: white; font-weight: bold;',
+          style: "background-color: red; color: white; font-weight: bold;",
         },
         rejectProps: {
-          style: 'background-color: gray;',
+          style: "background-color: gray;",
         },
         accept: () => {
           this.handleLogoutYes();
@@ -694,51 +681,51 @@ export default {
       });
     },
     handleLogoutYes() {
-      if (storage.get('superAuthToken')) {
-        storage.set('authToken', storage.get('superAuthToken'));
-        storage.set('role', storage.get('superRole'));
-        storage.set('userName', storage.get('superUserName'));
-        storage.set('userId', storage.get('superUserId'));
-        storage.set('first_name', storage.get('superFirstName') || '');
-        storage.set('last_name', storage.get('superLastName') || '');
-        storage.remove('superAuthToken');
-        storage.remove('superRole');
-        storage.remove('superUserName');
-        storage.remove('superUserId');
-        storage.remove('superFirstName');
-        storage.remove('superLastName');
-        this.$router.push('/user-permission');
+      if (storage.get("superAuthToken")) {
+        storage.set("authToken", storage.get("superAuthToken"));
+        storage.set("role", storage.get("superRole"));
+        storage.set("userName", storage.get("superUserName"));
+        storage.set("userId", storage.get("superUserId"));
+        storage.set("first_name", storage.get("superFirstName") || "");
+        storage.set("last_name", storage.get("superLastName") || "");
+        storage.remove("superAuthToken");
+        storage.remove("superRole");
+        storage.remove("superUserName");
+        storage.remove("superUserId");
+        storage.remove("superFirstName");
+        storage.remove("superLastName");
+        this.$router.push("/user-permission");
       } else {
         storage.clear();
-        this.$router.push({ name: 'Login' });
+        this.$router.push({ name: "Login" });
       }
     },
     checkScreen() {
       this.isVerySmallScreen = window.innerWidth <= 425;
     },
     updateNotificationCount() {
-      const count = Number(storage.get('notificationCount'));
+      const count = Number(storage.get("notificationCount"));
       this.notificationCount = isNaN(count) ? 0 : count;
     },
     goToProfile() {
       this.dropdownOpen = false;
-      this.$router.push({ name: 'Profile' });
+      this.$router.push({ name: "Profile" });
     },
   },
   mounted() {
     this.isNavbarAlive = true;
-    document.addEventListener('mousedown', this.handleClickOutside);
-    window.addEventListener('resize', this.checkScreen);
+    document.addEventListener("mousedown", this.handleClickOutside);
+    window.addEventListener("resize", this.checkScreen);
     this.checkScreen();
     this.updateNotificationCount();
     this.updateUserInfo();
     try {
-      const token = storage.get('authToken');
+      const token = storage.get("authToken");
       if (token) {
         this.fetchUnreadCount();
       }
     } catch (e) {
-      console.warn('Failed to fetch initial unread count', e);
+      console.warn("Failed to fetch initial unread count", e);
     }
     // Only fetch current user if not in guest access mode
     if (!this.isGuestAccess()) {
@@ -757,7 +744,7 @@ export default {
           this.fetchCurrentUser();
         }
       } catch (e) {
-        console.warn('Failed to fetch unread count after auth update', e);
+        console.warn("Failed to fetch unread count after auth update", e);
       }
       this.$forceUpdate && this.$forceUpdate();
     }, 500);
@@ -765,33 +752,33 @@ export default {
       this.fetchUnreadCount.bind(this),
       500
     );
-    window.addEventListener('notification-updated', this.boundFetchUnread);
-    window.addEventListener('auth-updated', this.boundAuthUpdated);
-    window.addEventListener('storage', this.boundUpdateNotificationCount);
+    window.addEventListener("notification-updated", this.boundFetchUnread);
+    window.addEventListener("auth-updated", this.boundAuthUpdated);
+    window.addEventListener("storage", this.boundUpdateNotificationCount);
     this.boundCountSync = (event) => {
       const incoming = event?.detail?.count;
-      if (typeof incoming !== 'number' || Number.isNaN(incoming)) return;
+      if (typeof incoming !== "number" || Number.isNaN(incoming)) return;
       this.notificationCount = incoming;
-      storage.set('notificationCount', String(incoming));
+      storage.set("notificationCount", String(incoming));
     };
-    window.addEventListener('notification-count-sync', this.boundCountSync);
+    window.addEventListener("notification-count-sync", this.boundCountSync);
 
     if (this.$root && this.$root.$on) {
-      this.$root.$on('page-title-override', (val) => {
+      this.$root.$on("page-title-override", (val) => {
         this.overridePageTitle = val;
       });
     }
 
     try {
       const rn = this.$route && this.$route.name;
-      if (rn === 'AssessmentSummary') {
+      if (rn === "AssessmentSummary") {
         const assessmentId =
           this.$route.params.assessmentId || this.$route.params.id;
         if (assessmentId && this.isNavbarAlive)
           this.fetchAssessmentName(assessmentId);
       }
     } catch (e) {
-      console.warn('Navbar: failed to fetch assessment name on mount', e);
+      console.warn("Navbar: failed to fetch assessment name on mount", e);
     }
 
     this.$watch(
@@ -799,14 +786,14 @@ export default {
       () => {
         try {
           const rn = this.$route && this.$route.name;
-          if (rn === 'AssessmentSummary') {
+          if (rn === "AssessmentSummary") {
             const aid =
               this.$route.params.assessmentId || this.$route.params.id;
             if (aid && this.isNavbarAlive) this.fetchAssessmentName(aid);
           }
         } catch (e) {
           console.warn(
-            'Navbar: failed to fetch assessment name on route change',
+            "Navbar: failed to fetch assessment name on route change",
             e
           );
         }
@@ -815,25 +802,25 @@ export default {
   },
   beforeUnmount() {
     this.isNavbarAlive = false;
-    document.removeEventListener('mousedown', this.handleClickOutside);
-    window.removeEventListener('resize', this.checkScreen);
+    document.removeEventListener("mousedown", this.handleClickOutside);
+    window.removeEventListener("resize", this.checkScreen);
     if (this.boundUpdateNotificationCount) {
-      window.removeEventListener('storage', this.boundUpdateNotificationCount);
+      window.removeEventListener("storage", this.boundUpdateNotificationCount);
     }
     if (this.boundFetchUnread) {
-      window.removeEventListener('notification-updated', this.boundFetchUnread);
+      window.removeEventListener("notification-updated", this.boundFetchUnread);
     }
     if (this.boundAuthUpdated) {
-      window.removeEventListener('auth-updated', this.boundAuthUpdated);
+      window.removeEventListener("auth-updated", this.boundAuthUpdated);
     }
     if (this.boundCountSync) {
       window.removeEventListener(
-        'notification-count-sync',
+        "notification-count-sync",
         this.boundCountSync
       );
     }
-    document.body.classList.remove('logout-overlay-active');
-    if (this.$root && this.$root.$off) this.$root.$off('page-title-override');
+    document.body.classList.remove("logout-overlay-active");
+    if (this.$root && this.$root.$off) this.$root.$off("page-title-override");
   },
 };
 </script>
@@ -904,7 +891,7 @@ export default {
 
 .navbar-page {
   position: static;
-  font-family: 'Helvetica Neue LT Std', sans-serif;
+  font-family: "Helvetica Neue LT Std", sans-serif;
   font-style: normal;
   font-weight: 500;
   font-size: 28px;
@@ -929,7 +916,6 @@ export default {
   .navbar-page {
     font-size: 18px;
     line-height: 24px;
-  
   }
 }
 

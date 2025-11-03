@@ -1,6 +1,6 @@
-import axios from 'axios';
-import storage from './storage';
-import router from '../router';
+import axios from "axios";
+import router from "../router";
+import storage from "./storage";
 
 // Helpers
 const isTokenExpired = (expiry) => {
@@ -10,32 +10,36 @@ const isTokenExpired = (expiry) => {
 };
 
 const handleTokenExpiry = () => {
-  console.log('Token expired, clearing storage and redirecting to login');
+  console.log("Token expired, clearing storage and redirecting to login");
   storage.clear();
-  router.push('/login');
-  return Promise.reject(new Error('Token expired'));
+  router.push("/login");
+  return Promise.reject(new Error("Token expired"));
 };
 
 const handleUnauthorized = (error) => {
-  console.log('Received 401 response, clearing storage and redirecting to login');
+  console.log(
+    "Received 401 response, clearing storage and redirecting to login"
+  );
   storage.clear();
-  router.push('/login');
+  router.push("/login");
   return Promise.reject(error);
 };
 
 const handleSubscriptionExpired = (error, data) => {
-  console.log('Subscription expired, updating storage');
+  console.log("Subscription expired, updating storage");
 
-  storage.set('subscription_status', 'expired');
-  if (data.subscription_end) storage.set('subscription_end', data.subscription_end);
-  if (data.subscription_id) storage.set('subscription_id', data.subscription_id);
+  storage.set("subscription_status", "expired");
+  if (data.subscription_end)
+    storage.set("subscription_end", data.subscription_end);
+  if (data.subscription_id)
+    storage.set("subscription_id", data.subscription_id);
 
   const currentPath = router.currentRoute.value.path;
   const allowedPages = [
-    '/manage-subscription',
-    '/subscriptions/plans',
-    '/profile',
-    '/organizations/billing-details'
+    "/manage-subscription",
+    "/subscriptions/plans",
+    "/profile",
+    "/organizations/billing-details",
   ];
 
   const isOnAllowedPage = allowedPages.some(
@@ -43,10 +47,10 @@ const handleSubscriptionExpired = (error, data) => {
   );
 
   if (!isOnAllowedPage) {
-    console.log('Redirecting to manage subscription page');
-    router.push('/manage-subscription');
+    console.log("Redirecting to manage subscription page");
+    router.push("/manage-subscription");
   } else {
-    console.log('Already on allowed page, not redirecting');
+    console.log("Already on allowed page, not redirecting");
   }
 
   return Promise.reject(error);
@@ -58,10 +62,10 @@ const handleSubscriptionExpired = (error, data) => {
 axios.interceptors.request.use(
   (config) => {
     // normalize auth token from storage (support string or object shapes)
-    let authToken = storage.get('authToken');
-    const tokenExpiry = storage.get('tokenExpiry');
+    let authToken = storage.get("authToken");
+    const tokenExpiry = storage.get("tokenExpiry");
 
-    if (authToken && typeof authToken === 'object') {
+    if (authToken && typeof authToken === "object") {
       if (authToken.token) authToken = authToken.token;
       else if (authToken.access_token) authToken = authToken.access_token;
       else authToken = null;
@@ -71,7 +75,7 @@ axios.interceptors.request.use(
       return handleTokenExpiry();
     }
 
-    if (authToken && typeof authToken === 'string') {
+    if (authToken && typeof authToken === "string") {
       config.headers = config.headers || {};
       // only set Authorization if not already set
       if (!config.headers.Authorization && !config.headers.authorization) {
@@ -94,7 +98,7 @@ axios.interceptors.response.use(
 
     if (
       error.response?.status === 403 &&
-      error.response.data?.status === 'expired' &&
+      error.response.data?.status === "expired" &&
       error.response.data.redirect_url
     ) {
       return handleSubscriptionExpired(error, error.response.data);

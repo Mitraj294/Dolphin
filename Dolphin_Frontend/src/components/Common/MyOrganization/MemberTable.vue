@@ -12,16 +12,10 @@
               ]"
             />
             <tbody>
-              <tr
-                v-for="group in groups"
-                :key="group.id"
-              >
+              <tr v-for="group in groups" :key="group.id">
                 <td>{{ group.name }}</td>
                 <td>
-                  <button
-                    class="btn-view"
-                    @click="viewGroup(group)"
-                  >
+                  <button class="btn-view" @click="viewGroup(group)">
                     <img
                       src="@/assets/images/Notes.svg"
                       alt="View"
@@ -32,12 +26,7 @@
                 </td>
               </tr>
               <tr v-if="groups.length === 0">
-                <td
-                  colspan="2"
-                  class="no-data"
-                >
-                  No groups found.
-                </td>
+                <td colspan="2" class="no-data">No groups found.</td>
               </tr>
             </tbody>
           </table>
@@ -48,10 +37,10 @@
 </template>
 
 <script>
-import TableHeader from '@/components/Common/Common_UI/TableHeader.vue';
+import TableHeader from "@/components/Common/Common_UI/TableHeader.vue";
 
 export default {
-  name: 'MemberTable',
+  name: "MemberTable",
   components: { TableHeader },
   props: {
     groups: {
@@ -61,7 +50,7 @@ export default {
   },
   methods: {
     viewGroup(group) {
-      this.$emit('view-group', group);
+      this.$emit("view-group", group);
     },
   },
 };

@@ -1,4 +1,5 @@
 <?php
+
 namespace Tests;
 
 use App\Console\Kernel as ConsoleKernel;
@@ -43,7 +44,7 @@ trait CreatesApplication
 
         $app->singleton(ConsoleKernelContract::class, ConsoleKernel::class);
         $app->singleton(HttpKernelContract::class, HttpKernel::class);
-        
+
         $app->singleton(ExceptionHandler::class, Handler::class);
 
         $app->make(ConsoleKernelContract::class)->bootstrap();

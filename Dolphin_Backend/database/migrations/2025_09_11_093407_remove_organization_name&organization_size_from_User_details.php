@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-    
+
         Schema::table('user_details', function (Blueprint $table) {
             if (Schema::hasColumn('user_details', 'organization_name')) {
                 $table->dropColumn('organization_name');

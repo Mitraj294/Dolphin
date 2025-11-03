@@ -48,7 +48,7 @@ Route::get('/health', function () {
     try {
         // Check database connection
         \Illuminate\Support\Facades\DB::connection()->getPdo();
-        
+
         return response()->json([
             'status' => 'ok',
             'service' => 'dolphin-backend',
@@ -159,7 +159,7 @@ Route::middleware('auth:api')->group(function () {
 
     // Allow marking notifications as read and marking all as read for authenticated users
     Route::prefix('announcements')->group(function () {
-    Route::post(ROUTE_PARAM_ID . '/read', [NotificationController::class, 'markAsRead']);
+        Route::post(ROUTE_PARAM_ID . '/read', [NotificationController::class, 'markAsRead']);
     });
     Route::prefix('notifications')->group(function () {
         Route::post('/mark-all-read', [NotificationController::class, 'markAllAsRead']);
@@ -188,25 +188,25 @@ Route::middleware('auth:api')->group(function () {
     // Protected by the `subscription.check` middleware.
     Route::middleware('subscription.check')->group(function () {
 
-        
+
         // General Features for All Active Subscribers
-        
+
         Route::apiResource('assessments', AssessmentController::class)->only(['index', 'store']);
         Route::get('/questions', [AnswerController::class, 'getQuestions']);
         Route::post('/answers', [AnswerController::class, 'store']);
         Route::get('/answers', [AnswerController::class, 'getUserAnswers']);
         Route::get('/organization-assessment-questions', [OrganizationAssessmentQuestionController::class, 'index']);
 
-        
+
         // Notifications (admin endpoints remain in superadmin block below)
 
-    
-        // 2.2.1 Role-Based Routes (Active Subscription Required)
-    
 
-        
+        // 2.2.1 Role-Based Routes (Active Subscription Required)
+
+
+
         // Superadmin Only (full management)
-        
+
         Route::middleware('auth.role:superadmin')->group(function () {
             Route::apiResource('users', UserController::class);
 
@@ -230,9 +230,9 @@ Route::middleware('auth:api')->group(function () {
             Route::get('/notifications', [NotificationController::class, 'allNotifications']);
         });
 
-        
+
         // Dolphin Admin & Superadmin (manage all lead actions)
-        
+
         Route::middleware('auth.role:dolphinadmin,superadmin')->group(function () {
             // Admins can perform all lead actions except index
             Route::apiResource('leads', LeadController::class)->except(['index']);
@@ -243,9 +243,9 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/leads', [LeadController::class, 'index'])
             ->middleware('auth.role:dolphinadmin,superadmin,salesperson');
 
-        
+
         // Organization Admin & Superadmin
-        
+
         Route::middleware('auth.role:organizationadmin,superadmin')->group(function () {
             Route::prefix('organizations')->group(function () {
                 Route::get('/', [OrganizationController::class, 'index']);
@@ -261,9 +261,9 @@ Route::middleware('auth:api')->group(function () {
             Route::get('/member-roles', [MemberRoleController::class, 'index']);
         });
 
-        
+
         // Organization Admin only for managing groups
-        
+
         Route::middleware('auth.role:organizationadmin')->group(function () {
             Route::prefix('groups')->group(function () {
                 Route::post('/', [GroupController::class, 'store']);
@@ -272,9 +272,9 @@ Route::middleware('auth:api')->group(function () {
             });
         });
 
-        
+
         // Multiple Admin Roles (Assessment Scheduling)
-        
+
         Route::middleware('auth.role:dolphinadmin,organizationadmin,superadmin')->group(function () {
             Route::post('/assessment-schedules', [AssessmentScheduleController::class, 'store']);
         });

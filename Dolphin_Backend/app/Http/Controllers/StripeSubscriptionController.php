@@ -26,153 +26,153 @@ use Carbon\Carbon;
 class StripeSubscriptionController extends Controller
 {
 
-public function createCheckoutSession(Request $request)
-{
-    Log::info('createCheckoutSession request:', $request->all());
+    public function createCheckoutSession(Request $request)
+    {
+        Log::info('createCheckoutSession request:', $request->all());
 
-    // Try optional authentication from Authorization header (Bearer token).
-    // The route is intentionally public to support guest checkouts, but when
-    // an Authorization header is present we should honor it and treat the
-    // request as authenticated (so organization admins don't get forced into
-    // the guest checkout branch).
-    try {
-        $authHeader = $request->header('Authorization');
-        if ($authHeader && preg_match('/Bearer\s+(.*)$/i', $authHeader, $m)) {
-            $bearer = $m[1];
-            $accessTokenModel = null;
-            if (strpos($bearer, '|') !== false) {
-                [$idPart] = explode('|', $bearer, 2);
-                $accessTokenModel = DB::table('oauth_access_tokens')->where('id', $idPart)->first();
-            }
-            if (!$accessTokenModel && substr_count($bearer, '.') === 2) {
-                try {
-                    $parts = explode('.', $bearer);
-                    $payloadB64 = $parts[1] ?? null;
-                    $payloadJson = $payloadB64 ? base64_decode(strtr($payloadB64, '-_', '+/')) : null;
-                    $payload = json_decode($payloadJson, true);
-                    if (is_array($payload) && !empty($payload['jti'])) {
-                        $accessTokenModel = DB::table('oauth_access_tokens')->where('id', $payload['jti'])->first();
-                    }
-                } catch (\Exception $e) {
-                    // ignore malformed JWTs here
+        // Try optional authentication from Authorization header (Bearer token).
+        // The route is intentionally public to support guest checkouts, but when
+        // an Authorization header is present we should honor it and treat the
+        // request as authenticated (so organization admins don't get forced into
+        // the guest checkout branch).
+        try {
+            $authHeader = $request->header('Authorization');
+            if ($authHeader && preg_match('/Bearer\s+(.*)$/i', $authHeader, $m)) {
+                $bearer = $m[1];
+                $accessTokenModel = null;
+                if (strpos($bearer, '|') !== false) {
+                    [$idPart] = explode('|', $bearer, 2);
+                    $accessTokenModel = DB::table('oauth_access_tokens')->where('id', $idPart)->first();
                 }
-            }
-            if (!$accessTokenModel) {
-                $accessTokenModel = DB::table('oauth_access_tokens')->where('id', $bearer)->first();
-            }
-            if ($accessTokenModel) {
-                $now = Carbon::now();
-                $expiresAt = isset($accessTokenModel->expires_at) ? Carbon::parse($accessTokenModel->expires_at) : null;
-                if (empty($accessTokenModel->revoked) && (!$expiresAt || $expiresAt->gt($now))) {
-                    $authUser = User::find($accessTokenModel->user_id);
-                    if ($authUser) {
-                        Auth::setUser($authUser);
+                if (!$accessTokenModel && substr_count($bearer, '.') === 2) {
+                    try {
+                        $parts = explode('.', $bearer);
+                        $payloadB64 = $parts[1] ?? null;
+                        $payloadJson = $payloadB64 ? base64_decode(strtr($payloadB64, '-_', '+/')) : null;
+                        $payload = json_decode($payloadJson, true);
+                        if (is_array($payload) && !empty($payload['jti'])) {
+                            $accessTokenModel = DB::table('oauth_access_tokens')->where('id', $payload['jti'])->first();
+                        }
+                    } catch (\Exception $e) {
+                        // ignore malformed JWTs here
                     }
                 }
+                if (!$accessTokenModel) {
+                    $accessTokenModel = DB::table('oauth_access_tokens')->where('id', $bearer)->first();
+                }
+                if ($accessTokenModel) {
+                    $now = Carbon::now();
+                    $expiresAt = isset($accessTokenModel->expires_at) ? Carbon::parse($accessTokenModel->expires_at) : null;
+                    if (empty($accessTokenModel->revoked) && (!$expiresAt || $expiresAt->gt($now))) {
+                        $authUser = User::find($accessTokenModel->user_id);
+                        if ($authUser) {
+                            Auth::setUser($authUser);
+                        }
+                    }
+                }
             }
+        } catch (\Exception $e) {
+            Log::warning('Optional token authentication failed: ' . $e->getMessage());
         }
-    } catch (\Exception $e) {
-        Log::warning('Optional token authentication failed: ' . $e->getMessage());
-    }
 
-    $user = Auth::user();
-    // If we set a user via optional token parsing above, prefer that.
-    if (isset($authUser) && $authUser instanceof User) {
-        $user = $authUser;
-    }
-    $priceId = $request->input('price_id');
-    $frontend = env('FRONTEND_URL', 'http://127.0.0.1:8080');
+        $user = Auth::user();
+        // If we set a user via optional token parsing above, prefer that.
+        if (isset($authUser) && $authUser instanceof User) {
+            $user = $authUser;
+        }
+        $priceId = $request->input('price_id');
+        $frontend = env('FRONTEND_URL', 'http://127.0.0.1:8080');
 
-    $customerEmail = null;
-    $leadId = null;
-    $response = [];
-    $status = 200;
+        $customerEmail = null;
+        $leadId = null;
+        $response = [];
+        $status = 200;
 
-    // Error collection
-    if (!$priceId) {
-        $response = ['error' => 'Missing price_id'];
-        $status = 400;
-    }
+        // Error collection
+        if (!$priceId) {
+            $response = ['error' => 'Missing price_id'];
+            $status = 400;
+        }
 
-    if (empty($response)) {
-        if ($user) {
-            $customerEmail = $user->email;
-        } else {
-            $customerEmail = trim((string)$request->input('email')) ?: null;
-            $leadId = $request->input('lead_id');
-
-            if (!$customerEmail || !$leadId) {
-                $response = ['error' => 'Email and lead_id are required for guest checkout'];
-                $status = 400;
+        if (empty($response)) {
+            if ($user) {
+                $customerEmail = $user->email;
             } else {
-                $lower = strtolower($customerEmail);
-                if (in_array($lower, ['...', 'n/a', 'na', 'none', 'null', 'user@example.com'], true) || strlen($customerEmail) > 254) {
-                    Log::warning('Guest email rejected as placeholder or too long', ['email' => $customerEmail, 'lead_id' => $leadId]);
-                    $response = ['error' => 'Invalid email address provided'];
-                    $status = 400;
-                } elseif (!filter_var($customerEmail, FILTER_VALIDATE_EMAIL)) {
-                    Log::warning('Invalid guest email provided for checkout', ['email' => $customerEmail, 'lead_id' => $leadId]);
-                    $response = ['error' => 'Invalid email address provided'];
+                $customerEmail = trim((string)$request->input('email')) ?: null;
+                $leadId = $request->input('lead_id');
+
+                if (!$customerEmail || !$leadId) {
+                    $response = ['error' => 'Email and lead_id are required for guest checkout'];
                     $status = 400;
                 } else {
-                    Log::info('Guest checkout email validated', ['email' => $customerEmail, 'lead_id' => $leadId]);
+                    $lower = strtolower($customerEmail);
+                    if (in_array($lower, ['...', 'n/a', 'na', 'none', 'null', 'user@example.com'], true) || strlen($customerEmail) > 254) {
+                        Log::warning('Guest email rejected as placeholder or too long', ['email' => $customerEmail, 'lead_id' => $leadId]);
+                        $response = ['error' => 'Invalid email address provided'];
+                        $status = 400;
+                    } elseif (!filter_var($customerEmail, FILTER_VALIDATE_EMAIL)) {
+                        Log::warning('Invalid guest email provided for checkout', ['email' => $customerEmail, 'lead_id' => $leadId]);
+                        $response = ['error' => 'Invalid email address provided'];
+                        $status = 400;
+                    } else {
+                        Log::info('Guest checkout email validated', ['email' => $customerEmail, 'lead_id' => $leadId]);
+                    }
                 }
             }
         }
+
+        // Only try Stripe if no previous error
+        if (empty($response)) {
+            // Redirect to an explicit frontend success page after checkout completes.
+            // The frontend success page should display payment confirmation and a
+            // button that allows the user to proceed to login (instead of auto-login).
+            $successUrl = $frontend . '/subscriptions/success?checkout_session_id={CHECKOUT_SESSION_ID}';
+            if ($customerEmail && $leadId) {
+                $successUrl .= '&email=' . urlencode($customerEmail) . '&lead_id=' . $leadId;
+            }
+            // Prefer a short guest_code (new flow) but fall back to legacy guest_token
+            $guestCode = $request->input('guest_code');
+            $guestToken = $request->input('guest_token');
+            if ($guestCode) {
+                $successUrl .= '&guest_code=' . urlencode($guestCode);
+            } elseif ($guestToken) {
+                // Backwards compatibility: some emails still include the full personal access token
+                $successUrl .= '&guest_token=' . urlencode($guestToken);
+            }
+            Log::info('Success URL:', ['url' => $successUrl]);
+
+            Stripe::setApiKey(config('services.stripe.secret'));
+
+            try {
+                $session = StripeSession::create([
+                    'payment_method_types' => ['card'],
+                    'mode' => 'subscription',
+                    'customer_email' => $customerEmail,
+                    'line_items' => [[
+                        'price' => $priceId,
+                        'quantity' => 1,
+                    ]],
+                    'success_url' => $successUrl,
+                    'cancel_url' => $frontend . '/subscriptions/plans',
+                ]);
+                $response = ['id' => $session->id, 'url' => $session->url];
+                $status = 200;
+            } catch (\Stripe\Exception\InvalidRequestException $e) {
+                Log::error('Stripe InvalidRequestException creating checkout session', [
+                    'message' => $e->getMessage(),
+                    'params' => ['price_id' => $priceId, 'email' => $customerEmail, 'lead_id' => $leadId]
+                ]);
+                $response = ['error' => 'Stripe rejected the request: ' . $e->getMessage()];
+                $status = 400;
+            } catch (\Throwable $e) {
+                Log::error('Unexpected error creating Stripe checkout session: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+                $response = ['error' => 'Could not create Stripe checkout session.'];
+                $status = 500;
+            }
+        }
+
+        return response()->json($response, $status);
     }
-
-    // Only try Stripe if no previous error
-    if (empty($response)) {
-    // Redirect to an explicit frontend success page after checkout completes.
-    // The frontend success page should display payment confirmation and a
-    // button that allows the user to proceed to login (instead of auto-login).
-    $successUrl = $frontend . '/subscriptions/success?checkout_session_id={CHECKOUT_SESSION_ID}';
-        if ($customerEmail && $leadId) {
-            $successUrl .= '&email=' . urlencode($customerEmail) . '&lead_id=' . $leadId;
-        }
-        // Prefer a short guest_code (new flow) but fall back to legacy guest_token
-        $guestCode = $request->input('guest_code');
-        $guestToken = $request->input('guest_token');
-        if ($guestCode) {
-            $successUrl .= '&guest_code=' . urlencode($guestCode);
-        } elseif ($guestToken) {
-            // Backwards compatibility: some emails still include the full personal access token
-            $successUrl .= '&guest_token=' . urlencode($guestToken);
-        }
-        Log::info('Success URL:', ['url' => $successUrl]);
-
-        Stripe::setApiKey(config('services.stripe.secret'));
-
-        try {
-            $session = StripeSession::create([
-                'payment_method_types' => ['card'],
-                'mode' => 'subscription',
-                'customer_email' => $customerEmail,
-                'line_items' => [[
-                    'price' => $priceId,
-                    'quantity' => 1,
-                ]],
-                'success_url' => $successUrl,
-                'cancel_url' => $frontend . '/subscriptions/plans',
-            ]);
-            $response = ['id' => $session->id, 'url' => $session->url];
-            $status = 200;
-        } catch (\Stripe\Exception\InvalidRequestException $e) {
-            Log::error('Stripe InvalidRequestException creating checkout session', [
-                'message' => $e->getMessage(),
-                'params' => ['price_id' => $priceId, 'email' => $customerEmail, 'lead_id' => $leadId]
-            ]);
-            $response = ['error' => 'Stripe rejected the request: ' . $e->getMessage()];
-            $status = 400;
-        } catch (\Throwable $e) {
-            Log::error('Unexpected error creating Stripe checkout session: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
-            $response = ['error' => 'Could not create Stripe checkout session.'];
-            $status = 500;
-        }
-    }
-
-    return response()->json($response, $status);
-}
 
 
     /**
@@ -217,7 +217,7 @@ public function createCheckoutSession(Request $request)
         return response()->json($response, $status);
     }
 
-    
+
 
     public function createCustomerPortal(Request $request)
     {
@@ -238,53 +238,53 @@ public function createCheckoutSession(Request $request)
     /**
      * Handles incoming Stripe webhooks with robust error handling and delegation.
      */
- public function handleWebhook(Request $request)
-{
-    $responseMessage = 'Webhook handled';
-    $responseCode = 200;
-    $event = null;
+    public function handleWebhook(Request $request)
+    {
+        $responseMessage = 'Webhook handled';
+        $responseCode = 200;
+        $event = null;
 
-    try {
-        $event = $this->verifyAndConstructEvent($request);
-        Log::info('Stripe Webhook Event Received:', [
-            'type' => $event->type,
-            'id' => $event->id
-        ]);
-    } catch (UnexpectedValueException $e) {
-        Log::error('Stripe Webhook Invalid Payload', [
-            'error' => $e->getMessage(),
-            'payload' => $request->getContent()
-        ]);
-        $responseMessage = 'Invalid payload';
-        $responseCode = 400;
-    } catch (SignatureVerificationException $e) {
-        Log::error('Stripe Webhook Invalid Signature', [
-            'error' => $e->getMessage(),
-            'signature' => $request->header('Stripe-Signature')
-        ]);
-        $responseMessage = 'Invalid signature';
-        $responseCode = 400;
-    }
-
-    if ($event) {
         try {
-            match ($event->type) {
-                'checkout.session.completed' => $this->handleCheckoutSessionCompleted($event->data->object),
-                'invoice.paid' => $this->handleInvoicePaid($event->data->object),
-                default => Log::info('Unhandled event type', ['type' => $event->type]),
-            };
-        } catch (Throwable $e) {
-            Log::error('Error processing webhook event', [
-                'event_id' => $event->id,
-                'event_type' => $event->type,
-                'exception' => $e
+            $event = $this->verifyAndConstructEvent($request);
+            Log::info('Stripe Webhook Event Received:', [
+                'type' => $event->type,
+                'id' => $event->id
             ]);
-            $responseMessage = 'Webhook handled with internal error';
+        } catch (UnexpectedValueException $e) {
+            Log::error('Stripe Webhook Invalid Payload', [
+                'error' => $e->getMessage(),
+                'payload' => $request->getContent()
+            ]);
+            $responseMessage = 'Invalid payload';
+            $responseCode = 400;
+        } catch (SignatureVerificationException $e) {
+            Log::error('Stripe Webhook Invalid Signature', [
+                'error' => $e->getMessage(),
+                'signature' => $request->header('Stripe-Signature')
+            ]);
+            $responseMessage = 'Invalid signature';
+            $responseCode = 400;
         }
-    }
 
-    return response($responseMessage, $responseCode);
-}
+        if ($event) {
+            try {
+                match ($event->type) {
+                    'checkout.session.completed' => $this->handleCheckoutSessionCompleted($event->data->object),
+                    'invoice.paid' => $this->handleInvoicePaid($event->data->object),
+                    default => Log::info('Unhandled event type', ['type' => $event->type]),
+                };
+            } catch (Throwable $e) {
+                Log::error('Error processing webhook event', [
+                    'event_id' => $event->id,
+                    'event_type' => $event->type,
+                    'exception' => $e
+                ]);
+                $responseMessage = 'Webhook handled with internal error';
+            }
+        }
+
+        return response($responseMessage, $responseCode);
+    }
 
 
     /**
@@ -387,7 +387,7 @@ public function createCheckoutSession(Request $request)
 
         $stripeSub = \Stripe\Subscription::retrieve($stripeSubscriptionId);
         $amount = $invoice->amount_paid / 100;
-        
+
         // Fallback for subscription period if not available on the subscription object
         // Use Carbon to compute start/end consistently. If Stripe didn't provide
         // a period end (or start and end are equal), compute end based on plan.
@@ -458,7 +458,7 @@ public function createCheckoutSession(Request $request)
                     return $this->formatPaymentMethodDetails($pm);
                 }
             }
-    
+
             if ($stripeSub->default_payment_method) {
                 Log::info('Payment method extracted from subscription default.', ['sub_id' => $stripeSub->id]);
                 $pm = PaymentMethod::retrieve($stripeSub->default_payment_method);
@@ -473,43 +473,42 @@ public function createCheckoutSession(Request $request)
     /**
      * Retrieves payment method details from an invoice, customer, or subscription.
      */
-  private function getPaymentMethodDetailsFromInvoice(
-    Invoice $invoice,
-    Customer $customer,
-    \Stripe\Subscription $stripeSub
-): array {
-    $pm = null;
+    private function getPaymentMethodDetailsFromInvoice(
+        Invoice $invoice,
+        Customer $customer,
+        \Stripe\Subscription $stripeSub
+    ): array {
+        $pm = null;
 
-    try {
-        if ($invoice->payment_intent) {
-            $intent = PaymentIntent::retrieve($invoice->payment_intent);
-            if ($intent->payment_method) {
-                $pm = PaymentMethod::retrieve($intent->payment_method);
+        try {
+            if ($invoice->payment_intent) {
+                $intent = PaymentIntent::retrieve($invoice->payment_intent);
+                if ($intent->payment_method) {
+                    $pm = PaymentMethod::retrieve($intent->payment_method);
+                }
             }
-        }
 
-        if (!$pm && $customer->invoice_settings->default_payment_method) {
-            Log::info('Attempting fallback for payment method via customer default.', [
-                'customer_id' => $customer->id
+            if (!$pm && $customer->invoice_settings->default_payment_method) {
+                Log::info('Attempting fallback for payment method via customer default.', [
+                    'customer_id' => $customer->id
+                ]);
+                $pm = PaymentMethod::retrieve($customer->invoice_settings->default_payment_method);
+            }
+
+            if (!$pm && $stripeSub->default_payment_method) {
+                Log::info('Attempting fallback for payment method via subscription default.', [
+                    'sub_id' => $stripeSub->id
+                ]);
+                $pm = PaymentMethod::retrieve($stripeSub->default_payment_method);
+            }
+        } catch (Throwable $e) {
+            Log::error('Stripe API error retrieving payment method for invoice: ' . $e->getMessage(), [
+                'invoice_id' => $invoice->id
             ]);
-            $pm = PaymentMethod::retrieve($customer->invoice_settings->default_payment_method);
         }
 
-        if (!$pm && $stripeSub->default_payment_method) {
-            Log::info('Attempting fallback for payment method via subscription default.', [
-                'sub_id' => $stripeSub->id
-            ]);
-            $pm = PaymentMethod::retrieve($stripeSub->default_payment_method);
-        }
-
-    } catch (Throwable $e) {
-        Log::error('Stripe API error retrieving payment method for invoice: ' . $e->getMessage(), [
-            'invoice_id' => $invoice->id
-        ]);
+        return $pm ? $this->formatPaymentMethodDetails($pm) : [];
     }
-
-    return $pm ? $this->formatPaymentMethodDetails($pm) : [];
-}
 
 
     /**
@@ -545,10 +544,10 @@ public function createCheckoutSession(Request $request)
             return;
         }
 
-    // Ensure the user has only the 'organizationadmin' role after subscription.
-    // This replaces any previous roles so the latest role is the single active one.
-    $orgAdminRole = Role::firstOrCreate(['name' => 'organizationadmin']);
-    $user->roles()->sync([$orgAdminRole->id]);
+        // Ensure the user has only the 'organizationadmin' role after subscription.
+        // This replaces any previous roles so the latest role is the single active one.
+        $orgAdminRole = Role::firstOrCreate(['name' => 'organizationadmin']);
+        $user->roles()->sync([$orgAdminRole->id]);
 
         // If this is the currently authenticated user, reload their roles into the session
         try {
@@ -574,7 +573,7 @@ public function createCheckoutSession(Request $request)
             $organization = Organization::create(['user_id' => $user->id]);
             Log::info('Organization created', ['organization_id' => $organization->id, 'user_id' => $user->id]);
         }
-        
+
         // Update or create the subscription
         Subscription::updateOrCreate(
             ['stripe_subscription_id' => $data['stripe_subscription_id']],

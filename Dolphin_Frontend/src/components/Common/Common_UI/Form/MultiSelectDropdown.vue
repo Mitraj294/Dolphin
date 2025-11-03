@@ -2,18 +2,15 @@
   <div
     class="form-box"
     ref="dropdownRoot"
-        @click.stop="toggleDropdown"
-      @keydown="handleKeyDown"
+    @click.stop="toggleDropdown"
+    @keydown="handleKeyDown"
   >
     <div>
       <span class="form-input-icon">
         <i :class="icon"></i>
       </span>
     </div>
-    <div
-      class="selected-container"
-      @click="toggleDropdown"
-    >
+    <div class="selected-container" @click="toggleDropdown">
       <template v-if="selectedItems && selectedItems.length">
         <span
           v-for="(s, idx) in selectedItems"
@@ -22,30 +19,19 @@
           @click.stop
         >
           <span class="chip-label">{{ labelFor(s) }}</span>
-          <button
-            class="chip-remove"
-            @click.stop.prevent="removeSelected(s)"
-          >
+          <button class="chip-remove" @click.stop.prevent="removeSelected(s)">
             ×
           </button>
         </span>
       </template>
       <template v-else>
         <span class="selected-placeholder">{{
-          placeholder || 'Select...'
+          placeholder || "Select..."
         }}</span>
       </template>
     </div>
-    <Button
-      class="form-dropdown-chevron"
-  
-      type="button"
-      tabindex="0"
-    >
-      <i
-        class="fas fa-chevron-down"
-        aria-hidden="true"
-      ></i>
+    <Button class="form-dropdown-chevron" type="button" tabindex="0">
+      <i class="fas fa-chevron-down" aria-hidden="true"></i>
     </Button>
     <teleport to="body">
       <div
@@ -97,26 +83,26 @@
 </template>
 
 <script>
-import Button from 'primevue/button';
+import Button from "primevue/button";
 
 export default {
-  name: 'MultiSelectDropdown',
+  name: "MultiSelectDropdown",
   components: {
     Button,
   },
   props: {
     options: { type: Array, required: true },
     selectedItems: { type: Array, required: true },
-    placeholder: { type: String, default: '' },
-    icon: { type: String, default: 'fas fa-users' },
-    optionLabel: { type: String, default: 'name' },
-    optionValue: { type: String, default: 'id' },
+    placeholder: { type: String, default: "" },
+    icon: { type: String, default: "fas fa-users" },
+    optionLabel: { type: String, default: "name" },
+    optionValue: { type: String, default: "id" },
     enableSelectAll: { type: Boolean, default: false },
   },
   data() {
     return {
       showDropdown: false,
-      search: '',
+      search: "",
       dropdownStyle: {},
       focusedIndex: -1,
     };
@@ -125,7 +111,7 @@ export default {
     filteredItems() {
       if (!this.search) return this.options;
       return this.options.filter((item) =>
-        (item[this.optionLabel] || '')
+        (item[this.optionLabel] || "")
           .toLowerCase()
           .includes(this.search.toLowerCase())
       );
@@ -142,24 +128,24 @@ export default {
     // nested shapes, and circular objects via a safe stringify fallback.
     selectedLabelString() {
       if (!Array.isArray(this.selectedItems) || this.selectedItems.length === 0)
-        return '';
+        return "";
 
       const labels = this.selectedItems
         .map((s) => this.labelForSelected(s))
-        .filter((x) => x !== '');
+        .filter((x) => x !== "");
 
-      return labels.join(', ');
+      return labels.join(", ");
     },
   },
   mounted() {
-    document.addEventListener('mousedown', this.handleClickOutside);
-    window.addEventListener('resize', this.updateDropdownPosition);
-    window.addEventListener('scroll', this.updateDropdownPosition, true);
+    document.addEventListener("mousedown", this.handleClickOutside);
+    window.addEventListener("resize", this.updateDropdownPosition);
+    window.addEventListener("scroll", this.updateDropdownPosition, true);
   },
   beforeUnmount() {
-    document.removeEventListener('mousedown', this.handleClickOutside);
-    window.removeEventListener('resize', this.updateDropdownPosition);
-    window.removeEventListener('scroll', this.updateDropdownPosition, true);
+    document.removeEventListener("mousedown", this.handleClickOutside);
+    window.removeEventListener("resize", this.updateDropdownPosition);
+    window.removeEventListener("scroll", this.updateDropdownPosition, true);
   },
   watch: {
     showDropdown(newVal) {
@@ -167,7 +153,7 @@ export default {
         this.$nextTick(() => this.updateDropdownPosition());
       } else {
         this.focusedIndex = -1;
-        this.search = '';
+        this.search = "";
       }
     },
     search() {
@@ -177,13 +163,13 @@ export default {
   },
   methods: {
     labelFor(s) {
-      if (s === null || s === undefined) return '';
+      if (s === null || s === undefined) return "";
 
       if (this.isPrimitive(s)) {
         return this.labelForPrimitive(s);
       }
 
-      if (typeof s === 'object') {
+      if (typeof s === "object") {
         return this.labelForObject(s);
       }
 
@@ -191,7 +177,7 @@ export default {
     },
 
     isPrimitive(val) {
-      return typeof val === 'string' || typeof val === 'number';
+      return typeof val === "string" || typeof val === "number";
     },
 
     labelForPrimitive(val) {
@@ -235,8 +221,8 @@ export default {
         return JSON.stringify(
           obj,
           (k, v) => {
-            if (v && typeof v === 'object') {
-              if (seen.has(v)) return '[Circular]';
+            if (v && typeof v === "object") {
+              if (seen.has(v)) return "[Circular]";
               seen.add(v);
             }
             return v;
@@ -244,16 +230,16 @@ export default {
           2
         );
       } catch (e) {
-        console.error('Error stringifying object', e);
+        console.error("Error stringifying object", e);
         try {
-          if (obj && typeof obj === 'object') {
+          if (obj && typeof obj === "object") {
             const parts = Object.keys(obj)
               .slice(0, 4)
               .map((k) => `${k}:${String(obj[k])}`);
-            return parts.join(' ');
+            return parts.join(" ");
           }
         } catch (e2) {
-          console.error('Error in fallback stringify', e2);
+          console.error("Error in fallback stringify", e2);
         }
         return String(obj);
       }
@@ -264,8 +250,8 @@ export default {
       const opt = this.options.find((o) => o[this.optionValue] === val);
       if (
         opt &&
-        (typeof opt[this.optionLabel] === 'string' ||
-          typeof opt[this.optionLabel] === 'number')
+        (typeof opt[this.optionLabel] === "string" ||
+          typeof opt[this.optionLabel] === "number")
       )
         return String(opt[this.optionLabel]);
       return null;
@@ -275,8 +261,8 @@ export default {
       for (const key of commonLabelKeys) {
         if (item && Object.hasOwn(item, key)) {
           const v = item[key];
-          if (typeof v === 'string' && v.trim()) return v.trim();
-          if (typeof v === 'number') return String(v);
+          if (typeof v === "string" && v.trim()) return v.trim();
+          if (typeof v === "number") return String(v);
         }
       }
       return null;
@@ -284,10 +270,10 @@ export default {
 
     extractNestedLabel(item) {
       // keep this loop minimal; delegate branching to getLabelFromNested
-      const nestedKeys = ['role', 'user', 'data'];
+      const nestedKeys = ["role", "user", "data"];
       for (const key of nestedKeys) {
         const nested = item && item[key];
-        if (nested && typeof nested === 'object') {
+        if (nested && typeof nested === "object") {
           const lbl = this.getLabelFromNested(nested);
           if (lbl) return lbl;
         }
@@ -296,13 +282,13 @@ export default {
     },
 
     getLabelFromNested(nested) {
-      if (!nested || typeof nested !== 'object') return null;
-      const tryKeys = [this.optionLabel, 'name'];
+      if (!nested || typeof nested !== "object") return null;
+      const tryKeys = [this.optionLabel, "name"];
       for (const k of tryKeys) {
         if (Object.hasOwn(nested, k)) {
           const v = nested[k];
-          if (typeof v === 'string' && v.trim()) return v.trim();
-          if (typeof v === 'number') return String(v);
+          if (typeof v === "string" && v.trim()) return v.trim();
+          if (typeof v === "number") return String(v);
           return this.safeStringify(v);
         }
       }
@@ -312,10 +298,10 @@ export default {
     extractAnyStringValue(item) {
       try {
         const vals = Object.values(item || {});
-        const strVal = vals.find((v) => typeof v === 'string' && v.trim());
+        const strVal = vals.find((v) => typeof v === "string" && v.trim());
         if (strVal) return strVal.trim();
       } catch (e) {
-        console.error('Error extracting string from object', e);
+        console.error("Error extracting string from object", e);
       }
       return null;
     },
@@ -323,23 +309,23 @@ export default {
     labelForSelected(s) {
       const commonLabelKeys = [
         this.optionLabel,
-        'name',
-        'label',
-        'title',
-        'role',
-        'display_name',
-        'text',
+        "name",
+        "label",
+        "title",
+        "role",
+        "display_name",
+        "text",
       ];
 
-      if (s === null || s === undefined) return '';
+      if (s === null || s === undefined) return "";
 
       // primitive selected (id or label)
-      if (typeof s === 'string' || typeof s === 'number') {
+      if (typeof s === "string" || typeof s === "number") {
         const optLabel = this.getOptionLabelByValue(s);
         return optLabel !== null ? optLabel : String(s);
       }
 
-      if (typeof s === 'object') {
+      if (typeof s === "object") {
         const common = this.extractCommonLabel(s, commonLabelKeys);
         if (common) return common;
 
@@ -359,11 +345,11 @@ export default {
     },
     removeSelected(item) {
       const newSelected = this.selectedItems.filter((i) => {
-        const a = typeof i === 'object' ? i[this.optionValue] : i;
-        const b = typeof item === 'object' ? item[this.optionValue] : item;
+        const a = typeof i === "object" ? i[this.optionValue] : i;
+        const b = typeof item === "object" ? item[this.optionValue] : item;
         return a !== b;
       });
-      this.$emit('update:selectedItems', newSelected);
+      this.$emit("update:selectedItems", newSelected);
     },
     toggleDropdown() {
       this.showDropdown = !this.showDropdown;
@@ -385,64 +371,71 @@ export default {
       );
       if (idx > -1) {
         this.$emit(
-          'update:selectedItems',
+          "update:selectedItems",
           this.selectedItems.filter(
             (i) => i[this.optionValue] !== item[this.optionValue]
           )
         );
       } else {
-        this.$emit('update:selectedItems', [...this.selectedItems, item]);
+        this.$emit("update:selectedItems", [...this.selectedItems, item]);
       }
     },
     selectFocusedOption() {
-      if (this.focusedIndex >= 0 && this.focusedIndex < this.filteredItems.length) {
+      if (
+        this.focusedIndex >= 0 &&
+        this.focusedIndex < this.filteredItems.length
+      ) {
         this.toggleItem(this.filteredItems[this.focusedIndex]);
       }
     },
     scrollToFocusedItem() {
       if (this.focusedIndex < 0) return;
-      
+
       this.$nextTick(() => {
         const dropdownEl = this.$refs.dropdownEl;
         const itemRefs = this.$refs[`dropdownItem${this.focusedIndex}`];
-        
+
         if (dropdownEl && itemRefs && itemRefs.length > 0) {
           const item = itemRefs[0];
           const dropdownRect = dropdownEl.getBoundingClientRect();
           const itemRect = item.getBoundingClientRect();
-          
+
           // Check if item is above the visible area
           if (itemRect.top < dropdownRect.top) {
             dropdownEl.scrollTop = item.offsetTop;
           }
           // Check if item is below the visible area
           else if (itemRect.bottom > dropdownRect.bottom) {
-            dropdownEl.scrollTop = item.offsetTop - dropdownEl.clientHeight + item.clientHeight;
+            dropdownEl.scrollTop =
+              item.offsetTop - dropdownEl.clientHeight + item.clientHeight;
           }
         }
       });
     },
     handleKeyDown(event) {
       switch (event.key) {
-        case 'ArrowDown':
-        case 'Down':
+        case "ArrowDown":
+        case "Down":
           event.preventDefault();
           if (!this.showDropdown) {
             this.toggleDropdown();
           } else {
-            this.focusedIndex = Math.min(this.focusedIndex + 1, this.filteredItems.length - 1);
+            this.focusedIndex = Math.min(
+              this.focusedIndex + 1,
+              this.filteredItems.length - 1
+            );
             this.scrollToFocusedItem();
           }
           break;
-        case 'ArrowUp':
-        case 'Up':
+        case "ArrowUp":
+        case "Up":
           event.preventDefault();
           if (this.showDropdown) {
             this.focusedIndex = Math.max(this.focusedIndex - 1, 0);
             this.scrollToFocusedItem();
           }
           break;
-        case 'Enter':
+        case "Enter":
           event.preventDefault();
           if (!this.showDropdown) {
             this.toggleDropdown();
@@ -450,13 +443,13 @@ export default {
             this.selectFocusedOption();
           }
           break;
-        case 'Escape':
+        case "Escape":
           event.preventDefault();
           this.showDropdown = false;
           this.focusedIndex = -1;
           break;
-        case ' ':
-        case 'Spacebar':
+        case " ":
+        case "Spacebar":
           if (!this.showDropdown) {
             event.preventDefault();
             this.toggleDropdown();
@@ -466,23 +459,26 @@ export default {
     },
     handleSearchKeyDown(event) {
       switch (event.key) {
-        case 'ArrowDown':
-        case 'Down':
+        case "ArrowDown":
+        case "Down":
           event.preventDefault();
-          this.focusedIndex = Math.min(this.focusedIndex + 1, this.filteredItems.length - 1);
+          this.focusedIndex = Math.min(
+            this.focusedIndex + 1,
+            this.filteredItems.length - 1
+          );
           this.scrollToFocusedItem();
           break;
-        case 'ArrowUp':
-        case 'Up':
+        case "ArrowUp":
+        case "Up":
           event.preventDefault();
           this.focusedIndex = Math.max(this.focusedIndex - 1, 0);
           this.scrollToFocusedItem();
           break;
-        case 'Enter':
+        case "Enter":
           event.preventDefault();
           this.selectFocusedOption();
           break;
-        case 'Escape':
+        case "Escape":
           event.preventDefault();
           this.showDropdown = false;
           this.focusedIndex = -1;
@@ -496,7 +492,7 @@ export default {
         const newSelected = this.selectedItems.filter(
           (i) => !filteredIds.includes(i[this.optionValue])
         );
-        this.$emit('update:selectedItems', newSelected);
+        this.$emit("update:selectedItems", newSelected);
       } else {
         // Select all filtered
         // Merge with already selected (avoid duplicates)
@@ -508,7 +504,7 @@ export default {
             merged.push(item);
           }
         });
-        this.$emit('update:selectedItems', merged);
+        this.$emit("update:selectedItems", merged);
       }
     },
     handleClickOutside(event) {
@@ -531,7 +527,7 @@ export default {
       const left = rect.left + window.scrollX;
       const width = rect.width;
       this.dropdownStyle = {
-        position: 'absolute',
+        position: "absolute",
         top: `${top}px`,
         left: `${left}px`,
         width: `${width}px`,
@@ -736,12 +732,12 @@ export default {
   border-color: #888;
 }
 .dropdown-checkbox.checked:after {
-  content: '\2713';
+  content: "\2713";
   color: #888;
   font-size: 13px;
   font-weight: bold;
 }
 .dropdown-checkbox:after {
-  content: '';
+  content: "";
 }
 </style>

@@ -15,18 +15,18 @@ class UserDetail extends Model
     use SoftDeletes;
 
 
-        protected $fillable = [
-            'user_id',
-            'phone',
-            'find_us',
-            'organization_name',
-            'organization_size',
-            'address',
-            'country_id',
-            'state_id',
-            'city_id',
-            'zip',
-        ];
+    protected $fillable = [
+        'user_id',
+        'phone',
+        'find_us',
+        'organization_name',
+        'organization_size',
+        'address',
+        'country_id',
+        'state_id',
+        'city_id',
+        'zip',
+    ];
 
     public function user()
     {

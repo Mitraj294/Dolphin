@@ -20,7 +20,7 @@ use App\Mail\LeadAssessmentRegistrationMail;
 // 1. Validation Rules (LeadValidationRules)
 // 2. Message Constants (Message)
 // 3. Controller Methods
- 
+
 
 
 // 1. Validation Rules for Lead Model Fields
@@ -49,13 +49,13 @@ class Message
 
 class LeadController extends Controller
 {
-    
+
     // Update an existing lead.
     // Handles PATCH for notes-only update.
     // @param Request $request
     // @param int $id
     // @return \Illuminate\Http\JsonResponse
-     
+
     public function update(Request $request, $id)
     {
         $lead = Lead::find($id);
@@ -67,7 +67,7 @@ class LeadController extends Controller
         // PATCH for notes-only update
         if ($request->isMethod('patch')) {
             $payloadKeys = array_keys($request->all());
-            $onlyNotes = !empty($payloadKeys) && collect($payloadKeys)->every(fn ($k) => $k === 'notes');
+            $onlyNotes = !empty($payloadKeys) && collect($payloadKeys)->every(fn($k) => $k === 'notes');
             if ($request->has('notes') && $onlyNotes) {
                 $data = $request->validate(['notes' => LeadValidationRules::OPTIONAL_STRING]);
                 $lead->update($data);
@@ -96,11 +96,11 @@ class LeadController extends Controller
         return response()->json(['message' => 'Lead updated successfully', 'lead' => $lead]);
     }
 
-    
+
     // Store a new lead.
     // @param Request $request
     // @return \Illuminate\Http\JsonResponse
-     
+
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -152,11 +152,11 @@ class LeadController extends Controller
         return response()->json(['message' => 'Lead saved successfully', 'lead' => $lead], 201);
     }
 
-    
+
     // List all leads for authenticated user.
     // Superadmin sees all leads.
     // @return \Illuminate\Http\JsonResponse
-     
+
     public function index()
     {
         $user = request()->user();
@@ -196,12 +196,12 @@ class LeadController extends Controller
         return response()->json($leads);
     }
 
-    
+
     // Show details for a single lead.
     // Includes registration link, organization, and sales person info if available.
     // @param int $id
     // @return \Illuminate\Http\JsonResponse
-     
+
     public function show($id)
     {
         $lead = Lead::find($id);
@@ -218,7 +218,7 @@ class LeadController extends Controller
             'phone'               => $lead->phone ?? '',
             'organization_name'   => $lead->organization_name ?? '',
             'organization_size'   => $lead->organization_size ?? '',
-            'organization_address'=> $lead->address ?? '',
+            'organization_address' => $lead->address ?? '',
             'organization_city'   => (string)($lead->city_id ?? ''),
             'organization_state'  => (string)($lead->state_id ?? ''),
             'organization_zip'    => $lead->zip ?? '',
@@ -245,7 +245,9 @@ class LeadController extends Controller
         HTML;
 
         // Organization, user, and details resolution
-        $org = null; $orgUser = null; $orgUserDetails = null;
+        $org = null;
+        $orgUser = null;
+        $orgUserDetails = null;
         try {
             $userModel = '\App\\Models\\User';
             $user = $userModel::where('email', $lead->email)->first();
@@ -305,12 +307,12 @@ class LeadController extends Controller
         return response()->json($resp);
     }
 
-    
+
     // Soft-delete a lead by id.
     // @param Request $request
     // @param int $id
     // @return \Illuminate\Http\JsonResponse
-     
+
     public function destroy(Request $request, $id)
     {
         $lead = Lead::find($id);
@@ -322,7 +324,7 @@ class LeadController extends Controller
             $lead->delete();
             Log::info('LeadController@destroy soft-deleted lead', [
                 'lead_id'   => $id,
-                'deleted_by'=> $request->user()->id ?? null
+                'deleted_by' => $request->user()->id ?? null
             ]);
             return response()->json(['message' => 'Lead soft-deleted', 'id' => $id]);
         } catch (\Exception $e) {
@@ -331,11 +333,11 @@ class LeadController extends Controller
         }
     }
 
-    
+
     // Generates registration invite email HTML.
     // @param Request $request
     // @return \Illuminate\Http\Response
-     
+
     public function leadRegistration(Request $request)
     {
         $registration_link = $request->query('registration_link', rtrim(env('FRONTEND_URL', env('APP_URL', 'http://127.0.0.1:8080')), '/') . '/register');
@@ -372,11 +374,11 @@ class LeadController extends Controller
         return response($html, 200)->header('Content-Type', 'text/html');
     }
 
-    
+
     // Generates lead agreement email HTML.
     // @param Request $request
     // @return \Illuminate\Http\Response
-     
+
     public function leadAgreement(Request $request)
     {
         $checkout_url = $request->query('checkout_url', rtrim(env('FRONTEND_URL', env('APP_URL', 'http://127.0.0.1:8080')), '/') . '/subscriptions/plans');
@@ -415,11 +417,11 @@ class LeadController extends Controller
         return response($html, 200)->header('Content-Type', 'text/html');
     }
 
-    
+
     // Prefill lead info for registration form.
     // @param Request $request
     // @return \Illuminate\Http\JsonResponse
-     
+
     public function prefill(Request $request)
     {
         $lead = null;
@@ -454,10 +456,10 @@ class LeadController extends Controller
         ]]);
     }
 
-    
+
     // Get distinct values for 'find_us' field from leads table.
     // @return \Illuminate\Http\JsonResponse
-     
+
     public function findUsOptions()
     {
         $values = Lead::whereNotNull('find_us')

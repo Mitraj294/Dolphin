@@ -50,8 +50,8 @@
 
 <script>
 export default {
-  name: 'TableHeader',
-  emits: ['sort'],
+  name: "TableHeader",
+  emits: ["sort"],
   props: {
     columns: {
       type: Array,
@@ -75,21 +75,21 @@ export default {
       // Handle explicit width property
       if (col.width) {
         style.width =
-          typeof col.width === 'number' ? col.width + 'px' : col.width;
+          typeof col.width === "number" ? col.width + "px" : col.width;
       }
 
       // Handle minWidth property
       if (col.minWidth) {
         style.minWidth =
-          typeof col.minWidth === 'number' ? col.minWidth + 'px' : col.minWidth;
+          typeof col.minWidth === "number" ? col.minWidth + "px" : col.minWidth;
       }
 
       // Handle style property (CSS string)
       if (col.style) {
         // Parse CSS string and add to style object
-        const cssRules = col.style.split(';').filter((rule) => rule.trim());
+        const cssRules = col.style.split(";").filter((rule) => rule.trim());
         cssRules.forEach((rule) => {
-          const [property, value] = rule.split(':').map((s) => s.trim());
+          const [property, value] = rule.split(":").map((s) => s.trim());
           if (property && value) {
             // Convert kebab-case to camelCase for Vue style binding
             const camelProperty = property.replace(/-([a-z])/g, (g) =>

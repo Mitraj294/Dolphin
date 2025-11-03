@@ -17,9 +17,9 @@ use Illuminate\Support\Facades\Log;
 class MemberController extends Controller
 {
 
-        //Display a listing of the resource for the organization admin.
-        //@param  Request  $request
-        //@return JsonResponse
+    //Display a listing of the resource for the organization admin.
+    //@param  Request  $request
+    //@return JsonResponse
 
     public function index(Request $request): JsonResponse
     {
@@ -35,16 +35,16 @@ class MemberController extends Controller
     }
 
 
-        //Store a newly created resource in storage.
-        //@param  StoreMemberRequest  $request
-        //@return JsonResponse
+    //Store a newly created resource in storage.
+    //@param  StoreMemberRequest  $request
+    //@return JsonResponse
 
     public function store(StoreMemberRequest $request): JsonResponse
     {
         try {
             $orgId = $this->getOrganizationIdForCurrentUser($request->user());
             $validated = $request->validated();
-            
+
             $memberData = array_merge($validated, [
                 'organization_id' => $orgId,
                 'user_id' => $request->user()->id,
@@ -53,7 +53,7 @@ class MemberController extends Controller
             $roleInput = $validated['member_role'] ?? null;
             $groupIds = $validated['group_ids'] ?? [];
             unset($memberData['member_role'], $memberData['group_ids']);
-            
+
             $member = DB::transaction(function () use ($memberData, $groupIds, $roleInput) {
                 $member = Member::create($memberData);
 
@@ -65,11 +65,10 @@ class MemberController extends Controller
                 }
                 return $member;
             });
-            
+
             return (new MemberResource($member->load('groups', 'memberRoles')))
                 ->response()
                 ->setStatusCode(201);
-
         } catch (\Exception $e) {
             Log::error('Failed to create member.', ['error' => $e->getMessage()]);
             return response()->json(['error' => 'An unexpected error occurred while creating the member.'], 500);
@@ -77,17 +76,17 @@ class MemberController extends Controller
     }
 
 
-        //Display the specified resource.
-        //@param  Request  $request
-        //@param  int  $id
-        //@return JsonResponse
+    //Display the specified resource.
+    //@param  Request  $request
+    //@param  int  $id
+    //@return JsonResponse
 
     public function show(Request $request, int $id): JsonResponse
     {
         try {
             $orgId = $this->getOrganizationIdForCurrentUser($request->user());
             $member = Member::where('organization_id', $orgId)->with(['groups', 'memberRoles'])->findOrFail($id);
-            
+
             return (new MemberResource($member))->response();
         } catch (ModelNotFoundException $e) {
             return response()->json(['error' => 'Member not found.'], 404);
@@ -98,10 +97,10 @@ class MemberController extends Controller
     }
 
 
-        //Update the specified resource in storage.
-        //@param  UpdateMemberRequest  $request
-        //@param  int  $id
-        //@return JsonResponse
+    //Update the specified resource in storage.
+    //@param  UpdateMemberRequest  $request
+    //@param  int  $id
+    //@return JsonResponse
 
     public function update(UpdateMemberRequest $request, int $id): JsonResponse
     {
@@ -113,14 +112,14 @@ class MemberController extends Controller
             $roleInput = $validated['member_role'] ?? null;
             $groupIds = $validated['group_ids'] ?? null;
             unset($validated['member_role'], $validated['group_ids']);
-            
+
             DB::transaction(function () use ($member, $validated, $roleInput, $groupIds) {
                 $member->update($validated);
-                
+
                 if ($roleInput !== null) {
                     $member->member_role = $roleInput;
                 }
-                
+
                 if ($groupIds !== null) {
                     $member->groups()->sync($groupIds);
                 }
@@ -136,10 +135,10 @@ class MemberController extends Controller
     }
 
 
-        //Remove the specified resource from storage.
-        //@param  Request  $request
-        //@param  int  $id
-        //@return JsonResponse
+    //Remove the specified resource from storage.
+    //@param  Request  $request
+    //@param  int  $id
+    //@return JsonResponse
 
     public function destroy(Request $request, int $id): JsonResponse
     {
@@ -155,11 +154,11 @@ class MemberController extends Controller
             $member = Member::where('organization_id', $orgId)->findOrFail($id);
             $member->delete();
 
-           $status_code = 204;
-           $response_data = null;
+            $status_code = 204;
+            $response_data = null;
         } catch (ModelNotFoundException $e) {
-          $status_code = 404;
-          $response_data['error'] = 'Member not found.';
+            $status_code = 404;
+            $response_data['error'] = 'Member not found.';
         } catch (\Exception $e) {
             Log::error('Failed to delete member.', ['id' => $id, 'error' => $e->getMessage()]);
             $response_data['error'] = 'An unexpected error occurred while deleting the member.';
@@ -171,10 +170,10 @@ class MemberController extends Controller
 
 
 
-        //Get the organization ID for the currently authenticated user.
-        //@param  \App\Models\User  $user
-        //@return int
-        //@throws \Exception
+    //Get the organization ID for the currently authenticated user.
+    //@param  \App\Models\User  $user
+    //@return int
+    //@throws \Exception
 
     private function getOrganizationIdForCurrentUser(\App\Models\User $user): int
     {

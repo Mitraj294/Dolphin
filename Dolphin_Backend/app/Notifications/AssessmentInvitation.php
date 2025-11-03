@@ -31,12 +31,12 @@ class AssessmentInvitation extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->subject('You have been invited to an assessment')
-                    ->line('You have been invited to take the assessment: ' . $this->assessmentName)
-                    ->action('Take Assessment', $this->assessmentLink)
-                    ->line('Thank you for your participation!');
+            ->subject('You have been invited to an assessment')
+            ->line('You have been invited to take the assessment: ' . $this->assessmentName)
+            ->action('Take Assessment', $this->assessmentLink)
+            ->line('Thank you for your participation!');
     }
-    
+
     public function toDatabase($notifiable)
     {
         // This will be stored in the 'notifications' table for in-app display.

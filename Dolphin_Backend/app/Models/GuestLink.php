@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -9,7 +10,12 @@ class GuestLink extends Model
     protected $table = 'guest_links';
 
     protected $fillable = [
-        'code', 'user_id', 'lead_id', 'meta', 'expires_at', 'used_at'
+        'code',
+        'user_id',
+        'lead_id',
+        'meta',
+        'expires_at',
+        'used_at'
     ];
 
     protected $casts = [

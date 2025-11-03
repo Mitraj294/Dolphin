@@ -35,7 +35,7 @@ class NewUserInvitation extends Notification
 
         if ($this->resetTokenUrl) {
             $mail->action('Change your password', $this->resetTokenUrl)
-                 ->line('The link will allow you to set a permanent password.');
+                ->line('The link will allow you to set a permanent password.');
         } else {
             $mail->line('You can change your password from your account settings once you log in.');
         }

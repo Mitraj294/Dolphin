@@ -41,20 +41,10 @@
                   />
                   <tbody>
                     <tr v-if="loading">
-                      <td
-                        colspan="5"
-                        class="no-data"
-                      >
-                        Loading members...
-                      </td>
+                      <td colspan="5" class="no-data">Loading members...</td>
                     </tr>
                     <tr v-else-if="paginatedMembers.length === 0">
-                      <td
-                        colspan="5"
-                        class="no-data"
-                      >
-                        No members found.
-                      </td>
+                      <td colspan="5" class="no-data">No members found.</td>
                     </tr>
                     <tr
                       v-else
@@ -107,14 +97,8 @@
           class="modal-overlay"
           @click.self="closeMemberModal"
         >
-          <div
-            class="modal-card"
-            style="max-width: 800px; width: 90%"
-          >
-            <button
-              class="modal-close-btn"
-              @click="closeMemberModal"
-            >
+          <div class="modal-card" style="max-width: 800px; width: 90%">
+            <button class="modal-close-btn" @click="closeMemberModal">
               &times;
             </button>
             <div class="modal-title">Member Details</div>
@@ -126,10 +110,7 @@
                   <i class="fas fa-user-circle profile-avatar"></i>
                   <span>Profile</span>
                 </div>
-                <button
-                  class="btn btn-primary"
-                  @click="openEditModal"
-                >
+                <button class="btn btn-primary" @click="openEditModal">
                   <i class="fas fa-pen-to-square"></i>
                   Edit
                 </button>
@@ -139,13 +120,13 @@
                 <div class="profile-info-row">
                   <div class="profile-label">First Name</div>
                   <div class="profile-value">
-                    {{ selectedMemberEdit.first_name || 'Not provided' }}
+                    {{ selectedMemberEdit.first_name || "Not provided" }}
                   </div>
                 </div>
                 <div class="profile-info-row">
                   <div class="profile-label">Last Name</div>
                   <div class="profile-value">
-                    {{ selectedMemberEdit.last_name || 'Not provided' }}
+                    {{ selectedMemberEdit.last_name || "Not provided" }}
                   </div>
                 </div>
                 <div class="profile-info-row">
@@ -166,7 +147,7 @@
                       {{
                         selectedMemberEdit.memberRoles
                           .map((role) => role.name)
-                          .join(', ')
+                          .join(", ")
                       }}
                     </span>
                     <span v-else>No roles assigned</span>
@@ -176,7 +157,7 @@
                 <div class="profile-info-row">
                   <div class="profile-label">Phone</div>
                   <div class="profile-value">
-                    {{ selectedMemberEdit.phone || 'Not provided' }}
+                    {{ selectedMemberEdit.phone || "Not provided" }}
                   </div>
                 </div>
                 <div class="profile-info-row">
@@ -220,27 +201,15 @@
           class="modal-overlay"
           @click.self="showEditModal = false"
         >
-          <div
-            class="modal-card"
-            style="max-width: 550px"
-          >
-            <button
-              class="modal-close-btn"
-              @click="showEditModal = false"
-            >
+          <div class="modal-card" style="max-width: 550px">
+            <button class="modal-close-btn" @click="showEditModal = false">
               &times;
             </button>
             <div class="modal-title">Edit Member Profile</div>
-            <div
-              class="modal-desc"
-              style="font-size: 1.5rem !important"
-            >
+            <div class="modal-desc" style="font-size: 1.5rem !important">
               Update member information.
             </div>
-            <form
-              class="modal-form"
-              @submit.prevent="onEditSave"
-            >
+            <form class="modal-form" @submit.prevent="onEditSave">
               <FormRow style="margin-bottom: 0 !important">
                 <FormLabel
                   style="font-size: 1rem !important; margin: 0 !important"
@@ -253,11 +222,9 @@
                   placeholder="Enter first name"
                   required
                 />
-                <FormLabel
-                  v-if="errors.first_name"
-                  class="error-message1"
-                  >{{ errors.first_name[0] }}</FormLabel
-                >
+                <FormLabel v-if="errors.first_name" class="error-message1">{{
+                  errors.first_name[0]
+                }}</FormLabel>
               </FormRow>
               <FormRow style="margin-bottom: 0 !important">
                 <FormLabel
@@ -271,10 +238,7 @@
                   placeholder="Enter last name"
                   required
                 />
-                <FormLabel
-                  v-if="errors.last_name"
-                  class="error-message1"
-                >
+                <FormLabel v-if="errors.last_name" class="error-message1">
                   {{ errors.last_name[0] }}
                 </FormLabel>
               </FormRow>
@@ -290,10 +254,7 @@
                   placeholder="Enter email address"
                   required
                 />
-                <FormLabel
-                  v-if="errors.email"
-                  class="error-message1"
-                >
+                <FormLabel v-if="errors.email" class="error-message1">
                   {{ errors.email[0] }}
                 </FormLabel>
               </FormRow>
@@ -308,11 +269,9 @@
                   type="text"
                   placeholder="Enter phone number"
                 />
-                <FormLabel
-                  v-if="errors.phone"
-                  class="error-message1"
-                  >{{ errors.phone[0] }}</FormLabel
-                >
+                <FormLabel v-if="errors.phone" class="error-message1">{{
+                  errors.phone[0]
+                }}</FormLabel>
               </FormRow>
               <FormRow style="margin-bottom: 0 !important">
                 <FormLabel
@@ -330,18 +289,12 @@
                   placeholder="Select role"
                   :enableSelectAll="true"
                 />
-                <FormLabel
-                  v-if="errors.member_role"
-                  class="error-message1"
-                >
+                <FormLabel v-if="errors.member_role" class="error-message1">
                   {{ errors.member_role[0] }}
                 </FormLabel>
               </FormRow>
               <div class="modal-form-actions">
-                <button
-                  type="submit"
-                  class="btn btn-primary"
-                >
+                <button type="submit" class="btn btn-primary">
                   <i class="fas fa-save"></i>
                   Save
                 </button>
@@ -362,20 +315,20 @@
 </template>
 
 <script>
-import MainLayout from '@/components/layout/MainLayout.vue';
-import Pagination from '@/components/layout/Pagination.vue';
-import TableHeader from '@/components/Common/Common_UI/TableHeader.vue';
-import axios from 'axios';
-import storage from '@/services/storage';
-import FormRow from '@/components/Common/Common_UI/Form/FormRow.vue';
-import FormLabel from '@/components/Common/Common_UI/Form/FormLabel.vue';
-import FormInput from '@/components/Common/Common_UI/Form/FormInput.vue';
-import MultiSelectDropdown from '@/components/Common/Common_UI/Form/MultiSelectDropdown.vue';
-import Toast from 'primevue/toast';
-import { useConfirm } from 'primevue/useconfirm';
+import FormInput from "@/components/Common/Common_UI/Form/FormInput.vue";
+import FormLabel from "@/components/Common/Common_UI/Form/FormLabel.vue";
+import FormRow from "@/components/Common/Common_UI/Form/FormRow.vue";
+import MultiSelectDropdown from "@/components/Common/Common_UI/Form/MultiSelectDropdown.vue";
+import TableHeader from "@/components/Common/Common_UI/TableHeader.vue";
+import MainLayout from "@/components/layout/MainLayout.vue";
+import Pagination from "@/components/layout/Pagination.vue";
+import storage from "@/services/storage";
+import axios from "axios";
+import Toast from "primevue/toast";
+import { useConfirm } from "primevue/useconfirm";
 
 export default {
-  name: 'MemberListing',
+  name: "MemberListing",
   components: {
     MainLayout,
     Pagination,
@@ -394,9 +347,9 @@ export default {
     return {
       currentPage: 1,
       pageSize: 10,
-      searchQuery: '',
+      searchQuery: "",
       showPageDropdown: false,
-      sortKey: '',
+      sortKey: "",
       sortAsc: true,
       members: [],
       filteredMembers: [],
@@ -420,8 +373,8 @@ export default {
       const sorted = [...this.filteredMembers];
       if (this.sortKey) {
         sorted.sort((a, b) => {
-          const aVal = a[this.sortKey] || '';
-          const bVal = b[this.sortKey] || '';
+          const aVal = a[this.sortKey] || "";
+          const bVal = b[this.sortKey] || "";
           if (aVal < bVal) return this.sortAsc ? -1 : 1;
           if (aVal > bVal) return this.sortAsc ? 1 : -1;
           return 0;
@@ -436,13 +389,13 @@ export default {
         return Array.from({ length: total }, (_, i) => i + 1);
       }
       const pages = [1];
-      if (this.currentPage > 4) pages.push('...');
+      if (this.currentPage > 4) pages.push("...");
       const start = Math.max(2, this.currentPage - 1);
       const end = Math.min(total - 1, this.currentPage + 1);
       for (let i = start; i <= end; i++) {
         pages.push(i);
       }
-      if (this.currentPage < total - 3) pages.push('...');
+      if (this.currentPage < total - 3) pages.push("...");
       pages.push(total);
       return pages;
     },
@@ -471,7 +424,7 @@ export default {
     async openMemberModal(member) {
       // Always fetch full member data from the API by ID so we use the DB's created_at
       let memberId = null;
-      if (typeof member === 'string' || typeof member === 'number') {
+      if (typeof member === "string" || typeof member === "number") {
         memberId = member;
       }
 
@@ -502,7 +455,7 @@ export default {
 
     async fetchMemberById(memberId) {
       try {
-        const authToken = storage.get('authToken');
+        const authToken = storage.get("authToken");
         const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
         const response = await axios.get(
           `${API_BASE_URL}/api/members/${memberId}`,
@@ -514,11 +467,11 @@ export default {
         const memberData = response.data.data;
         this.selectedMemberEdit = this.normalizeMember(memberData);
       } catch (error) {
-        console.error('Failed to fetch member details:', error);
+        console.error("Failed to fetch member details:", error);
         this.$toast.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Could not load member details.',
+          severity: "error",
+          summary: "Error",
+          detail: "Could not load member details.",
           life: 3000,
         });
         // Fallback to existing member data if available
@@ -537,15 +490,15 @@ export default {
         Array.isArray(member.memberRoles) &&
         member.memberRoles.length > 0
       ) {
-        return member.memberRoles.map((r) => r.name).join(', ');
+        return member.memberRoles.map((r) => r.name).join(", ");
       }
-      return member.member_role || 'No Role';
+      return member.member_role || "No Role";
     },
 
     formatMemberGroups(member) {
       // If we have full group objects with names, use them
       if (member && Array.isArray(member.groups) && member.groups.length > 0) {
-        return member.groups.map((group) => group.name).join(', ');
+        return member.groups.map((group) => group.name).join(", ");
       }
 
       // If we only have group IDs, look them up in our groups cache
@@ -562,26 +515,26 @@ export default {
           .filter((name) => name); // Remove any null/undefined names
 
         return groupNames.length > 0
-          ? groupNames.join(', ')
-          : 'No groups assigned';
+          ? groupNames.join(", ")
+          : "No groups assigned";
       }
 
-      return 'No groups assigned';
+      return "No groups assigned";
     },
 
     formatDate(dateString) {
-      if (!dateString) return 'Not available';
+      if (!dateString) return "Not available";
       try {
         const date = new Date(dateString);
-        if (isNaN(date.getTime())) return 'Invalid date';
-        return date.toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric',
+        if (isNaN(date.getTime())) return "Invalid date";
+        return date.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "short",
+          day: "numeric",
         });
       } catch (error) {
-        console.warn('Error formatting date:', error);
-        return 'Invalid date';
+        console.warn("Error formatting date:", error);
+        return "Invalid date";
       }
     },
 
@@ -589,16 +542,16 @@ export default {
       const memberId = this.selectedMemberEdit?.id;
       if (!memberId) {
         this.$toast.add({
-          severity: 'warn',
-          summary: 'Warning',
-          detail: 'No member selected.',
+          severity: "warn",
+          summary: "Warning",
+          detail: "No member selected.",
           life: 3000,
         });
         return;
       }
 
       try {
-        const authToken = storage.get('authToken');
+        const authToken = storage.get("authToken");
         const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
         const response = await axios.get(
           `${API_BASE_URL}/api/members/${memberId}`,
@@ -614,11 +567,11 @@ export default {
         this.errors = {};
         this.showEditModal = true;
       } catch (error) {
-        console.error('Failed to fetch member details for editing:', error);
+        console.error("Failed to fetch member details for editing:", error);
         this.$toast.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Could not load member details.',
+          severity: "error",
+          summary: "Error",
+          detail: "Could not load member details.",
           life: 3000,
         });
         // Fallback to existing data if fetch fails
@@ -640,7 +593,7 @@ export default {
 
     async onEditSave() {
       try {
-        const authToken = storage.get('authToken');
+        const authToken = storage.get("authToken");
         const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
 
         // Build payload with only fields that might have changed
@@ -663,12 +616,12 @@ export default {
         ) {
           payload.member_role = this.editMember.member_role_ids.map((r) => {
             // Ensure we're sending integers, not objects
-            return typeof r === 'object' ? parseInt(r.id) : parseInt(r);
+            return typeof r === "object" ? parseInt(r.id) : parseInt(r);
           });
         }
 
-        console.log('Sending payload:', payload);
-        console.log('Member roles array:', payload.member_role);
+        console.log("Sending payload:", payload);
+        console.log("Member roles array:", payload.member_role);
 
         const response = await axios.patch(
           `${API_BASE_URL}/api/members/${this.editMember.id}`,
@@ -695,13 +648,13 @@ export default {
         this.showEditModal = false;
 
         this.$toast.add({
-          severity: 'success',
-          summary: 'Success',
-          detail: 'Member updated successfully.',
+          severity: "success",
+          summary: "Success",
+          detail: "Member updated successfully.",
           life: 3000,
         });
       } catch (error) {
-        console.error('Failed to update member:', error);
+        console.error("Failed to update member:", error);
 
         // Handle validation errors - don't close modal
         if (
@@ -712,9 +665,9 @@ export default {
         ) {
           this.errors = error.response.data.errors;
           this.$toast.add({
-            severity: 'error',
-            summary: 'Validation Error',
-            detail: 'Please fix the errors below and try again.',
+            severity: "error",
+            summary: "Validation Error",
+            detail: "Please fix the errors below and try again.",
             life: 3000,
           });
           return; // Don't close modal, let user fix errors
@@ -722,10 +675,10 @@ export default {
 
         // Handle other types of errors
         const errorDetail =
-          error.response?.data?.message || 'An unexpected error occurred.';
+          error.response?.data?.message || "An unexpected error occurred.";
         this.$toast.add({
-          severity: 'error',
-          summary: 'Update Failed',
+          severity: "error",
+          summary: "Update Failed",
           detail: errorDetail,
           sticky: true,
         });
@@ -750,11 +703,11 @@ export default {
         `${member.first_name} ${member.last_name}`.trim() || member.email;
       this.confirm.require({
         message: `Are you sure you want to delete ${memberDisplay}?`,
-        header: 'Confirm Delete',
-        icon: 'pi pi-trash',
+        header: "Confirm Delete",
+        icon: "pi pi-trash",
         accept: async () => {
           try {
-            const authToken = storage.get('authToken');
+            const authToken = storage.get("authToken");
             const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
             await axios.delete(`${API_BASE_URL}/api/members/${member.id}`, {
               headers: { Authorization: `Bearer ${authToken}` },
@@ -764,17 +717,17 @@ export default {
             this.onSearch();
             this.showMemberModal = false;
             this.$toast.add({
-              severity: 'info',
-              summary: 'Deleted',
-              detail: 'Member has been deleted.',
+              severity: "info",
+              summary: "Deleted",
+              detail: "Member has been deleted.",
               life: 3000,
             });
           } catch (e) {
-            console.error('Failed to delete member', e);
+            console.error("Failed to delete member", e);
             this.$toast.add({
-              severity: 'error',
-              summary: 'Delete Failed',
-              detail: 'Failed to delete member.',
+              severity: "error",
+              summary: "Delete Failed",
+              detail: "Failed to delete member.",
               sticky: true,
             });
           }
@@ -797,7 +750,7 @@ export default {
     },
 
     goToPage(page) {
-      if (typeof page === 'number' && page >= 1 && page <= this.totalPages) {
+      if (typeof page === "number" && page >= 1 && page <= this.totalPages) {
         this.currentPage = page;
       }
     },
@@ -820,7 +773,7 @@ export default {
     async fetchInitialData() {
       this.loading = true;
       try {
-        const authToken = storage.get('authToken');
+        const authToken = storage.get("authToken");
         const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
 
         const [membersRes, rolesRes, groupsRes] = await Promise.all([
@@ -866,11 +819,11 @@ export default {
         this.members = membersData.map((m) => this.normalizeMember(m));
         this.filteredMembers = [...this.members];
       } catch (error) {
-        console.error('Failed to fetch initial data:', error);
+        console.error("Failed to fetch initial data:", error);
         this.$toast.add({
-          severity: 'error',
-          summary: 'Failed to load data',
-          detail: 'Could not fetch members and roles from the server.',
+          severity: "error",
+          summary: "Failed to load data",
+          detail: "Could not fetch members and roles from the server.",
           life: 5000,
         });
       } finally {
@@ -900,8 +853,8 @@ export default {
 </script>
 
 <style>
-@import '@/assets/global.css';
-@import '@/assets/modelcssnotificationandassesment.css';
+@import "@/assets/global.css";
+@import "@/assets/modelcssnotificationandassesment.css";
 
 /* Modal form customization for member edit */
 .modal-form {
@@ -952,7 +905,7 @@ export default {
   background: #f8f8f8;
   font-size: 14px;
   outline: none;
-  background-image: url('@/assets/images/Search.svg');
+  background-image: url("@/assets/images/Search.svg");
   background-repeat: no-repeat;
   background-position: 8px center;
   background-size: 16px 16px;

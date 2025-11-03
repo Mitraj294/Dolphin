@@ -4,10 +4,7 @@
       <div class="lead-capture-outer">
         <div class="lead-capture-card">
           <h3 class="lead-capture-card-title">Edit Lead</h3>
-          <form
-            class="lead-capture-form"
-            @submit.prevent="handleUpdateLead"
-          >
+          <form class="lead-capture-form" @submit.prevent="handleUpdateLead">
             <FormRow>
               <div>
                 <FormLabel>First Name</FormLabel>
@@ -17,11 +14,9 @@
                   placeholder="Type here"
                   required
                 />
-                <FormLabel
-                  v-if="errors.firstName"
-                  class="error-message"
-                  >{{ errors.firstName[0] }}</FormLabel
-                >
+                <FormLabel v-if="errors.firstName" class="error-message">{{
+                  errors.firstName[0]
+                }}</FormLabel>
               </div>
               <div>
                 <FormLabel>Last Name</FormLabel>
@@ -31,11 +26,9 @@
                   placeholder="Type here"
                   required
                 />
-                <FormLabel
-                  v-if="errors.lastName"
-                  class="error-message"
-                  >{{ errors.lastName[0] }}</FormLabel
-                >
+                <FormLabel v-if="errors.lastName" class="error-message">{{
+                  errors.lastName[0]
+                }}</FormLabel>
               </div>
               <div>
                 <FormLabel>Email</FormLabel>
@@ -45,11 +38,9 @@
                   type="email"
                   placeholder="abc@gmail.com"
                   required
-                /><FormLabel
-                  v-if="errors.email"
-                  class="error-message"
-                  >{{ errors.email[0] }}</FormLabel
-                >
+                /><FormLabel v-if="errors.email" class="error-message">{{
+                  errors.email[0]
+                }}</FormLabel>
               </div>
             </FormRow>
             <FormRow>
@@ -60,11 +51,9 @@
                   icon="fas fa-phone"
                   placeholder="Type here"
                   required
-                /><FormLabel
-                  v-if="errors.phone"
-                  class="error-message"
-                  >{{ errors.phone[0] }}</FormLabel
-                >
+                /><FormLabel v-if="errors.phone" class="error-message">{{
+                  errors.phone[0]
+                }}</FormLabel>
               </div>
 
               <div>
@@ -78,11 +67,9 @@
                   ]"
                   required
                 />
-                <FormLabel
-                  v-if="errors.find_us"
-                  class="error-message"
-                  >{{ errors.find_us[0] }}</FormLabel
-                >
+                <FormLabel v-if="errors.find_us" class="error-message">{{
+                  errors.find_us[0]
+                }}</FormLabel>
               </div>
               <div></div>
             </FormRow>
@@ -127,11 +114,9 @@
                   icon="fas fa-map-marker-alt"
                   placeholder="Enter address"
                   required
-                /><FormLabel
-                  v-if="errors.address"
-                  class="error-message"
-                  >{{ errors.address[0] }}</FormLabel
-                >
+                /><FormLabel v-if="errors.address" class="error-message">{{
+                  errors.address[0]
+                }}</FormLabel>
               </div>
               <div>
                 <FormLabel>Country</FormLabel>
@@ -145,11 +130,9 @@
                   ]"
                   required
                 />
-                <FormLabel
-                  v-if="errors.country_id"
-                  class="error-message"
-                  >{{ errors.country_id[0] }}</FormLabel
-                >
+                <FormLabel v-if="errors.country_id" class="error-message">{{
+                  errors.country_id[0]
+                }}</FormLabel>
               </div>
               <div>
                 <FormLabel>State</FormLabel>
@@ -162,11 +145,9 @@
                     ...states.map((s) => ({ value: s.id, text: s.name })),
                   ]"
                   required
-                /><FormLabel
-                  v-if="errors.state_id"
-                  class="error-message"
-                  >{{ errors.state_id[0] }}</FormLabel
-                >
+                /><FormLabel v-if="errors.state_id" class="error-message">{{
+                  errors.state_id[0]
+                }}</FormLabel>
               </div>
             </FormRow>
             <FormRow>
@@ -183,11 +164,9 @@
                     })),
                   ]"
                   required
-                /><FormLabel
-                  v-if="errors.city_id"
-                  class="error-message"
-                  >{{ errors.city_id[0] }}</FormLabel
-                >
+                /><FormLabel v-if="errors.city_id" class="error-message">{{
+                  errors.city_id[0]
+                }}</FormLabel>
               </div>
               <div>
                 <FormLabel>Zip Code</FormLabel>
@@ -196,11 +175,9 @@
                   icon="fas fa-map-marker-alt"
                   placeholder="Enter PIN code"
                   required
-                /><FormLabel
-                  v-if="errors.zip"
-                  class="error-message"
-                  >{{ errors.zip[0] }}</FormLabel
-                >
+                /><FormLabel v-if="errors.zip" class="error-message">{{
+                  errors.zip[0]
+                }}</FormLabel>
               </div>
               <div></div>
             </FormRow>
@@ -212,12 +189,7 @@
               >
                 Cancel
               </button>
-              <button
-                type="submit"
-                class="org-edit-update"
-              >
-                Update Lead
-              </button>
+              <button type="submit" class="org-edit-update">Update Lead</button>
             </div>
           </form>
         </div>
@@ -227,19 +199,19 @@
 </template>
 
 <script>
-import MainLayout from '@/components/layout/MainLayout.vue';
 import {
-  FormRow,
-  FormLabel,
-  FormInput,
-  FormDropdown,
   FormBox,
-} from '@/components/Common/Common_UI/Form';
-import { findUsOptions, orgSizeOptions } from '@/utils/formUtils';
-import axios from 'axios';
+  FormDropdown,
+  FormInput,
+  FormLabel,
+  FormRow,
+} from "@/components/Common/Common_UI/Form";
+import MainLayout from "@/components/layout/MainLayout.vue";
+import { findUsOptions, orgSizeOptions } from "@/utils/formUtils";
+import axios from "axios";
 
 export default {
-  name: 'EditLead',
+  name: "EditLead",
   components: {
     MainLayout,
     FormRow,
@@ -253,25 +225,25 @@ export default {
       findUsOptions,
       orgSizeOptions,
       form: {
-        first_name: '',
-        last_name: '',
-        email: '',
-        phone: '',
-        find_us: '',
-        organization_name: '',
-        organization_size: '',
-        address: '',
+        first_name: "",
+        last_name: "",
+        email: "",
+        phone: "",
+        find_us: "",
+        organization_name: "",
+        organization_size: "",
+        address: "",
         country_id: null,
         state_id: null,
         city_id: null,
-        zip: '',
+        zip: "",
       },
       countries: [],
       states: [],
       cities: [],
       loading: false,
-      successMessage: '',
-      errorMessage: '',
+      successMessage: "",
+      errorMessage: "",
       errors: {},
     };
   },
@@ -297,8 +269,8 @@ export default {
     async loadLeadFromApi(leadId) {
       try {
         const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
-        const storage = require('@/services/storage').default;
-        const token = storage.get('authToken');
+        const storage = require("@/services/storage").default;
+        const token = storage.get("authToken");
 
         const res = await axios.get(`${API_BASE_URL}/api/leads/${leadId}`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -317,7 +289,7 @@ export default {
         this.updatePageTitle(leadObj);
         return true;
       } catch (e) {
-        console.error('Error fetching lead data:', e);
+        console.error("Error fetching lead data:", e);
         return false;
       }
     },
@@ -328,15 +300,15 @@ export default {
 
       if (q.lead) {
         try {
-          lead = typeof q.lead === 'string' ? JSON.parse(q.lead) : q.lead;
+          lead = typeof q.lead === "string" ? JSON.parse(q.lead) : q.lead;
         } catch (e) {
-          console.error('Failed to parse lead query param:', e);
+          console.error("Failed to parse lead query param:", e);
         }
       }
 
       this.fillForm({
-        first_name: q.first_name || q.contact?.split(' ')[0],
-        last_name: q.last_name || q.contact?.split(' ')[1],
+        first_name: q.first_name || q.contact?.split(" ")[0],
+        last_name: q.last_name || q.contact?.split(" ")[1],
         email: q.email,
         phone: q.phone,
         find_us: q.source || q.find_us,
@@ -356,29 +328,29 @@ export default {
 
     fillForm(leadObj) {
       this.form = {
-        first_name: leadObj.first_name || '',
-        last_name: leadObj.last_name || '',
-        email: leadObj.email || '',
-        phone: leadObj.phone || '',
-        find_us: leadObj.find_us || '',
-        organization_name: leadObj.organization_name || '',
-        organization_size: leadObj.organization_size || '',
-        address: leadObj.address || leadObj.address_line || '',
+        first_name: leadObj.first_name || "",
+        last_name: leadObj.last_name || "",
+        email: leadObj.email || "",
+        phone: leadObj.phone || "",
+        find_us: leadObj.find_us || "",
+        organization_name: leadObj.organization_name || "",
+        organization_size: leadObj.organization_size || "",
+        address: leadObj.address || leadObj.address_line || "",
         country_id: leadObj.country_id || null,
         state_id: leadObj.state_id || null,
         city_id: leadObj.city_id || null,
-        zip: leadObj.zip || '',
+        zip: leadObj.zip || "",
       };
     },
 
     updatePageTitle(leadObj) {
       this.$nextTick(() => {
-        const name = `${leadObj.first_name || ''} ${
-          leadObj.last_name || ''
+        const name = `${leadObj.first_name || ""} ${
+          leadObj.last_name || ""
         }`.trim();
         this.$root?.$emit(
-          'page-title-override',
-          name ? `Edit Lead : ${name}` : 'Edit Lead'
+          "page-title-override",
+          name ? `Edit Lead : ${name}` : "Edit Lead"
         );
       });
     },
@@ -411,14 +383,14 @@ export default {
     },
     onCountryChange() {
       let val = this.form.country_id;
-      if (val !== null && val !== '' && typeof val !== 'number') {
+      if (val !== null && val !== "" && typeof val !== "number") {
         const num = Number(val);
         if (!Number.isNaN(num)) {
           this.form.country_id = num;
           val = num;
         }
       }
-      if (val && typeof val === 'number') {
+      if (val && typeof val === "number") {
         this.form.state_id = null;
         this.form.city_id = null;
         this.states = [];
@@ -433,14 +405,14 @@ export default {
     },
     onStateChange() {
       let val = this.form.state_id;
-      if (val !== null && val !== '' && typeof val !== 'number') {
+      if (val !== null && val !== "" && typeof val !== "number") {
         const num = Number(val);
         if (!Number.isNaN(num)) {
           this.form.state_id = num;
           val = num;
         }
       }
-      if (val && typeof val === 'number') {
+      if (val && typeof val === "number") {
         this.form.city_id = null;
         this.cities = [];
         this.fetchCities();
@@ -469,24 +441,24 @@ export default {
       }
     },
     resetMessages() {
-      this.successMessage = '';
-      this.errorMessage = '';
+      this.successMessage = "";
+      this.errorMessage = "";
       this.errors = {};
     },
     getAuthToken() {
-      const storage = require('@/services/storage').default;
-      return storage.get('authToken');
+      const storage = require("@/services/storage").default;
+      return storage.get("authToken");
     },
 
     handleAuthError() {
-      this.errorMessage = 'Authentication token not found. Please log in.';
-      this.showToast('error', 'Authentication Error', this.errorMessage);
+      this.errorMessage = "Authentication token not found. Please log in.";
+      this.showToast("error", "Authentication Error", this.errorMessage);
       this.loading = false;
     },
 
     handleMissingId() {
-      this.errorMessage = 'Lead ID not found in route query.';
-      this.showToast('error', 'Error', this.errorMessage);
+      this.errorMessage = "Lead ID not found in route query.";
+      this.showToast("error", "Error", this.errorMessage);
       this.loading = false;
     },
     async updateLeadApi(leadId, token, payload) {
@@ -496,23 +468,23 @@ export default {
       });
     },
     handleSuccess(data) {
-      this.successMessage = data.message || 'Lead updated successfully!';
-      this.showToast('success', 'Success', this.successMessage);
-      this.$router.push('/leads');
+      this.successMessage = data.message || "Lead updated successfully!";
+      this.showToast("success", "Success", this.successMessage);
+      this.$router.push("/leads");
     },
     handleError(error) {
-      console.error('Error updating lead:', error);
+      console.error("Error updating lead:", error);
 
       if (error.response?.data) {
         const { message, errors } = error.response.data;
 
-        this.errorMessage = message || 'Failed to update lead.';
+        this.errorMessage = message || "Failed to update lead.";
         this.errors = errors || {};
       } else {
-        this.errorMessage = 'An unexpected error occurred.';
+        this.errorMessage = "An unexpected error occurred.";
       }
 
-      this.showToast('error', 'Validation Error', this.errorMessage);
+      this.showToast("error", "Validation Error", this.errorMessage);
     },
 
     showToast(severity, summary, detail, life = 5000) {

@@ -80,9 +80,9 @@
 </template>
 
 <script>
-import '@/assets/global.css';
+import "@/assets/global.css";
 export default {
-  name: 'Pagination',
+  name: "Pagination",
   props: {
     withPagination: {
       type: Boolean,
@@ -106,49 +106,49 @@ export default {
         return Array.from({ length: total }, (_, i) => i + 1);
       }
       if (current <= 3) {
-        return [1, 2, 3, 4, '...', total - 1, total];
+        return [1, 2, 3, 4, "...", total - 1, total];
       }
       if (current === 4) {
-        return [1, 3, 4, 5, '...', total - 1, total];
+        return [1, 3, 4, 5, "...", total - 1, total];
       }
       if (current === 5) {
-        return [1, 4, 5, 6, '...', total - 1, total];
+        return [1, 4, 5, 6, "...", total - 1, total];
       }
       if (current === 6) {
-        return [1, 5, 6, 7, '...', total - 1, total];
+        return [1, 5, 6, 7, "...", total - 1, total];
       }
       if (current === 7) {
-        return [1, 2, '...', 6, 7, 8, total, total - 1].filter(
+        return [1, 2, "...", 6, 7, 8, total, total - 1].filter(
           (v, i, arr) => arr.indexOf(v) === i
         );
       }
       if (current === total - 2) {
-        return [1, 2, '...', total - 3, total - 2, total - 1, total];
+        return [1, 2, "...", total - 3, total - 2, total - 1, total];
       }
       if (current === total - 1) {
-        return [1, 2, '...', total - 2, total - 1, total];
+        return [1, 2, "...", total - 2, total - 1, total];
       }
       if (current === total) {
-        return [1, 2, '...', total - 2, total - 1, total];
+        return [1, 2, "...", total - 2, total - 1, total];
       }
       return [
         1,
         2,
-        '...',
+        "...",
         current - 1,
         current,
         current + 1,
-        '...',
+        "...",
         total - 1,
         total,
       ].filter((v, i, arr) => arr.indexOf(v) === i);
     },
   },
   mounted() {
-    document.addEventListener('mousedown', this.handleClickOutside);
+    document.addEventListener("mousedown", this.handleClickOutside);
   },
   beforeUnmount() {
-    document.removeEventListener('mousedown', this.handleClickOutside);
+    document.removeEventListener("mousedown", this.handleClickOutside);
   },
   methods: {
     handleClickOutside(e) {
@@ -156,7 +156,7 @@ export default {
       const menu = this.$refs.pageSizeMenu;
       const btn = this.$refs.pageSizeBtn;
       if (menu && !menu.contains(e.target) && btn && !btn.contains(e.target)) {
-        this.$emit('togglePageDropdown');
+        this.$emit("togglePageDropdown");
       }
     },
   },

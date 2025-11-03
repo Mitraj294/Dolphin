@@ -51,9 +51,9 @@ class CheckSubscriptionStatus
     {
         /** @var User|null $user */
         $user = Auth::user();
-    $allow = false;
-    // when true, an organization-admin without an active org subscription must be blocked
-    $forceBlock = false;
+        $allow = false;
+        // when true, an organization-admin without an active org subscription must be blocked
+        $forceBlock = false;
         $blockContext = [
             'latest' => null,
             'status' => 'none',
@@ -154,7 +154,7 @@ class CheckSubscriptionStatus
         // Web responses: redirect to subscription management with a flash message
         return redirect('/manage-subscription')->with('error', $message);
     }
-    
+
 
     /**
      * Determine if the user has any role that exempts them from subscription checks.
@@ -196,7 +196,7 @@ class CheckSubscriptionStatus
                 ->where('status', 'active')
                 ->orderByDesc('created_at')
                 ->first();
-            
+
             if ($subscription) {
                 // Check if subscription has expired in real-time using controller
                 if ($this->subscriptionController->hasExpired($subscription)) {

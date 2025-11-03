@@ -5,23 +5,12 @@
   >
     <div class="page">
       <div class="org-detail-outer">
-        <div
-          v-if="isLoading"
-          class="loading-state"
-        >
-          Loading...
-        </div>
-        <div
-          v-else-if="error"
-          class="error-state"
-        >
+        <div v-if="isLoading" class="loading-state">Loading...</div>
+        <div v-else-if="error" class="error-state">
           {{ error }}
         </div>
 
-        <div
-          v-else-if="organization"
-          class="org-detail-main-card"
-        >
+        <div v-else-if="organization" class="org-detail-main-card">
           <div class="org-detail-header-row">
             <div
               class="org-detail-main-card-header-title"
@@ -59,11 +48,11 @@
                 <div class="org-detail-list-card org-detail-list-card--box">
                   <div class="org-detail-list-row">
                     <span>Organization Name</span
-                    ><b>{{ organization.organization_name || 'N/A' }}</b>
+                    ><b>{{ organization.organization_name || "N/A" }}</b>
                   </div>
                   <div class="org-detail-list-row">
                     <span>Organization Size</span>
-                    <b>{{ organization.organization_size || 'N/A' }}</b>
+                    <b>{{ organization.organization_size || "N/A" }}</b>
                   </div>
                   <div class="org-detail-list-row">
                     <span>Contract Start</span
@@ -75,7 +64,7 @@
                   </div>
                   <div class="org-detail-list-row">
                     <span>Source</span>
-                    <b>{{ organization.source || 'N/A' }}</b>
+                    <b>{{ organization.source || "N/A" }}</b>
                   </div>
                   <div class="org-detail-list-row">
                     <span>Address</span>
@@ -88,19 +77,19 @@
                 <div class="org-detail-list-card org-detail-list-card--box">
                   <div class="org-detail-list-row">
                     <span>Main Contact</span
-                    ><b>{{ organization.main_contact || 'N/A' }}</b>
+                    ><b>{{ organization.main_contact || "N/A" }}</b>
                   </div>
                   <div class="org-detail-list-row">
                     <span>Admin Email</span
-                    ><b>{{ organization.admin_email || 'N/A' }}</b>
+                    ><b>{{ organization.admin_email || "N/A" }}</b>
                   </div>
                   <div class="org-detail-list-row">
                     <span>Admin Phone</span>
-                    <b>{{ organization.admin_phone || 'N/A' }}</b>
+                    <b>{{ organization.admin_phone || "N/A" }}</b>
                   </div>
                   <div class="org-detail-list-row">
                     <span>Sales Person</span
-                    ><b>{{ organization.sales_person || 'N/A' }}</b>
+                    ><b>{{ organization.sales_person || "N/A" }}</b>
                   </div>
                   <div class="org-detail-list-row">
                     <span>Last Contacted</span
@@ -150,7 +139,7 @@
                           justify-content: flex-start;
                         "
                       >
-                        {{ billingPlan.plan_name || 'Plan' }}
+                        {{ billingPlan.plan_name || "Plan" }}
                       </div>
                       <div style="font-weight: 500; font-size: 16px">
                         ${{ billingPlan.amount }}/{{ billingPlan.period }}
@@ -240,12 +229,12 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
-import axios from 'axios';
-import { format, parseISO } from 'date-fns';
-import MainLayout from '@/components/layout/MainLayout.vue';
-import storage from '@/services/storage.js';
+import MainLayout from "@/components/layout/MainLayout.vue";
+import storage from "@/services/storage.js";
+import axios from "axios";
+import { format, parseISO } from "date-fns";
+import { computed, onMounted, ref } from "vue";
+import { useRoute } from "vue-router";
 
 // STATE
 const route = useRoute();
@@ -257,19 +246,19 @@ const error = ref(null);
 
 // COMPUTED PROPERTIES
 const formattedAddress = computed(() => {
-  if (!organization.value) return 'N/A';
+  if (!organization.value) return "N/A";
   const { address, city, state, zip, country } = organization.value;
   // Filter out any null, undefined, or empty parts before joining
   return (
-    [address, city, state, zip, country].filter(Boolean).join(', ') || 'N/A'
+    [address, city, state, zip, country].filter(Boolean).join(", ") || "N/A"
   );
 });
 
 // METHODS
 const formatDate = (dateString) => {
-  if (!dateString) return 'N/A';
+  if (!dateString) return "N/A";
   try {
-    return format(parseISO(dateString), 'dd MMM, yyyy');
+    return format(parseISO(dateString), "dd MMM, yyyy");
   } catch {
     return dateString; // Fallback for invalid date formats
   }
@@ -297,7 +286,7 @@ const isExpired = computed(() => {
 });
 
 const lastBillingEndDisplay = computed(() => {
-  if (!hasHistory.value) return 'N/A';
+  if (!hasHistory.value) return "N/A";
   // pick the most recent entry by subscriptionEnd or paymentDate
   const sorted = [...billingHistory.value].sort((a, b) => {
     const ta =
@@ -305,13 +294,13 @@ const lastBillingEndDisplay = computed(() => {
       a.subscription_end ||
       a.paymentDate ||
       a.payment_date ||
-      '';
+      "";
     const tb =
       b.subscriptionEnd ||
       b.subscription_end ||
       b.paymentDate ||
       b.payment_date ||
-      '';
+      "";
     return new Date(tb) - new Date(ta);
   });
   const item = sorted[0] || {};
@@ -321,21 +310,21 @@ const lastBillingEndDisplay = computed(() => {
     item.paymentDate ||
     item.payment_date ||
     null;
-  return dateStr ? formatDate(dateStr) : 'Unknown';
+  return dateStr ? formatDate(dateStr) : "Unknown";
 });
 
 const fetchAllData = async () => {
   const orgId = route.params.id;
   if (!orgId) {
-    error.value = 'Organization ID not found in URL.';
+    error.value = "Organization ID not found in URL.";
     isLoading.value = false;
     return;
   }
 
-  const authToken = storage.get('authToken');
+  const authToken = storage.get("authToken");
   const headers = { Authorization: `Bearer ${authToken}` };
   const API_BASE_URL =
-    process.env.VUE_APP_API_BASE_URL || 'http://122.0.0.1:8000';
+    process.env.VUE_APP_API_BASE_URL || "http://122.0.0.1:8000";
 
   isLoading.value = true;
   error.value = null;
@@ -358,8 +347,8 @@ const fetchAllData = async () => {
       ? historyResponse.data
       : [];
   } catch (err) {
-    console.error('Failed to fetch organization data:', err);
-    error.value = 'Could not load organization details. Please try again.';
+    console.error("Failed to fetch organization data:", err);
+    error.value = "Could not load organization details. Please try again.";
   } finally {
     isLoading.value = false;
   }
@@ -458,7 +447,7 @@ onMounted(fetchAllData);
 }
 
 .org-detail-section-title {
-  font-family: 'Helvetica Neue LT Std', Helvetica, Arial, sans-serif;
+  font-family: "Helvetica Neue LT Std", Helvetica, Arial, sans-serif;
   font-weight: 600;
   font-size: 20px;
   color: #222;
@@ -502,7 +491,7 @@ onMounted(fetchAllData);
   min-width: 160px;
   text-align: left;
   font-size: 19px; /* Increased font size */
-  font-family: 'Inter', Arial, sans-serif;
+  font-family: "Inter", Arial, sans-serif;
   line-height: 1.7;
   letter-spacing: 0.01em;
   flex: 1 1 50%;
@@ -514,7 +503,7 @@ onMounted(fetchAllData);
   text-align: left; /* Add this */
   word-break: break-word;
   font-size: 17px; /* Increased font size */
-  font-family: 'Inter', Arial, sans-serif;
+  font-family: "Inter", Arial, sans-serif;
   line-height: 1.7;
   letter-spacing: 0.01em;
   flex: 1 1 50%;
@@ -529,7 +518,7 @@ onMounted(fetchAllData);
   border: none;
   padding: 8px 24px 8px 16px;
   font-size: 15px;
-  font-family: 'Helvetica Neue LT Std', Helvetica, Arial, sans-serif;
+  font-family: "Helvetica Neue LT Std", Helvetica, Arial, sans-serif;
   font-weight: 500;
   cursor: pointer;
   display: flex;
@@ -647,7 +636,7 @@ onMounted(fetchAllData);
   margin-bottom: 16px;
   margin-top: 2px;
   letter-spacing: 0.01em;
-  font-family: 'Inter', Arial, sans-serif;
+  font-family: "Inter", Arial, sans-serif;
 }
 
 .org-detail-algo-row {

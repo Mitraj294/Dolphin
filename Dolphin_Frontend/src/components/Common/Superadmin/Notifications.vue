@@ -5,10 +5,7 @@
       <div class="table-outer">
         <div class="table-card">
           <div class="table-header-bar">
-            <button
-              class="btn btn-primary"
-              @click="showSendModal = true"
-            >
+            <button class="btn btn-primary" @click="showSendModal = true">
               <img
                 src="@/assets/images/SendNotification.svg"
                 alt="Send"
@@ -30,10 +27,7 @@
                 />
 
                 <tbody>
-                  <tr
-                    v-for="item in paginatedNotifications"
-                    :key="item.id"
-                  >
+                  <tr v-for="item in paginatedNotifications" :key="item.id">
                     <td class="notification-body-cell">
                       <span
                         class="notification-body-truncate"
@@ -42,17 +36,14 @@
                         {{ item.body }}
                       </span>
                     </td>
-                    <td>{{ formatLocalDateTime(item.scheduled_at) || '-' }}</td>
+                    <td>{{ formatLocalDateTime(item.scheduled_at) || "-" }}</td>
                     <td>
                       {{
-                        item.sent_at ? formatLocalDateTime(item.sent_at) : '-'
+                        item.sent_at ? formatLocalDateTime(item.sent_at) : "-"
                       }}
                     </td>
                     <td>
-                      <button
-                        class="btn-view"
-                        @click="openDetail(item)"
-                      >
+                      <button class="btn-view" @click="openDetail(item)">
                         <img
                           src="@/assets/images/Detail.svg"
                           alt="View"
@@ -65,12 +56,7 @@
 
                   <!-- Empty state -->
                   <tr v-if="paginatedNotifications.length === 0">
-                    <td
-                      colspan="4"
-                      class="no-data"
-                    >
-                      No notifications found.
-                    </td>
+                    <td colspan="4" class="no-data">No notifications found.</td>
                   </tr>
                 </tbody>
               </table>
@@ -94,15 +80,9 @@
     />
 
     <!-- Send Notification Modal -->
-    <div
-      v-if="showSendModal"
-      class="modal-overlay"
-    >
+    <div v-if="showSendModal" class="modal-overlay">
       <div class="modal-card">
-        <button
-          class="modal-close-btn"
-          @click="showSendModal = false"
-        >
+        <button class="modal-close-btn" @click="showSendModal = false">
           &times;
         </button>
 
@@ -176,7 +156,7 @@
                   <FormInput
                     v-model="scheduledDate"
                     type="date"
-                 placeholder="MM/DD/YYYY"
+                    placeholder="MM/DD/YYYY"
                   />
                 </div>
               </div>
@@ -194,10 +174,7 @@
           </div>
         </div>
 
-        <button
-          class="btn btn-primary"
-          @click="sendNotification"
-        >
+        <button class="btn btn-primary" @click="sendNotification">
           Send Notification
         </button>
       </div>
@@ -217,21 +194,21 @@
 
 <script>
 // Organized imports: external libraries first, then services, then local components
-import axios from 'axios';
-import storage from '@/services/storage';
+import storage from "@/services/storage";
+import axios from "axios";
 
-import MainLayout from '../../layout/MainLayout.vue';
-import Pagination from '../../layout/Pagination.vue';
-import TableHeader from '@/components/Common/Common_UI/TableHeader.vue';
-import NotificationDetail from './NotificationDetail.vue';
+import TableHeader from "@/components/Common/Common_UI/TableHeader.vue";
+import MainLayout from "../../layout/MainLayout.vue";
+import Pagination from "../../layout/Pagination.vue";
+import NotificationDetail from "./NotificationDetail.vue";
 
-import { FormLabel } from '@/components/Common/Common_UI/Form';
-import FormInput from '../Common_UI/Form/FormInput.vue';
-import MultiSelectDropdown from '../Common_UI/Form/MultiSelectDropdown.vue';
-import Toast from 'primevue/toast';
+import { FormLabel } from "@/components/Common/Common_UI/Form";
+import Toast from "primevue/toast";
+import FormInput from "../Common_UI/Form/FormInput.vue";
+import MultiSelectDropdown from "../Common_UI/Form/MultiSelectDropdown.vue";
 
 export default {
-  name: 'Notifications',
+  name: "Notifications",
 
   // Register components used in the template
   components: {
@@ -258,18 +235,18 @@ export default {
       // Table state
       pageSize: 10,
       currentPage: 1,
-      sortKey: '',
+      sortKey: "",
       sortAsc: true,
 
       // Form selections
       selectedOrganizations: [],
-      selectedAdmin: '',
+      selectedAdmin: "",
       selectedAdmins: [],
       selectedGroups: [],
 
       // Scheduling
-      scheduledDate: '',
-      scheduledTime: '',
+      scheduledDate: "",
+      scheduledTime: "",
 
       // Data collections from API
       organizations: [],
@@ -289,24 +266,24 @@ export default {
     tableColumns() {
       return [
         {
-          label: 'Notification Title',
-          key: 'body',
-          minWidth: '225px',
+          label: "Notification Title",
+          key: "body",
+          minWidth: "225px",
           sortable: true,
         },
         {
-          label: 'Scheduled Date & Time',
-          key: 'scheduled_at',
-          minWidth: '225px',
+          label: "Scheduled Date & Time",
+          key: "scheduled_at",
+          minWidth: "225px",
           sortable: true,
         },
         {
-          label: 'Sent Date & Time',
-          key: 'sent_at',
-          minWidth: '225px',
+          label: "Sent Date & Time",
+          key: "sent_at",
+          minWidth: "225px",
           sortable: true,
         },
-        { label: 'Action', key: 'action', minWidth: '200px' },
+        { label: "Action", key: "action", minWidth: "200px" },
       ];
     },
 
@@ -320,8 +297,8 @@ export default {
       const list = [...this.notifications];
       if (this.sortKey) {
         list.sort((a, b) => {
-          const aVal = a[this.sortKey] || '';
-          const bVal = b[this.sortKey] || '';
+          const aVal = a[this.sortKey] || "";
+          const bVal = b[this.sortKey] || "";
           if (aVal < bVal) return this.sortAsc ? -1 : 1;
           if (aVal > bVal) return this.sortAsc ? 1 : -1;
           return 0;
@@ -337,7 +314,7 @@ export default {
       if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
 
       const pages = [1];
-      if (this.currentPage > 4) pages.push('...');
+      if (this.currentPage > 4) pages.push("...");
       for (
         let i = Math.max(2, this.currentPage - 1);
         i <= Math.min(total - 1, this.currentPage + 1);
@@ -345,7 +322,7 @@ export default {
       ) {
         pages.push(i);
       }
-      if (this.currentPage < total - 3) pages.push('...');
+      if (this.currentPage < total - 3) pages.push("...");
       pages.push(total);
       return pages;
     },
@@ -372,10 +349,10 @@ export default {
         for (const rp of roleProps) {
           if (!rp) return false;
           try {
-            if (rp.toString().toLowerCase().includes('organizationadmin'))
+            if (rp.toString().toLowerCase().includes("organizationadmin"))
               return true;
           } catch (e) {
-            console.warn('filteredGroups: unable to parse role prop', e, rp);
+            console.warn("filteredGroups: unable to parse role prop", e, rp);
           }
         }
         return false;
@@ -417,7 +394,7 @@ export default {
     // UI helpers
     // --------------------
     goToPage(page) {
-      if (page === '...' || page < 1 || page > this.totalPages) return;
+      if (page === "..." || page < 1 || page > this.totalPages) return;
       this.currentPage = page;
     },
 
@@ -437,7 +414,7 @@ export default {
 
     // Nicely format various date string shapes into a human readable, local-time string.
     formatLocalDateTime(dateStr) {
-      if (!dateStr) return '';
+      if (!dateStr) return "";
       let d = null;
       try {
         // If ISO with timezone, use Date parser
@@ -445,7 +422,7 @@ export default {
           d = new Date(dateStr);
         } else {
           // Try to parse common 'YYYY-MM-DD HH:MM:SS' format as UTC
-          const m = (dateStr || '').match(
+          const m = (dateStr || "").match(
             /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})(?::(\d{2}))?$/
           );
           if (m) {
@@ -460,34 +437,34 @@ export default {
           } else d = new Date(dateStr);
         }
       } catch (e) {
-        console.warn('Date parse error:', e);
+        console.warn("Date parse error:", e);
         d = new Date(dateStr);
       }
       if (!d || Number.isNaN(d.getTime())) {
-        return dateStr || '';
+        return dateStr || "";
       }
 
-      const dayOfMonth = String(d.getDate()).padStart(2, '0');
+      const dayOfMonth = String(d.getDate()).padStart(2, "0");
       const months = [
-        'JAN',
-        'FEB',
-        'MAR',
-        'APR',
-        'MAY',
-        'JUN',
-        'JUL',
-        'AUG',
-        'SEP',
-        'OCT',
-        'NOV',
-        'DEC',
+        "JAN",
+        "FEB",
+        "MAR",
+        "APR",
+        "MAY",
+        "JUN",
+        "JUL",
+        "AUG",
+        "SEP",
+        "OCT",
+        "NOV",
+        "DEC",
       ];
       const mon = months[d.getMonth()];
       const yr = d.getFullYear();
 
       let hr = d.getHours();
-      const min = String(d.getMinutes()).padStart(2, '0');
-      const ampm = hr >= 12 ? 'PM' : 'AM';
+      const min = String(d.getMinutes()).padStart(2, "0");
+      const ampm = hr >= 12 ? "PM" : "AM";
       hr = hr % 12;
       if (hr === 0) hr = 12; // display 12 instead of 0
 
@@ -501,9 +478,9 @@ export default {
     // --------------------
     async fetchOrganizations() {
       try {
-        const apiUrl = process.env.VUE_APP_API_URL || '/api';
-        const token = storage.get('authToken');
-        const res = await axios.get(apiUrl + '/organizations', {
+        const apiUrl = process.env.VUE_APP_API_URL || "/api";
+        const token = storage.get("authToken");
+        const res = await axios.get(apiUrl + "/organizations", {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!this.isAlive) return;
@@ -524,16 +501,16 @@ export default {
         // `organizationAdmins` (populated by fetchAdmins) for that purpose.
         this.organizations = orgs;
       } catch (err) {
-        console.error('Error fetching organizations:', err);
+        console.error("Error fetching organizations:", err);
         if (this.isAlive) this.organizations = [];
       }
     },
 
     async fetchGroups() {
       try {
-        const apiUrl = process.env.VUE_APP_API_URL || '/api';
-        const token = storage.get('authToken');
-        const res = await axios.get(apiUrl + '/groups', {
+        const apiUrl = process.env.VUE_APP_API_URL || "/api";
+        const token = storage.get("authToken");
+        const res = await axios.get(apiUrl + "/groups", {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!this.isAlive) return;
@@ -545,16 +522,16 @@ export default {
           this.groups = res.data.groups;
         else this.groups = [];
       } catch (err) {
-        console.error('Error fetching groups:', err);
+        console.error("Error fetching groups:", err);
         if (this.isAlive) this.groups = [];
       }
     },
 
     async fetchAdmins() {
       try {
-        const apiUrl = process.env.VUE_APP_API_URL || '/api';
-        const token = storage.get('authToken');
-        const res = await axios.get(apiUrl + '/users', {
+        const apiUrl = process.env.VUE_APP_API_URL || "/api";
+        const token = storage.get("authToken");
+        const res = await axios.get(apiUrl + "/users", {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!this.isAlive) return;
@@ -573,19 +550,19 @@ export default {
           if (Array.isArray(user.roles)) {
             return user.roles.some(
               (r) =>
-                (r && (r.name || r)).toString().toLowerCase() === 'dolphinadmin'
+                (r && (r.name || r)).toString().toLowerCase() === "dolphinadmin"
             );
           }
           if (Array.isArray(user.user_roles)) {
             return user.user_roles.some(
               (r) =>
-                (r && (r.name || r)).toString().toLowerCase() === 'dolphinadmin'
+                (r && (r.name || r)).toString().toLowerCase() === "dolphinadmin"
             );
           }
-          const roleStr = (user.role || user.role_name || user.user_role || '')
+          const roleStr = (user.role || user.role_name || user.user_role || "")
             .toString()
             .toLowerCase();
-          if (roleStr) return roleStr.includes('dolphinadmin');
+          if (roleStr) return roleStr.includes("dolphinadmin");
           return false;
         };
 
@@ -596,20 +573,20 @@ export default {
             return user.roles.some(
               (r) =>
                 (r && (r.name || r)).toString().toLowerCase() ===
-                'organizationadmin'
+                "organizationadmin"
             );
           }
           if (Array.isArray(user.user_roles)) {
             return user.user_roles.some(
               (r) =>
                 (r && (r.name || r)).toString().toLowerCase() ===
-                'organizationadmin'
+                "organizationadmin"
             );
           }
-          const roleStr = (user.role || user.role_name || user.user_role || '')
+          const roleStr = (user.role || user.role_name || user.user_role || "")
             .toString()
             .toLowerCase();
-          if (roleStr) return roleStr.includes('organizationadmin');
+          if (roleStr) return roleStr.includes("organizationadmin");
           return false;
         };
 
@@ -628,24 +605,24 @@ export default {
             u.name ||
             (u.first_name || u.firstName || u.firstname
               ? `${u.first_name || u.firstName || u.firstname} ${
-                  u.last_name || u.lastName || u.lastname || ''
+                  u.last_name || u.lastName || u.lastname || ""
                 }`.trim()
               : null) ||
             u.email ||
-            (u.username || '').toString();
+            (u.username || "").toString();
           return { ...u, id, name };
         });
       } catch (err) {
-        console.error('Error fetching admins:', err);
+        console.error("Error fetching admins:", err);
         if (this.isAlive) this.admins = [];
       }
     },
 
     async fetchNotifications() {
       try {
-        const apiUrl = process.env.VUE_APP_API_URL || '/api';
-        const token = storage.get('authToken');
-        const res = await axios.get(apiUrl + '/announcements', {
+        const apiUrl = process.env.VUE_APP_API_URL || "/api";
+        const token = storage.get("authToken");
+        const res = await axios.get(apiUrl + "/announcements", {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!this.isAlive) return;
@@ -657,7 +634,7 @@ export default {
           this.notifications = res.data.notifications;
         else this.notifications = [];
       } catch (err) {
-        console.error('Error fetching notifications:', err);
+        console.error("Error fetching notifications:", err);
         if (this.isAlive) this.notifications = [];
       }
     },
@@ -665,17 +642,17 @@ export default {
     // Fetch detail for a single notification and open detail modal
     async openDetail(item) {
       if (!item || !item.id) {
-        console.error('Invalid item for detail view:', item);
+        console.error("Invalid item for detail view:", item);
         this.$toast.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Cannot load details for invalid item.',
+          severity: "error",
+          summary: "Error",
+          detail: "Cannot load details for invalid item.",
           life: 3000,
         });
         return;
       }
       try {
-        const token = storage.get('authToken');
+        const token = storage.get("authToken");
         const res = await axios.get(
           `${process.env.VUE_APP_API_BASE_URL}/api/announcements/${item.id}`,
           { headers: { Authorization: `Bearer ${token}` } }
@@ -686,11 +663,11 @@ export default {
           this.showDetailModal = true;
         }
       } catch (error) {
-        console.error('Failed to fetch notification details', error);
+        console.error("Failed to fetch notification details", error);
         this.$toast.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to fetch notification details. Please try again.',
+          severity: "error",
+          summary: "Error",
+          detail: "Failed to fetch notification details. Please try again.",
           life: 3000,
         });
       }
@@ -705,16 +682,16 @@ export default {
     // Build payload and send notification(s) to backend
     async sendNotification() {
       try {
-        const apiUrl = process.env.VUE_APP_API_URL || '/api';
-        const token = storage.get('authToken');
+        const apiUrl = process.env.VUE_APP_API_URL || "/api";
+        const token = storage.get("authToken");
 
         // Build scheduled_at in UTC from selected local date/time
         let scheduled_at;
         if (this.scheduledDate && this.scheduledTime) {
           let time = this.scheduledTime;
-          if (time.length === 5) time += ':00';
+          if (time.length === 5) time += ":00";
           const local = new Date(`${this.scheduledDate}T${time}`);
-          const pad = (n) => String(n).padStart(2, '0');
+          const pad = (n) => String(n).padStart(2, "0");
           const YYYY = local.getUTCFullYear();
           const MM = pad(local.getUTCMonth() + 1);
           const DD = pad(local.getUTCDate());
@@ -724,16 +701,16 @@ export default {
           scheduled_at = `${YYYY}-${MM}-${DD} ${hh}:${mm}:${ss}`;
         }
 
-        const bodyEl = this.$el.querySelector('.modal-textarea');
+        const bodyEl = this.$el.querySelector(".modal-textarea");
         const payload = {
           organization_ids: this.selectedOrganizations.map((org) => org.id),
           group_ids: this.selectedGroups.map((group) => group.id),
           admin_ids: this.selectedAdmins.map((admin) => admin.id),
-          body: bodyEl ? bodyEl.value : '',
+          body: bodyEl ? bodyEl.value : "",
         };
         if (scheduled_at) payload.scheduled_at = scheduled_at;
 
-        await axios.post(apiUrl + '/notifications/send', payload, {
+        await axios.post(apiUrl + "/notifications/send", payload, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -743,19 +720,19 @@ export default {
           this.$toast &&
             this.$toast.add &&
             this.$toast.add({
-              severity: 'success',
-              summary: 'Success',
-              detail: 'Announcement sent!',
+              severity: "success",
+              summary: "Success",
+              detail: "Announcement sent!",
               life: 3000,
             });
         }
       } catch (err) {
-        console.error('Error sending announcement:', err);
+        console.error("Error sending announcement:", err);
         if (this.isAlive && this.$toast && this.$toast.add) {
           this.$toast.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Failed to send announcement',
+            severity: "error",
+            summary: "Error",
+            detail: "Failed to send announcement",
             life: 4000,
           });
         }
@@ -767,10 +744,10 @@ export default {
       this.selectedOrganizations = [];
       this.selectedAdmins = [];
       this.selectedGroups = [];
-      this.scheduledDate = '';
-      this.scheduledTime = '';
-      const textarea = this.$el.querySelector('.modal-textarea');
-      if (textarea) textarea.value = '';
+      this.scheduledDate = "";
+      this.scheduledTime = "";
+      const textarea = this.$el.querySelector(".modal-textarea");
+      if (textarea) textarea.value = "";
     },
   },
 
@@ -790,8 +767,8 @@ export default {
 </script>
 
 <style>
-@import '@/assets/global.css';
-@import '@/assets/modelcssnotificationandassesment.css';
+@import "@/assets/global.css";
+@import "@/assets/modelcssnotificationandassesment.css";
 </style>
 
 <!-- Unified modal styles for consistency across components -->
@@ -1093,7 +1070,7 @@ export default {
     margin-top: 10px;
   }
 }
-.form-box{
+.form-box {
   padding: 0 !important;
 }
 </style>

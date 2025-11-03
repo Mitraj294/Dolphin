@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Minimal PHPUnit stubs to help static analyzers (Psalm/PHPStan/IDE)
  * recognize PHPUnit's TestCase and a few commonly used assertion methods
@@ -20,9 +21,7 @@ abstract class TestCase
      * @param mixed $actual
      * @param string $message
      */
-    public function assertNotNull($actual, string $message = ''): void
-    {
-    }
+    public function assertNotNull($actual, string $message = ''): void {}
 
     /**
      * Asserts that two variables are equal.
@@ -30,16 +29,12 @@ abstract class TestCase
      * @param mixed $actual
      * @param string $message
      */
-    public function assertEquals($expected, $actual, string $message = ''): void
-    {
-    }
+    public function assertEquals($expected, $actual, string $message = ''): void {}
 
     /**
      * Asserts that a condition is true.
      * @param bool $condition
      * @param string $message
      */
-    public function assertTrue(bool $condition, string $message = ''): void
-    {
-    }
+    public function assertTrue(bool $condition, string $message = ''): void {}
 }

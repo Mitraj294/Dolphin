@@ -1371,6 +1371,10 @@ button::-moz-focus-inner {
 .tox[dir=rtl] .tox-swatches__picker-btn {
   margin-right: auto;
 }
+.tox {
+  /* Animation for deleting a comment */
+  /* A comment fades to 0 when it is being deleted, then is removed */
+}
 .tox .tox-comment {
   background: #222F3E;
   border: 1px solid #222F3E;

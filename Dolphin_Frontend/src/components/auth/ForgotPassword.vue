@@ -1,11 +1,7 @@
 <template>
   <div class="login-bg">
     <Toast />
-    <img
-      src="@/assets/images/Lines.svg"
-      alt="Lines"
-      class="bg-lines"
-    />
+    <img src="@/assets/images/Lines.svg" alt="Lines" class="bg-lines" />
     <img
       src="@/assets/images/Image.svg"
       alt="Illustration"
@@ -19,28 +15,15 @@
           <span class="icon">
             <i class="fas fa-envelope"></i>
           </span>
-          <input
-            type="email"
-            v-model="email"
-            placeholder="Email ID"
-            required
-          />
+          <input type="email" v-model="email" placeholder="Email ID" required />
         </div>
-        <button
-          type="submit"
-          class="login-btn"
-          :disabled="loading"
-        >
-          {{ loading ? 'Sending...' : 'Send Reset Link' }}
+        <button type="submit" class="login-btn" :disabled="loading">
+          {{ loading ? "Sending..." : "Send Reset Link" }}
         </button>
       </form>
       <div class="switch-auth">
         <span>Remembered your password?</span>
-        <router-link
-          to="/login"
-          class="switch-link"
-          >Login here</router-link
-        >
+        <router-link to="/login" class="switch-link">Login here</router-link>
       </div>
       <div class="footer">
         <img
@@ -55,11 +38,11 @@
 </template>
 
 <script>
-import Toast from 'primevue/toast';
-import { useToast } from 'primevue/usetoast';
+import Toast from "primevue/toast";
+import { useToast } from "primevue/usetoast";
 
 export default {
-  name: 'ForgotPassword',
+  name: "ForgotPassword",
   components: { Toast },
   setup() {
     const toast = useToast();
@@ -67,7 +50,7 @@ export default {
   },
   data() {
     return {
-      email: '',
+      email: "",
       loading: false,
       cooldown: 0,
       cooldownInterval: null,
@@ -78,8 +61,8 @@ export default {
       const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
       if (this.cooldown > 0) {
         this.toast.add({
-          severity: 'warn',
-          summary: 'Please wait',
+          severity: "warn",
+          summary: "Please wait",
           detail: `You can request another reset link in ${this.cooldown}s`,
           life: 3000,
         });
@@ -87,17 +70,17 @@ export default {
       }
       if (!this.email) {
         this.toast.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Please enter your email address.',
+          severity: "error",
+          summary: "Error",
+          detail: "Please enter your email address.",
           life: 3000,
         });
         return;
       }
       this.loading = true;
       fetch(`${API_BASE_URL}/api/password/email`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: this.email }),
       })
         .then(async (res) => {
@@ -105,28 +88,28 @@ export default {
           this.loading = false;
           if (
             res.status === 429 ||
-            (data.message && data.message.toLowerCase().includes('throttle'))
+            (data.message && data.message.toLowerCase().includes("throttle"))
           ) {
             this.cooldown = 30;
             this.startCooldown();
             this.toast.add({
-              severity: 'warn',
-              summary: 'Please wait',
+              severity: "warn",
+              summary: "Please wait",
               detail: `You can request another reset link in 3 minutes`,
               life: 3500,
             });
             return;
           }
           this.toast.add({
-            severity: 'success',
-            summary: 'Reset Link Sent',
+            severity: "success",
+            summary: "Reset Link Sent",
             detail:
               data.message ||
-              'If this email is registered, a reset link has been sent.',
+              "If this email is registered, a reset link has been sent.",
             life: 3500,
           });
 
-          this.email = '';
+          this.email = "";
           this.cooldown = 30;
           this.startCooldown();
           /*setTimeout(() => {
@@ -136,9 +119,9 @@ export default {
         .catch(() => {
           this.loading = false;
           this.toast.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Failed to send reset link. Try again.',
+            severity: "error",
+            summary: "Error",
+            detail: "Failed to send reset link. Try again.",
             life: 3500,
           });
         });
@@ -198,14 +181,14 @@ export default {
   font-weight: 600;
   color: #234056;
   margin-bottom: 8px;
-  font-family: 'Helvetica Neue LT Std', Arial, sans-serif;
+  font-family: "Helvetica Neue LT Std", Arial, sans-serif;
 }
 
 .login-subtitle {
   font-size: 1rem;
   color: #787878;
   margin-bottom: 32px;
-  font-family: 'Inter', Arial, sans-serif;
+  font-family: "Inter", Arial, sans-serif;
 }
 
 .input-group {
@@ -266,7 +249,7 @@ export default {
   margin-bottom: 16px;
   font-size: 1rem;
   color: #787878;
-  font-family: 'Helvetica Neue LT Std', Arial, sans-serif;
+  font-family: "Helvetica Neue LT Std", Arial, sans-serif;
 }
 
 .switch-link {
@@ -297,7 +280,7 @@ export default {
 .copyright {
   color: #787878;
   font-size: 14px;
-  font-family: 'Inter', Arial, sans-serif;
+  font-family: "Inter", Arial, sans-serif;
   text-align: center;
   margin-top: 4px;
 }

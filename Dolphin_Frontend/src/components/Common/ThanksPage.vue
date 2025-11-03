@@ -1,10 +1,6 @@
 <template>
   <div class="thanks-page">
-    <img
-      src="@/assets/images/Lines.svg"
-      alt="Lines"
-      class="bg-lines"
-    />
+    <img src="@/assets/images/Lines.svg" alt="Lines" class="bg-lines" />
     <img
       src="@/assets/images/Image.svg"
       alt="Illustration"
@@ -12,17 +8,8 @@
     />
     <div class="thanks-card">
       <div class="check-circle">
-        <svg
-          width="56"
-          height="56"
-          viewBox="0 0 56 56"
-        >
-          <circle
-            cx="28"
-            cy="28"
-            r="28"
-            fill="#2ecc40"
-          />
+        <svg width="56" height="56" viewBox="0 0 56 56">
+          <circle cx="28" cy="28" r="28" fill="#2ecc40" />
           <polyline
             points="18,30 26,38 38,20"
             fill="none"
@@ -58,7 +45,7 @@
 
 <script>
 export default {
-  name: 'ThanksPage',
+  name: "ThanksPage",
 };
 </script>
 

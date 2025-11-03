@@ -1,15 +1,12 @@
 <template>
-  <div
-    class="form-box"
-    :class="{ 'form-box--error': error }"
-  >
+  <div class="form-box" :class="{ 'form-box--error': error }">
     <slot />
   </div>
 </template>
 
 <script>
 export default {
-  name: 'FormBox',
+  name: "FormBox",
   props: {
     error: { type: Boolean, default: false },
   },

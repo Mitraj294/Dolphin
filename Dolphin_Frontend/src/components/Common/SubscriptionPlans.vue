@@ -8,10 +8,7 @@
             <div class="subscription-plans-header-spacer"></div>
             <div class="subscription-plans-container">
               <div class="subscription-plans-title">Subscription Plans</div>
-              <div
-                class="subscription-plans-desc"
-                style="max-width: 600px"
-              >
+              <div class="subscription-plans-desc" style="max-width: 600px">
                 Choose the plan that fits your needs. Whether you’re just
                 starting or looking for long-term value, we’ve got flexible
                 options to help you grow without limits.
@@ -68,10 +65,7 @@
                   </button>
                 </div>
               </div>
-              <div
-                class="subscription-plans-footer"
-                style="max-width: 600px"
-              >
+              <div class="subscription-plans-footer" style="max-width: 600px">
                 Upgrade anytime, cancel anytime. No hidden fees – just simple,
                 transparent pricing.
               </div>
@@ -81,20 +75,14 @@
       </div>
     </MainLayout>
 
-    <div
-      v-else
-      class="page guest-view"
-    >
+    <div v-else class="page guest-view">
       <div class="subscription-plans-outer">
         <div class="subscription-plans-card">
           <div class="subscription-plans-header"></div>
           <div class="subscription-plans-header-spacer"></div>
           <div class="subscription-plans-container">
             <div class="subscription-plans-title">Subscription Plans</div>
-            <div
-              class="subscription-plans-desc"
-              style="max-width: 600px"
-            >
+            <div class="subscription-plans-desc" style="max-width: 600px">
               Choose a plan to continue. This page was opened from an invitation
               and may be pre-filled.
             </div>
@@ -134,10 +122,7 @@
                 </button>
               </div>
             </div>
-            <div
-              class="subscription-plans-footer"
-              style="max-width: 600px"
-            >
+            <div class="subscription-plans-footer" style="max-width: 600px">
               After payment you'll be redirected to the login page.
             </div>
           </div>
@@ -150,24 +135,24 @@
 <script>
 // Component Imports
 
-import MainLayout from '@/components/layout/MainLayout.vue';
-import axios from 'axios';
-import storage from '@/services/storage';
+import MainLayout from "@/components/layout/MainLayout.vue";
+import storage from "@/services/storage";
+import axios from "axios";
 
 export default {
-  name: 'SubscriptionPlans',
+  name: "SubscriptionPlans",
   components: { MainLayout },
 
   // Data
 
   data() {
     return {
-      planPeriod: 'annually',
+      planPeriod: "annually",
       isAnnually: true,
       isLoading: false,
       stripePriceIds: {
-        monthly: 'price_1SERsJPnfSZSgS1XktSvPTQr',
-        annually: 'price_1SERriPnfSZSgS1XYnWP4uM2',
+        monthly: "price_1SERsJPnfSZSgS1XktSvPTQr",
+        annually: "price_1SERriPnfSZSgS1XYnWP4uM2",
       },
       userPlan: null,
       isGuestView: false,
@@ -188,9 +173,9 @@ export default {
      * Determines the text for the Basic plan button based on the user's current plan.
      */
     basicBtnText() {
-      if (this.userPlan === 250) return 'Current Plan';
-      if (this.userPlan === 2500) return 'Change Plan';
-      return 'Get Started';
+      if (this.userPlan === 250) return "Current Plan";
+      if (this.userPlan === 2500) return "Change Plan";
+      return "Get Started";
     },
 
     /**
@@ -198,16 +183,16 @@ export default {
      */
     basicBtnAction() {
       if (this.userPlan === 250) return this.goToBillingDetails;
-      return () => this.startStripeCheckout('monthly');
+      return () => this.startStripeCheckout("monthly");
     },
 
     /**
      * Determines the text for the Standard plan button.
      */
     standardBtnText() {
-      if (this.userPlan === 2500) return 'Current Plan';
-      if (this.userPlan === 250) return 'Upgrade Plan';
-      return 'Get Started';
+      if (this.userPlan === 2500) return "Current Plan";
+      if (this.userPlan === 250) return "Upgrade Plan";
+      return "Get Started";
     },
 
     /**
@@ -215,7 +200,7 @@ export default {
      */
     standardBtnAction() {
       if (this.userPlan === 2500) return this.goToBillingDetails;
-      return () => this.startStripeCheckout('annually');
+      return () => this.startStripeCheckout("annually");
     },
   },
 
@@ -223,7 +208,7 @@ export default {
 
   watch: {
     isAnnually(val) {
-      this.planPeriod = val ? 'annually' : 'monthly';
+      this.planPeriod = val ? "annually" : "monthly";
     },
   },
 
@@ -235,7 +220,7 @@ export default {
      */
     async fetchUserPlan() {
       try {
-        const authToken = storage.get('authToken');
+        const authToken = storage.get("authToken");
         const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
         const res = await axios.get(`${API_BASE_URL}/api/subscription`, {
           headers: { Authorization: `Bearer ${authToken}` },
@@ -243,14 +228,16 @@ export default {
 
         const rawAmount = res.data?.amount ?? res.data?.plan_amount ?? null;
         if (rawAmount !== null && rawAmount !== undefined) {
-          const parsed = Number.parseFloat(String(rawAmount).replaceAll(',', ''));
+          const parsed = Number.parseFloat(
+            String(rawAmount).replaceAll(",", "")
+          );
           this.userPlan = Number.isFinite(parsed) ? Math.round(parsed) : null;
         } else {
           this.userPlan = null;
         }
       } catch (e) {
         this.userPlan = null;
-        console.error('[Subscription] Error fetching user plan:', e);
+        console.error("[Subscription] Error fetching user plan:", e);
       }
     },
 
@@ -263,11 +250,16 @@ export default {
       try {
         const priceId =
           this.stripePriceIds[period] || this.stripePriceIds.annually;
-        console.log('Starting checkout with period:', period, 'priceId:', priceId);
-        const authToken = storage.get('authToken');
+        console.log(
+          "Starting checkout with period:",
+          period,
+          "priceId:",
+          priceId
+        );
+        const authToken = storage.get("authToken");
         const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
         const payload = this.buildCheckoutPayload(priceId);
-        console.log('Checkout payload:', payload);
+        console.log("Checkout payload:", payload);
 
         const res = await axios.post(
           `${API_BASE_URL}/api/stripe/checkout-session`,
@@ -281,7 +273,7 @@ export default {
           // Handle error
         }
       } catch (e) {
-        console.error('[Subscription] Stripe checkout error:', e);
+        console.error("[Subscription] Stripe checkout error:", e);
       } finally {
         this.isLoading = false;
       }
@@ -298,9 +290,12 @@ export default {
         // Add guest params but exclude null/undefined values to avoid overriding valid priceId
         const filteredGuestParams = {};
         for (const key of Object.keys(this.guestParams)) {
-          if (this.guestParams[key] !== null && this.guestParams[key] !== undefined) {
+          if (
+            this.guestParams[key] !== null &&
+            this.guestParams[key] !== undefined
+          ) {
             // Don't override the priceId we already set
-            if (key !== 'price_id') {
+            if (key !== "price_id") {
               filteredGuestParams[key] = this.guestParams[key];
             }
           }
@@ -316,17 +311,22 @@ export default {
     async validateGuestToken(opts) {
       try {
         const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
-        const res = await axios.get(`${API_BASE_URL}/api/leads/guest-validate`, { params: opts });
+        const res = await axios.get(
+          `${API_BASE_URL}/api/leads/guest-validate`,
+          { params: opts }
+        );
         if (res?.data?.valid) {
           if (res.data.token) {
-            storage.set('authToken', res.data.token);
-            axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
+            storage.set("authToken", res.data.token);
+            axios.defaults.headers.common[
+              "Authorization"
+            ] = `Bearer ${res.data.token}`;
           }
-          storage.set('guest_user', res.data.user || null);
+          storage.set("guest_user", res.data.user || null);
           return true;
         }
       } catch (e) {
-        console.error('Guest validation failed', e);
+        console.error("Guest validation failed", e);
       }
       return false;
     },
@@ -335,70 +335,74 @@ export default {
      * Navigates to the billing details page.
      */
     goToBillingDetails() {
-      this.$router.push({ name: 'BillingDetails' });
+      this.$router.push({ name: "BillingDetails" });
     },
   },
 
   // Lifecycle Hooks
 
   mounted() {
-    console.log('SubscriptionPlans mounted, URL:', globalThis.location.href);
+    console.log("SubscriptionPlans mounted, URL:", globalThis.location.href);
     const qs = new URLSearchParams(globalThis.location.search);
-    console.log('URL search params:', qs.toString());
-    
+    console.log("URL search params:", qs.toString());
+
     const hasGuestParams = [
-      'email',
-      'lead_id',
-      'price_id',
-      'guest_code',
-      'guest_token',
+      "email",
+      "lead_id",
+      "price_id",
+      "guest_code",
+      "guest_token",
     ].some((p) => qs.has(p));
 
-    console.log('Guest params check:', {
+    console.log("Guest params check:", {
       hasGuestParams,
-      email: qs.has('email'),
-      lead_id: qs.has('lead_id'),
-      price_id: qs.has('price_id'),
-      guest_code: qs.has('guest_code'),
-      guest_token: qs.has('guest_token')
+      email: qs.has("email"),
+      lead_id: qs.has("lead_id"),
+      price_id: qs.has("price_id"),
+      guest_code: qs.has("guest_code"),
+      guest_token: qs.has("guest_token"),
     });
 
     if (hasGuestParams) {
-      console.log('Setting guest view mode');
+      console.log("Setting guest view mode");
       this.isGuestView = true;
       this.guestParams = {
-        email: qs.get('email'),
-        lead_id: qs.get('lead_id'),
-        price_id: qs.get('price_id'),
-        guest_code: qs.get('guest_code'),
-        guest_token: qs.get('guest_token'),
+        email: qs.get("email"),
+        lead_id: qs.get("lead_id"),
+        price_id: qs.get("price_id"),
+        guest_code: qs.get("guest_code"),
+        guest_token: qs.get("guest_token"),
       };
-      console.log('Guest params:', this.guestParams);
+      console.log("Guest params:", this.guestParams);
 
       // Validate guest token/code to get authentication
       if (this.guestParams.guest_code) {
-        console.log('Validating guest code:', this.guestParams.guest_code);
-        this.validateGuestToken({ guest_code: this.guestParams.guest_code }).then(success => {
-          console.log('Guest code validation result:', success);
+        console.log("Validating guest code:", this.guestParams.guest_code);
+        this.validateGuestToken({
+          guest_code: this.guestParams.guest_code,
+        }).then((success) => {
+          console.log("Guest code validation result:", success);
           if (success) {
-            console.log('Guest authentication successful, auth token set');
+            console.log("Guest authentication successful, auth token set");
           } else {
-            console.log('Guest authentication failed');
+            console.log("Guest authentication failed");
           }
         });
       } else if (this.guestParams.guest_token) {
-        console.log('Validating guest token:', this.guestParams.guest_token);
-        this.validateGuestToken({ token: this.guestParams.guest_token }).then(success => {
-          console.log('Guest token validation result:', success);
-          if (success) {
-            console.log('Guest authentication successful, auth token set');
-          } else {
-            console.log('Guest authentication failed');
+        console.log("Validating guest token:", this.guestParams.guest_token);
+        this.validateGuestToken({ token: this.guestParams.guest_token }).then(
+          (success) => {
+            console.log("Guest token validation result:", success);
+            if (success) {
+              console.log("Guest authentication successful, auth token set");
+            } else {
+              console.log("Guest authentication failed");
+            }
           }
-        });
+        );
       }
     } else {
-      console.log('No guest params detected, fetching user plan');
+      console.log("No guest params detected, fetching user plan");
       this.fetchUserPlan();
     }
   },
@@ -407,7 +411,7 @@ export default {
 
 <style scoped>
 /* All original styles are preserved here */
-@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+@import url("https://fonts.googleapis.com/icon?family=Material+Icons");
 
 .subscription-plans-outer {
   width: 100%;
@@ -617,7 +621,7 @@ export default {
   text-align: center;
   margin-top: 8px;
 }
-.input-group input[placeholder='0000 0000 0000 0000'] {
+.input-group input[placeholder="0000 0000 0000 0000"] {
   letter-spacing: 2px;
 }
 .input-group:last-child .input-icon {
@@ -665,7 +669,7 @@ export default {
 }
 .switch-slider:before {
   position: absolute;
-  content: '';
+  content: "";
   height: 16px;
   width: 16px;
   left: 3px;

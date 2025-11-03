@@ -27,7 +27,7 @@
                     "
                     >Basic</span
                   >
-                  <span v-else>{{ currentPlan?.name || 'Plan' }}</span>
+                  <span v-else>{{ currentPlan?.name || "Plan" }}</span>
                 </div>
                 <div class="plan-price">
                   <span
@@ -52,7 +52,7 @@
                         ? `${currentPlan.price}`
                         : currentPlan?.amount
                         ? `${currentPlan.amount}`
-                        : ''
+                        : ""
                     }}
                   </span>
                 </div>
@@ -61,13 +61,13 @@
                 <div>
                   Subscription Start :
                   <b>{{
-                    currentPlan?.start ? formatDate(currentPlan.start) : 'N/A'
+                    currentPlan?.start ? formatDate(currentPlan.start) : "N/A"
                   }}</b>
                 </div>
                 <div>
                   Subscription End :
                   <b>{{
-                    currentPlan?.end ? formatDate(currentPlan.end) : 'N/A'
+                    currentPlan?.end ? formatDate(currentPlan.end) : "N/A"
                   }}</b>
                 </div>
                 <div class="plan-next">
@@ -75,7 +75,7 @@
                   {{
                     currentPlan?.nextBill
                       ? formatDate(currentPlan.nextBill)
-                      : 'N/A'
+                      : "N/A"
                   }})
                 </div>
               </div>
@@ -96,7 +96,7 @@
                     <b>{{
                       lastBillingItem && lastBillingItem.subscriptionEnd
                         ? formatDate(lastBillingItem.subscriptionEnd)
-                        : 'Unknown'
+                        : "Unknown"
                     }}</b>
                   </div>
                   <div>
@@ -104,7 +104,7 @@
                     <b>{{
                       lastBillingItem && lastBillingItem.paymentDate
                         ? formatDate(lastBillingItem.paymentDate)
-                        : 'Unknown'
+                        : "Unknown"
                     }}</b>
                   </div>
                   <div class="plan-next">
@@ -169,25 +169,22 @@
                   @sort="handleSort"
                 />
                 <tbody>
-                  <tr
-                    v-for="(item, idx) in sortedBillingHistory"
-                    :key="idx"
-                  >
+                  <tr v-for="(item, idx) in sortedBillingHistory" :key="idx">
                     <td>
                       {{ item.payment_method }}
                     </td>
 
                     <td>
-                      {{ item.paymentDate ? formatDate(item.paymentDate) : '' }}
+                      {{ item.paymentDate ? formatDate(item.paymentDate) : "" }}
                     </td>
                     <td>
                       {{
                         item.subscriptionEnd
                           ? formatDate(item.subscriptionEnd)
-                          : ''
+                          : ""
                       }}
                     </td>
-                    <td>{{ item.amount ? `${item.amount}` : '' }}$</td>
+                    <td>{{ item.amount ? `${item.amount}` : "" }}$</td>
                     <td>
                       <a
                         v-if="item.pdfUrl"
@@ -235,21 +232,21 @@
 </template>
 
 <script>
-import MainLayout from '@/components/layout/MainLayout.vue';
-import TableHeader from '@/components/Common/Common_UI/TableHeader.vue';
-import axios from 'axios';
-import storage from '@/services/storage';
+import TableHeader from "@/components/Common/Common_UI/TableHeader.vue";
+import MainLayout from "@/components/layout/MainLayout.vue";
+import storage from "@/services/storage";
+import axios from "axios";
 
-const API_BASE_URL = process.env.VUE_APP_API_BASE_URL || '';
+const API_BASE_URL = process.env.VUE_APP_API_BASE_URL || "";
 
 export default {
-  name: 'BillingDetails',
+  name: "BillingDetails",
   components: { MainLayout, TableHeader },
   data() {
     return {
       currentPlan: null,
       billingHistory: [],
-      activeSortKey: 'paymentDate',
+      activeSortKey: "paymentDate",
       sortAsc: false,
     };
   },
@@ -258,8 +255,8 @@ export default {
       if (!this.billingHistory || !this.billingHistory.length) return null;
       // Prefer items with subscriptionEnd or paymentDate; pick the most recent by subscriptionEnd then paymentDate
       const sorted = [...this.billingHistory].sort((a, b) => {
-        const ta = a.subscriptionEnd || a.paymentDate || '';
-        const tb = b.subscriptionEnd || b.paymentDate || '';
+        const ta = a.subscriptionEnd || a.paymentDate || "";
+        const tb = b.subscriptionEnd || b.paymentDate || "";
         return new Date(tb) - new Date(ta);
       });
       return sorted[0] || null;
@@ -271,8 +268,8 @@ export default {
         let valB = b[this.activeSortKey];
 
         if (
-          this.activeSortKey === 'paymentDate' ||
-          this.activeSortKey === 'subscriptionEnd'
+          this.activeSortKey === "paymentDate" ||
+          this.activeSortKey === "subscriptionEnd"
         ) {
           valA = valA ? new Date(valA) : 0;
           valB = valB ? new Date(valB) : 0;
@@ -296,9 +293,9 @@ export default {
     },
     async fetchBillingDetails() {
       try {
-        const authToken = storage.get('authToken');
+        const authToken = storage.get("authToken");
         const headers = {};
-        if (authToken) headers['Authorization'] = `Bearer ${authToken}`;
+        if (authToken) headers["Authorization"] = `Bearer ${authToken}`;
         // If orgId is supplied via query, request org-specific billing endpoints
         const orgId = this.$route.query.orgId || null;
         const planUrl = orgId
@@ -316,19 +313,19 @@ export default {
           ? historyRes.data
           : [];
       } catch (e) {
-        console.error('Error fetching billing details:', e);
+        console.error("Error fetching billing details:", e);
         this.currentPlan = null;
         this.billingHistory = [];
       }
     },
     formatDate(dateStr) {
-      if (!dateStr) return '';
+      if (!dateStr) return "";
       const d = new Date(dateStr);
-      if (Number.isNaN(d)) return '';
-      return d.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
+      if (Number.isNaN(d)) return "";
+      return d.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
       });
     },
   },

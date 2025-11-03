@@ -3,10 +3,7 @@
     class="schedule-demo-schedule-inputs"
     style="display: flex; gap: 24px; width: 100%; justify-content: flex-start"
   >
-    <div
-      class="form-box"
-      style="width: 338px; min-width: 0"
-    >
+    <div class="form-box" style="width: 338px; min-width: 0">
       <div class="form-input-noicon-wrap">
         <input
           type="date"
@@ -17,10 +14,7 @@
         />
       </div>
     </div>
-    <div
-      class="form-box"
-      style="width: 338px; min-width: 0"
-    >
+    <div class="form-box" style="width: 338px; min-width: 0">
       <div class="form-input-noicon-wrap">
         <input
           type="time"
@@ -36,12 +30,12 @@
 
 <script>
 export default {
-  name: 'FormDateTime',
+  name: "FormDateTime",
   props: {
-    date: { type: String, default: '' },
-    time: { type: String, default: '' },
-    datePlaceholder: { type: String, default: 'MM/DD/YYYY' },
-    timePlaceholder: { type: String, default: '00:00' },
+    date: { type: String, default: "" },
+    time: { type: String, default: "" },
+    datePlaceholder: { type: String, default: "MM/DD/YYYY" },
+    timePlaceholder: { type: String, default: "00:00" },
   },
   computed: {
     dateValue: {
@@ -49,7 +43,7 @@ export default {
         return this.date;
       },
       set(val) {
-        this.$emit('update:date', val);
+        this.$emit("update:date", val);
       },
     },
     timeValue: {
@@ -57,7 +51,7 @@ export default {
         return this.time;
       },
       set(val) {
-        this.$emit('update:time', val);
+        this.$emit("update:time", val);
       },
     },
   },

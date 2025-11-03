@@ -55,7 +55,7 @@ class OrganizationController extends Controller
             'salesPerson',
             'activeSubscription'
         ]);
-        
+
         return response()->json($this->formatOrganizationPayload($organization));
     }
 
@@ -147,24 +147,24 @@ class OrganizationController extends Controller
     {
         // Using a policy for authorization is recommended here
         // $this->authorize('delete', $organization);
-        
+
         $organization->delete();
-        
+
         return response()->json(null, 204);
     }
 
-   
+
     private function formatOrganizationPayload(Organization $org): array
     {
         $user = $org->user;
         $details = $user?->userDetails;
         $subscription = $org->activeSubscription;
-        
-    
+
+
 
         // If you don't have a full_name accessor, this is the direct fix:
         if ($org->salesPerson) {
-             $salesPersonName = trim($org->salesPerson->first_name . ' ' . $org->salesPerson->last_name);
+            $salesPersonName = trim($org->salesPerson->first_name . ' ' . $org->salesPerson->last_name);
         } else {
             $salesPersonName = null;
         }

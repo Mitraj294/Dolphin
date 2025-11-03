@@ -22,7 +22,7 @@ return new class extends Migration
         try {
             $driver = DB::connection()->getDriverName();
             $fkName = 'assessment_schedules_assessment_id_foreign';
-            
+
             if ($driver === 'mysql') {
                 $row = DB::selectOne(
                     "SELECT COUNT(*) AS cnt FROM information_schema.table_constraints 

@@ -4,6 +4,7 @@ namespace App\Observers;
 
 use App\Models\Organization;
 use App\Models\Subscription;
+use Illuminate\Support\Facades\Log;
 use Exception;
 
 class OrganizationObserver
@@ -35,7 +36,7 @@ class OrganizationObserver
                 }
             }
         } catch (Exception $e) {
-            \Log::error('Error applying latest subscription to organization', [
+            Log::error('Error applying latest subscription to organization', [
                 'organization_id' => $organization->id,
                 'user_id' => $organization->user_id,
                 'error' => $e->getMessage()

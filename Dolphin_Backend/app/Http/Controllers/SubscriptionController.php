@@ -11,7 +11,7 @@ use Carbon\Carbon;
 
 class SubscriptionController extends Controller
 {
-    
+
     /**
      * Check if a subscription has expired.
      *
@@ -24,7 +24,7 @@ class SubscriptionController extends Controller
         if (!$subscription->subscription_end) {
             return false;
         }
-        
+
         // Compare the end date with the current time
         return $subscription->subscription_end->isPast();
     }
@@ -52,13 +52,13 @@ class SubscriptionController extends Controller
             $subscription->update(['status' => 'expired']);
             return false;
         }
-        
+
         return $subscription->status === 'active';
     }
-    
+
     //Get the current active subscription plan for the relevant user.
     //Accessible by the user or by a superadmin viewing a specific organization.
-     
+
     public function getCurrentPlan(Request $request)
     {
         $user = $this->resolveUser($request);
@@ -81,7 +81,7 @@ class SubscriptionController extends Controller
     }
 
     //Get the entire billing history for the relevant user.
-     
+
     public function getBillingHistory(Request $request)
     {
         $user = $this->resolveUser($request);
@@ -99,7 +99,7 @@ class SubscriptionController extends Controller
     }
 
     //Get a simple subscription status for the relevant user.
-    
+
     public function subscriptionStatus(Request $request)
     {
         $user = $this->resolveUser($request);
@@ -151,7 +151,7 @@ class SubscriptionController extends Controller
             'amount' => $subscription->amount,
             'period' => $subscription->amount == 2500 ? 'Annual' : 'Monthly',
             'status' => $subscription->status,
-            'payment_method' => $subscription->payment_method_type . ' ' . $subscription->payment_method ,
+            'payment_method' => $subscription->payment_method_type . ' ' . $subscription->payment_method,
             'start' => $subscription->subscription_start,
             'end' => $subscription->subscription_end,
             'nextBill' => $subscription->subscription_end?->addDay()->toDateTimeString(),
@@ -170,7 +170,7 @@ class SubscriptionController extends Controller
         }
 
         return [
-           
+
             'payment_method' => $subscription->payment_method_type . ' ' . $subscription->payment_method,
             'paymentEmail' => $subscription->customer_email,
             'paymentDate' => $subscription->payment_date ?? $subscription->created_at,
@@ -178,7 +178,7 @@ class SubscriptionController extends Controller
             'amount' => $subscription->amount,
             'pdfUrl' => $subscription->receipt_url,
             'description' => $subscription->amount == 2500 ? 'DOLPHIN Standard Subscription (at $2500.00 / year)' : 'DOLPHIN Basic Subscription (at $250.00 / month)',
-         
+
             'invoiceNumber' => $subscription->invoice_number,
         ];
     }

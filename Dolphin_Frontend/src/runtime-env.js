@@ -5,7 +5,7 @@
 export async function loadRuntimeEnv() {
   if (window.__env) return;
   try {
-    const res = await fetch('/env.json', { cache: 'no-store' });
+    const res = await fetch("/env.json", { cache: "no-store" });
     if (res.ok) {
       const obj = await res.json();
       window.__env = obj;

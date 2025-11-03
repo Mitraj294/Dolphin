@@ -1,11 +1,7 @@
 <template>
   <div class="login-bg">
     <Toast />
-    <img
-      src="@/assets/images/Lines.svg"
-      alt="Lines"
-      class="bg-lines"
-    />
+    <img src="@/assets/images/Lines.svg" alt="Lines" class="bg-lines" />
     <img
       src="@/assets/images/Image.svg"
       alt="Illustration"
@@ -38,18 +34,12 @@
             :autocomplete="showPassword ? 'off' : 'current-password'"
             required
           />
-          <span
-            class="icon right"
-            @click="togglePassword"
-          >
+          <span class="icon right" @click="togglePassword">
             <i :class="showPassword ? 'fas fa-eye' : 'fas fa-eye-slash'"></i>
           </span>
         </div>
         <div>
-          <FormLabel
-            v-if="errorMessage"
-            class="error-message1"
-          >
+          <FormLabel v-if="errorMessage" class="error-message1">
             {{ errorMessage }}
             <button
               type="button"
@@ -71,30 +61,18 @@
         </div>
         <div class="options-row">
           <label class="remember-label">
-            <input
-              type="checkbox"
-              v-model="rememberMe"
-            />
+            <input type="checkbox" v-model="rememberMe" />
             Remember me
           </label>
-          <router-link
-            to="/forgot-password"
-            class="forgot-password"
+          <router-link to="/forgot-password" class="forgot-password"
             >Forgot Password?</router-link
           >
         </div>
-        <button
-          type="submit"
-          class="login-btn"
-        >
-          Login
-        </button>
+        <button type="submit" class="login-btn">Login</button>
       </form>
       <div class="switch-auth">
         <span>Don't have an account?</span>
-        <router-link
-          to="/register"
-          class="switch-link"
+        <router-link to="/register" class="switch-link"
           >Register here</router-link
         >
       </div>
@@ -113,20 +91,24 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 
-import Toast from 'primevue/toast';
-import { useToast } from 'primevue/usetoast';
-import storage from '@/services/storage';
-import { fetchCurrentUser } from '@/services/user';
-import { FormLabel } from '@/components/Common/Common_UI/Form';
+import { FormLabel } from "@/components/Common/Common_UI/Form";
+import storage from "@/services/storage";
+import { fetchCurrentUser } from "@/services/user";
+import Toast from "primevue/toast";
+import { useToast } from "primevue/usetoast";
 // Prefer a runtime-injected value (window.__env) so the built app can be
 // configured without a rebuild. Fall back to window.VUE_APP_API_BASE_URL or
 // the compiled process.env value.
-const API_BASE_URL = (window.__env && window.__env.VUE_APP_API_BASE_URL) || window.VUE_APP_API_BASE_URL || process.env.VUE_APP_API_BASE_URL || '';
+const API_BASE_URL =
+  (window.__env && window.__env.VUE_APP_API_BASE_URL) ||
+  window.VUE_APP_API_BASE_URL ||
+  process.env.VUE_APP_API_BASE_URL ||
+  "";
 
 export default {
-  name: 'Login',
+  name: "Login",
   components: { Toast, FormLabel },
   setup() {
     const toast = useToast();
@@ -134,18 +116,18 @@ export default {
   },
   data() {
     return {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
       rememberMe: false,
       showPassword: false,
       currentYear: new Date().getFullYear(),
       loading: false,
-      successMessage: '',
-      errorMessage: '',
+      successMessage: "",
+      errorMessage: "",
       errors: {},
-      error: '',
-      role: '',
-      status: '',
+      error: "",
+      role: "",
+      status: "",
     };
   },
   mounted() {
@@ -155,9 +137,9 @@ export default {
 
     if (this.$route.query.registrationSuccess) {
       this.toast.add({
-        severity: 'success',
-        summary: 'Registration Successful',
-        detail: 'Please log in with your new account.',
+        severity: "success",
+        summary: "Registration Successful",
+        detail: "Please log in with your new account.",
         life: 3000,
       });
     }
@@ -169,23 +151,23 @@ export default {
 
     // If auth token exists in storage (shared across tabs via localStorage),
     // validate it by fetching the current user and redirect to dashboard.
-    const token = storage.get('authToken');
+    const token = storage.get("authToken");
     if (token) {
       fetchCurrentUser()
         .then((user) => {
           if (user) {
-            if (user.role) storage.set('role', user.role);
+            if (user.role) storage.set("role", user.role);
             // navigate to dashboard
-            this.$router.push('/dashboard').catch(() => {});
+            this.$router.push("/dashboard").catch(() => {});
           } else {
             // token invalid — remove it so user can login normally
-            storage.remove('authToken');
+            storage.remove("authToken");
           }
         })
         .catch((e) => {
-          console.error('Error fetching current user:', e);
+          console.error("Error fetching current user:", e);
           // token invalid — remove it so user can login normally
-          storage.remove('authToken');
+          storage.remove("authToken");
         });
     }
   },
@@ -207,8 +189,8 @@ export default {
         const userObj = response.data.user || {};
         const role = userObj.role;
         const name = userObj.name;
-        const firstName = userObj.first_name || '';
-        const lastName = userObj.last_name || '';
+        const firstName = userObj.first_name || "";
+        const lastName = userObj.last_name || "";
         const expiresAt = response.data.expires_at;
         // Try several places where organization_name might be present
         const organization_name =
@@ -216,68 +198,68 @@ export default {
             response.data.organizations.organization_name) ||
           userObj.organization_name ||
           response.data.organization_name ||
-          '';
+          "";
 
         // Save tokens in storage
-        storage.set('authToken', token);
+        storage.set("authToken", token);
         // set axios header immediately so subsequent calls are authenticated
         if (token) {
-          axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+          axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
         }
-        storage.set('refreshToken', refreshToken); // NEW: store refresh token
+        storage.set("refreshToken", refreshToken); // NEW: store refresh token
         if (expiresAt) {
-          storage.set('tokenExpiry', expiresAt);
+          storage.set("tokenExpiry", expiresAt);
         }
-        storage.set('role', role);
-        storage.set('first_name', firstName);
-        storage.set('last_name', lastName);
+        storage.set("role", role);
+        storage.set("first_name", firstName);
+        storage.set("last_name", lastName);
         storage.set(
-          'userName',
+          "userName",
           firstName || lastName ? `${firstName} ${lastName}`.trim() : name
         );
         // store the full user object so other components can access organization_name, organization_id, etc.
         try {
-          storage.set('user', userObj);
+          storage.set("user", userObj);
         } catch (e) {
-          console.error('Error storing user object:', e);
+          console.error("Error storing user object:", e);
         }
-        storage.set('organization_name', organization_name);
+        storage.set("organization_name", organization_name);
 
         // Welcome toast
-        storage.set('showDashboardWelcome', '1');
+        storage.set("showDashboardWelcome", "1");
         this.toast.add({
-          severity: 'success',
-          summary: 'Login Successful',
+          severity: "success",
+          summary: "Login Successful",
           detail: `Welcome, ${firstName} ${lastName}`.trim(),
           life: 3000,
         });
 
-        let redirectTo = '/dashboard';
+        let redirectTo = "/dashboard";
         try {
           const orgId = userObj.organization_id || userObj.org_id || null;
           const subStatus = await this.checkSubscriptionStatus(orgId);
           if (subStatus) {
-            storage.set('subscription_status', subStatus.status || null);
-            storage.set('subscription_end', subStatus.subscription_end || null);
+            storage.set("subscription_status", subStatus.status || null);
+            storage.set("subscription_end", subStatus.subscription_end || null);
 
-            if (subStatus.status === 'expired') {
+            if (subStatus.status === "expired") {
               this.toast.add({
-                severity: 'error',
-                summary: 'Subscription Expired',
-                detail: 'Please renew your subscription.',
+                severity: "error",
+                summary: "Subscription Expired",
+                detail: "Please renew your subscription.",
                 life: 6000,
               });
-              redirectTo = '/manage-subscription';
+              redirectTo = "/manage-subscription";
             }
           }
         } catch (e) {
-          console.error('Failed to fetch subscription status on login:', e);
+          console.error("Failed to fetch subscription status on login:", e);
         }
 
         this.$router.push(redirectTo);
       } catch (error) {
-        console.error('Login failed:', error);
-        let errorMessage = 'Login failed. Please check your credentials.';
+        console.error("Login failed:", error);
+        let errorMessage = "Login failed. Please check your credentials.";
         if (
           error.response &&
           error.response.data &&
@@ -286,8 +268,8 @@ export default {
           errorMessage = error.response.data.message;
         }
         this.toast.add({
-          severity: 'error',
-          summary: 'Login Error',
+          severity: "error",
+          summary: "Login Error",
           detail: errorMessage,
           life: 4000,
         });
@@ -296,13 +278,13 @@ export default {
 
     async refreshAccessToken() {
       try {
-        const refreshToken = storage.get('refreshToken');
+        const refreshToken = storage.get("refreshToken");
         if (!refreshToken) {
-          throw new Error('No refresh token available');
+          throw new Error("No refresh token available");
         }
 
         const response = await axios.post(`${API_BASE_URL}/oauth/token`, {
-          grant_type: 'refresh_token',
+          grant_type: "refresh_token",
           refresh_token: refreshToken,
           client_id: process.env.VUE_APP_CLIENT_ID,
           client_secret: process.env.VUE_APP_CLIENT_SECRET,
@@ -312,22 +294,22 @@ export default {
         const newRefreshToken = response.data.refresh_token;
 
         // Save new tokens
-        storage.set('authToken', newAccessToken);
-        storage.set('refreshToken', newRefreshToken);
+        storage.set("authToken", newAccessToken);
+        storage.set("refreshToken", newRefreshToken);
 
         return newAccessToken;
       } catch (error) {
-        console.error('Token refresh failed:', error);
+        console.error("Token refresh failed:", error);
 
         this.toast.add({
-          severity: 'error',
-          summary: 'Session Expired',
-          detail: 'Please log in again.',
+          severity: "error",
+          summary: "Session Expired",
+          detail: "Please log in again.",
           life: 4000,
         });
         storage.clear(); // remove all tokens + user info
         storage.clear();
-        this.$router.push('/login');
+        this.$router.push("/login");
 
         return null;
       }
@@ -342,7 +324,7 @@ export default {
         const response = await axios.get(url);
         return response.data;
       } catch (error) {
-        console.error('Error checking subscription status:', error);
+        console.error("Error checking subscription status:", error);
         return null;
       }
     },
@@ -399,14 +381,14 @@ export default {
   font-weight: 600;
   color: #234056;
   margin-bottom: 8px;
-  font-family: 'Helvetica Neue LT Std', Arial, sans-serif;
+  font-family: "Helvetica Neue LT Std", Arial, sans-serif;
 }
 
 .login-subtitle {
   font-size: 1rem;
   color: #787878;
   margin-bottom: 32px;
-  font-family: 'Inter', Arial, sans-serif;
+  font-family: "Inter", Arial, sans-serif;
 }
 
 .input-group {
@@ -448,7 +430,7 @@ export default {
   margin-bottom: 32px;
   font-size: 0.9rem;
   color: #787878;
-  font-family: 'Inter', Arial, sans-serif;
+  font-family: "Inter", Arial, sans-serif;
 }
 .remember-label {
   display: flex;
@@ -456,7 +438,7 @@ export default {
   gap: 8px;
   cursor: pointer;
 }
-.remember-label input[type='checkbox'] {
+.remember-label input[type="checkbox"] {
   margin: 0;
   accent-color: #0074c2;
 }
@@ -496,7 +478,7 @@ export default {
   margin-bottom: 16px;
   font-size: 1rem;
   color: #787878;
-  font-family: 'Helvetica Neue LT Std', Arial, sans-serif;
+  font-family: "Helvetica Neue LT Std", Arial, sans-serif;
 }
 
 .switch-link {
@@ -527,7 +509,7 @@ export default {
 .copyright {
   color: #787878;
   font-size: 14px;
-  font-family: 'Inter', Arial, sans-serif;
+  font-family: "Inter", Arial, sans-serif;
   text-align: center;
   margin-top: 4px;
 }

@@ -23,11 +23,7 @@
         :alt="open ? 'Close' : 'Open'"
       />
     </button>
-    <div
-      v-if="open"
-      class="dropdown-radio-list"
-      :style="dropdownListStyle"
-    >
+    <div v-if="open" class="dropdown-radio-list" :style="dropdownListStyle">
       <button
         v-for="opt in options"
         :key="opt.value"
@@ -47,20 +43,20 @@
 
 <script>
 export default {
-  name: 'UniversalDropdown',
+  name: "UniversalDropdown",
   props: {
     options: { type: Array, default: () => [] },
-    modelValue: { type: String, default: '' },
+    modelValue: { type: String, default: "" },
     dropdownWidth: {
       type: Number,
       default: 240,
     },
   },
-  emits: ['update:modelValue'],
+  emits: ["update:modelValue"],
   data() {
     return {
       open: false,
-      internalValue: this.modelValue || this.options[0]?.value || '',
+      internalValue: this.modelValue || this.options[0]?.value || "",
     };
   },
   computed: {
@@ -69,7 +65,7 @@ export default {
     },
     displayLabel() {
       const found = this.options.find((o) => o.value === this.internalValue);
-      return found ? found.label : this.options[0]?.label || '';
+      return found ? found.label : this.options[0]?.label || "";
     },
     dropdownListStyle() {
       return `width: ${this.dropdownWidth}px; min-width: ${this.dropdownWidth}px; max-width: ${this.dropdownWidth}px;`;
@@ -80,7 +76,7 @@ export default {
       this.internalValue = val;
     },
     internalValue(val) {
-      this.$emit('update:modelValue', val);
+      this.$emit("update:modelValue", val);
     },
   },
   methods: {
@@ -98,10 +94,10 @@ export default {
     },
   },
   mounted() {
-    document.addEventListener('mousedown', this.handleClickOutside);
+    document.addEventListener("mousedown", this.handleClickOutside);
   },
   beforeUnmount() {
-    document.removeEventListener('mousedown', this.handleClickOutside);
+    document.removeEventListener("mousedown", this.handleClickOutside);
   },
 };
 </script>

@@ -25,7 +25,7 @@ class UpdateGroupRequest extends FormRequest
     public function rules(): array
     {
         $groupId = $this->route('id');
-        
+
         return [
             'name' => [
                 'sometimes',

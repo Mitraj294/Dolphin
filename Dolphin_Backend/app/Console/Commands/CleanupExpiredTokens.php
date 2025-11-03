@@ -62,13 +62,13 @@ class CleanupExpiredTokens extends Command
 
         if ($revokedCount > 0) {
             $this->info("Found {$revokedCount} old revoked tokens.");
-            
+
             if ($this->option('force') || $this->confirm("Do you want to delete {$revokedCount} old revoked tokens?")) {
                 $deletedRevokedCount = DB::table('oauth_access_tokens')
                     ->where('revoked', 1)
                     ->where('created_at', '<', Carbon::now()->subDays(7))
                     ->delete();
-                
+
                 $this->info("Successfully deleted {$deletedRevokedCount} old revoked tokens.");
             }
         }
@@ -84,7 +84,7 @@ class CleanupExpiredTokens extends Command
 
         if ($refreshTokensCount > 0) {
             $this->info("Found {$refreshTokensCount} orphaned refresh tokens.");
-            
+
             if ($this->option('force') || $this->confirm("Do you want to delete {$refreshTokensCount} orphaned refresh tokens?")) {
                 $deletedRefreshCount = DB::table('oauth_refresh_tokens')
                     ->whereNotExists(function ($query) {
@@ -93,7 +93,7 @@ class CleanupExpiredTokens extends Command
                             ->whereRaw('oauth_refresh_tokens.access_token_id = oauth_access_tokens.id');
                     })
                     ->delete();
-                
+
                 $this->info("Successfully deleted {$deletedRefreshCount} orphaned refresh tokens.");
             }
         }

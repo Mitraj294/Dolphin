@@ -105,19 +105,16 @@ class GeneralNotification extends Notification implements ShouldQueue
         }
 
         $subject = $this->announcement->subject ?? 'New Announcement';
-        
+
         $mailMessage = (new MailMessage)
             ->subject($subject);
-        
+
         if ($displayName) {
             $mailMessage->greeting('Hello ' . $displayName . ',');
         }
-        
+
         $mailMessage->line($this->announcement->body);
 
         return $mailMessage;
     }
-
-  
-  
 }

@@ -3,23 +3,43 @@ require __DIR__ . '/../vendor/autoload.php';
 $app = require_once __DIR__ . '/../bootstrap/app.php';
 $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 $kernel->bootstrap();
+
 use App\Models\Announcement;
+
 $id = $argv[1] ?? 95;
-$a = Announcement::with(['organizations','groups'])->find($id);
-if(!$a){ echo "not found\n"; exit(1); }
+$a = Announcement::with(['organizations', 'groups'])->find($id);
+if (!$a) {
+    echo "not found\n";
+    exit(1);
+}
 $u = [];
 $m = [];
 $u = array_merge($u, $a->admins()->pluck('users.id')->toArray());
-foreach($a->organizations as $org){
-    try{ if(method_exists($org,'users')){ $ou = $org->users()->pluck('users.id')->toArray(); } else { $ou = []; } } catch (\Exception $e) { $ou = []; }
-    if(empty($ou) && isset($org->user_id) && $org->user_id) $ou[] = $org->user_id;
+foreach ($a->organizations as $org) {
+    try {
+        if (method_exists($org, 'users')) {
+            $ou = $org->users()->pluck('users.id')->toArray();
+        } else {
+            $ou = [];
+        }
+    } catch (\Exception $e) {
+        $ou = [];
+    }
+    if (empty($ou) && isset($org->user_id) && $org->user_id) $ou[] = $org->user_id;
     $u = array_merge($u, $ou);
     $orgAdminEmail = $org->admin_email ?? ($org->user->email ?? null);
     if (!empty($orgAdminEmail)) $m[] = $orgAdminEmail;
 }
-if($a->groups && $a->groups->isNotEmpty()){
-    foreach($a->groups as $g){
-        try{ if(method_exists($g,'members')){ $m = array_merge($m, $g->members()->pluck('email')->toArray()); $mu = $g->members()->whereNotNull('user_id')->pluck('user_id')->toArray(); $u = array_merge($u, $mu); } } catch (\Exception $e) {}
+if ($a->groups && $a->groups->isNotEmpty()) {
+    foreach ($a->groups as $g) {
+        try {
+            if (method_exists($g, 'members')) {
+                $m = array_merge($m, $g->members()->pluck('email')->toArray());
+                $mu = $g->members()->whereNotNull('user_id')->pluck('user_id')->toArray();
+                $u = array_merge($u, $mu);
+            }
+        } catch (\Exception $e) {
+        }
     }
 }
 $u = array_values(array_unique(array_filter($u)));
@@ -36,8 +56,8 @@ $out = [
 foreach ($a->organizations as $org) {
     $out['organizations'][] = [
         'id' => $org->id,
-    'organization_name' => $org->organization_name ?? null,
-    'admin_email' => $org->admin_email ?? $org->user->email ?? null,
+        'organization_name' => $org->organization_name ?? null,
+        'admin_email' => $org->admin_email ?? $org->user->email ?? null,
         'user_id' => $org->user_id ?? null,
     ];
 }

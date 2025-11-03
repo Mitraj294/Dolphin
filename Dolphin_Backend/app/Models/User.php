@@ -1,11 +1,14 @@
 <?php
+
 namespace App\Models;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Passport\HasApiTokens;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Traits\HasRoles;
+
 class User extends Authenticatable
 {
 
@@ -62,11 +65,8 @@ class User extends Authenticatable
         return $this->hasRole('superadmin');
     }
 
-        public function users()
+    public function users()
     {
         return $this->belongsToMany(User::class, 'user_role');
     }
-
-
-    
 }

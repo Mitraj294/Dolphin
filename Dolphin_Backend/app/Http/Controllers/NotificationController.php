@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -13,7 +14,8 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class NotificationController extends Controller {
+class NotificationController extends Controller
+{
     // Return unread announcements for the authenticated user
     public function unreadAnnouncements(Request $request)
     {
@@ -54,7 +56,7 @@ class NotificationController extends Controller {
                 }
             }
 
-            $notifications =DB::table('notifications')
+            $notifications = DB::table('notifications')
                 ->where('notifiable_type', $notifiableType)
                 ->where('notifiable_id', $notifiableId)
                 ->orderByDesc('created_at')
@@ -122,7 +124,7 @@ class NotificationController extends Controller {
                     'id' => $org->id,
                     'name' => $org->org_name,
                     'name' => $org->organization_name,
-                    'contact_email' => $org->user->email ?? null    ,
+                    'contact_email' => $org->user->email ?? null,
                     'user_id' => $org->user_id,
                     'user_first_name' => $org->user->first_name ?? null,
                     'user_last_name' => $org->user->last_name ?? null,
@@ -138,12 +140,12 @@ class NotificationController extends Controller {
                 ]),
                 'admins' => $announcement->admins->map(fn($a) => [
                     'id' => $a->id,
-                    'name' => $a->first_name.' '.$a->last_name,
+                    'name' => $a->first_name . ' ' . $a->last_name,
                     'email' => $a->email,
                 ]),
             ];
 
-            $notifRows =DB::table('notifications')
+            $notifRows = DB::table('notifications')
                 ->where('notifiable_type', 'App\\Models\\User')
                 ->whereRaw("JSON_EXTRACT(data, '$.announcement_id') = ?", [$announcement->id])
                 ->get();
@@ -238,22 +240,22 @@ class NotificationController extends Controller {
         $orgUsers = $announcement->organizations->flatMap(function ($org) {
             return $org->users;
         });
-        
+
         $users = $adminUsers->merge($orgUsers)->unique('id');
-        
+
         $groupMembers = $announcement->groups->flatMap(function ($group) {
             return $group->members;
         });
-        
+
         $userEmails = $users->pluck('email')->filter()->all();
-        
+
         $membersOnly = $groupMembers->filter(function ($member) use ($userEmails) {
             if ($member->user_id) {
                 return false;
             }
             return !in_array($member->email, $userEmails);
         })->unique('email');
-        
+
         return $users->merge($membersOnly);
     }
 
@@ -262,13 +264,13 @@ class NotificationController extends Controller {
     {
         $user = $request->user();
         // Get announcements related to user's orgs, groups, or admin status
-        $announcements = Announcement::whereHas('admins', function($q) use ($user) {
-                $q->where('users.id', $user->id);
-            })
-            ->orWhereHas('organizations', function($q) use ($user) {
+        $announcements = Announcement::whereHas('admins', function ($q) use ($user) {
+            $q->where('users.id', $user->id);
+        })
+            ->orWhereHas('organizations', function ($q) use ($user) {
                 $q->where('organizations.id', $user->organization_id);
             })
-            ->orWhereHas('groups', function($q) use ($user) {
+            ->orWhereHas('groups', function ($q) use ($user) {
                 $q->where('groups.id', $user->group_id);
             })
             ->orderByDesc('created_at')
@@ -292,18 +294,18 @@ class NotificationController extends Controller {
 
     // Mark all notifications as read for the authenticated user
     public function markAllAsRead(Request $request)
-{
-    $user = $request->user();
+    {
+        $user = $request->user();
 
-    // Mark all unread notifications for this user as read
-    $user->unreadNotifications->markAsRead();
+        // Mark all unread notifications for this user as read
+        $user->unreadNotifications->markAsRead();
 
-    return response()->json([
-        'message' => 'All notifications marked as read',
-        // send back updated list
-        'notifications' => $user->notifications
-    ]);
-}
+        return response()->json([
+            'message' => 'All notifications marked as read',
+            // send back updated list
+            'notifications' => $user->notifications
+        ]);
+    }
 
     // Manual API endpoint to create a notification record (for testing)
     public function createNotification(Request $request)
@@ -334,5 +336,4 @@ class NotificationController extends Controller {
             return response()->json(['error' => 'Failed to create notification'], 500);
         }
     }
-
 }

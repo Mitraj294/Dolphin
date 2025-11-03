@@ -69,18 +69,8 @@
       <template v-else>
         <div class="user-assessment-success-card">
           <div class="user-assessment-success-icon">
-            <svg
-              width="80"
-              height="80"
-              viewBox="0 0 80 80"
-              fill="none"
-            >
-              <circle
-                cx="40"
-                cy="40"
-                r="40"
-                fill="#2ECC40"
-              />
+            <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+              <circle cx="40" cy="40" r="40" fill="#2ECC40" />
               <path
                 d="M25 42l13 13 17-23"
                 stroke="#fff"
@@ -123,16 +113,16 @@
 </template>
 
 <script>
-import axios from 'axios';
-import { ref, computed, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import Toast from 'primevue/toast';
-import { useToast } from 'primevue/usetoast';
+import axios from "axios";
+import Toast from "primevue/toast";
+import { useToast } from "primevue/usetoast";
+import { computed, onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
 
-const API_BASE_URL = process.env.VUE_APP_API_BASE_URL || '';
+const API_BASE_URL = process.env.VUE_APP_API_BASE_URL || "";
 
 export default {
-  name: 'UserAssessment',
+  name: "UserAssessment",
   components: { Toast },
   setup() {
     const router = useRouter();
@@ -147,7 +137,7 @@ export default {
 
     const totalSteps = computed(() => questions.value.length);
     const currentQuestion = computed(
-      () => questions.value[step.value - 1] || { question: '', options: [] }
+      () => questions.value[step.value - 1] || { question: "", options: [] }
     );
     const currentSelectedWords = computed(
       () => selectedWords.value[step.value - 1] || []
@@ -163,16 +153,16 @@ export default {
     // Fetch questions, answers, and subscription status from backend
     const fetchQuestionsAndAnswers = async () => {
       try {
-        const storage = require('@/services/storage').default;
-        const authToken = storage.get('authToken');
-        const userId = storage.get('user_id');
+        const storage = require("@/services/storage").default;
+        const authToken = storage.get("authToken");
+        const userId = storage.get("user_id");
         const headers = {};
         if (authToken) {
-          headers['Authorization'] = `Bearer ${authToken}`;
+          headers["Authorization"] = `Bearer ${authToken}`;
         }
         const params = {};
         if (userId) {
-          params['user_id'] = userId;
+          params["user_id"] = userId;
         }
         // Fetch questions
         const resQ = await axios.get(`${API_BASE_URL}/api/questions`, {
@@ -213,21 +203,21 @@ export default {
           isSubscribed.value = !!(
             resSub.data &&
             (resSub.data.active ||
-              resSub.data.status === 'active' ||
+              resSub.data.status === "active" ||
               resSub.data.subscribed)
           );
         } catch (e) {
-          isSubscribed.value = 'expired';
+          isSubscribed.value = "expired";
         }
       } catch (error) {
         if (error.response && error.response.status === 401) {
-          router.push('/login');
+          router.push("/login");
         } else {
-          if (toast && typeof toast.add === 'function') {
+          if (toast && typeof toast.add === "function") {
             toast.add({
-              severity: 'error',
-              summary: 'Load failed',
-              detail: 'Failed to load assessment questions or answers.',
+              severity: "error",
+              summary: "Load failed",
+              detail: "Failed to load assessment questions or answers.",
               sticky: true,
             });
           }
@@ -250,18 +240,18 @@ export default {
     // Submit
     const handleSubmit = async () => {
       if (!canProceed.value) return;
-      const storage = require('@/services/storage').default;
-      const authToken = storage.get('authToken');
+      const storage = require("@/services/storage").default;
+      const authToken = storage.get("authToken");
       if (!authToken) {
-        if (toast && typeof toast.add === 'function') {
+        if (toast && typeof toast.add === "function") {
           toast.add({
-            severity: 'warn',
-            summary: 'Not logged in',
-            detail: 'You must be logged in to submit an assessment.',
+            severity: "warn",
+            summary: "Not logged in",
+            detail: "You must be logged in to submit an assessment.",
             sticky: true,
           });
         }
-        router.push('/login');
+        router.push("/login");
         return;
       }
       // Build answers array as expected by backend
@@ -275,25 +265,25 @@ export default {
           { answers: answersPayload },
           {
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
               Authorization: `Bearer ${authToken}`,
             },
           }
         );
         submitted.value = true;
       } catch (error) {
-        let errorMessage = 'Failed to submit assessment. Please try again.';
+        let errorMessage = "Failed to submit assessment. Please try again.";
         if (error.response && error.response.status === 401) {
-          errorMessage = 'Your session has expired. Please log in again.';
-          router.push('/login');
+          errorMessage = "Your session has expired. Please log in again.";
+          router.push("/login");
         }
-        if (toast && typeof toast.add === 'function') {
+        if (toast && typeof toast.add === "function") {
           toast.add({
             severity:
               error.response && error.response.status === 401
-                ? 'warn'
-                : 'error',
-            summary: 'Submission failed',
+                ? "warn"
+                : "error",
+            summary: "Submission failed",
             detail: errorMessage,
             sticky: true,
           });
@@ -305,11 +295,11 @@ export default {
 
     // Success page navigation handlers
     const goToManageSubscription = () => {
-      router.push({ name: 'ManageSubscription' });
+      router.push({ name: "ManageSubscription" });
     };
 
     const explorePlans = () => {
-      router.push({ name: 'SubscriptionPlans' });
+      router.push({ name: "SubscriptionPlans" });
     };
 
     return {

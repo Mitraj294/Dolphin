@@ -31,11 +31,10 @@ class Subscription extends Model
         'customer_country',
         'meta',
     ];
-  protected $casts = [
+    protected $casts = [
         'payment_date' => 'datetime',
         'subscription_start' => 'datetime',
         'subscription_end' => 'datetime',
-        'meta' => 'array', 
+        'meta' => 'array',
     ];
- 
 }

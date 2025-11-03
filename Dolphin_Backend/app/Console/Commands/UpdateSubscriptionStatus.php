@@ -34,16 +34,16 @@ class UpdateSubscriptionStatus extends Command
             ->get();
 
         $count = $expiredSubscriptions->count();
-        
+
         if ($count > 0) {
             foreach ($expiredSubscriptions as $subscription) {
                 $subscription->status = 'expired';
                 $subscription->save();
-                
+
                 // Here you could add logic to send expiration emails, generate reports, etc.
                 // Mail::to($subscription->customer_email)->send(new SubscriptionExpiredMail($subscription));
             }
-            
+
             $this->info("Updated {$count} expired subscription(s).");
         } else {
             $this->info('No expired subscriptions found.');

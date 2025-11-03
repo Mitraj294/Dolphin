@@ -1,10 +1,12 @@
 <?php
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-    public function up() {
+    public function up()
+    {
         if (! Schema::hasTable('assessment_answer_links')) {
             Schema::create('assessment_answer_links', function (Blueprint $table) {
                 $table->id();
@@ -17,7 +19,8 @@ return new class extends Migration {
             });
         }
     }
-    public function down() {
+    public function down()
+    {
         Schema::dropIfExists('assessment_answer_links');
     }
 };

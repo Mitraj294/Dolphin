@@ -101,8 +101,8 @@ class AssessmentAnswerLinkController extends Controller
 
             // Check if token has already been used
             if ($tokenRow->used) {
-              $status_code = 409; // Conflict
-              $response_data['message'] = 'This assessment has already been submitted.';
+                $status_code = 409; // Conflict
+                $response_data['message'] = 'This assessment has already been submitted.';
             }
 
             // Check if token has expired
@@ -124,8 +124,8 @@ class AssessmentAnswerLinkController extends Controller
                 'success' => true,
             ]);
         } catch (\InvalidArgumentException $e) {
-           $status_code = 400;
-           $response_data['message'] = $e->getMessage();
+            $status_code = 400;
+            $response_data['message'] = $e->getMessage();
         } catch (\Exception $e) {
             Log::error('Failed to submit answers.', ['token' => $token, 'error' => $e->getMessage()]);
             $status_code = 500;

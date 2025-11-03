@@ -54,9 +54,9 @@ class AddSoftDeletesAndNullableUserId extends Migration
                                 $tableBlueprint->unsignedBigInteger('user_id')->nullable()->change();
                             }
                         } catch (\Exception $e) {
-                           Log::error('Error making user_id nullable', [
-                               'error' => $e->getMessage()
-                           ]);
+                            Log::error('Error making user_id nullable', [
+                                'error' => $e->getMessage()
+                            ]);
                         }
                     }
                 });
@@ -95,7 +95,7 @@ class AddSoftDeletesAndNullableUserId extends Migration
                                 'error' => $e->getMessage()
                             ]);
                             // some DB drivers don't support change() without the doctrine/dbal package;
-                            
+
                         }
                     }
                 });

@@ -1,17 +1,9 @@
 <template>
   <div class="modal-overlay">
     <div class="modal-card">
-      <button
-        class="modal-close"
-        @click="$emit('close')"
-      >
-        &times;
-      </button>
+      <button class="modal-close" @click="$emit('close')">&times;</button>
       <div class="modal-title">Create Assessment</div>
-      <form
-        class="modal-form"
-        @submit.prevent="handleSubmit"
-      >
+      <form class="modal-form" @submit.prevent="handleSubmit">
         <div class="modal-form-row">
           <div
             class="modal-form-group"
@@ -150,12 +142,8 @@
           </div>
         </div>
         <div class="modal-form-actions">
-          <button
-            type="submit"
-            class="modal-save-btn"
-            :disabled="isSubmitting"
-          >
-            {{ isSubmitting ? 'Creating...' : 'Create' }}
+          <button type="submit" class="modal-save-btn" :disabled="isSubmitting">
+            {{ isSubmitting ? "Creating..." : "Create" }}
           </button>
           <button
             type="button"
@@ -172,11 +160,11 @@
 </template>
 
 <script>
-import axios from 'axios';
-import storage from '@/services/storage';
+import storage from "@/services/storage";
+import axios from "axios";
 
 export default {
-  name: 'CreateAssessmentModal',
+  name: "CreateAssessmentModal",
   props: {
     questions: {
       type: Array,
@@ -184,11 +172,11 @@ export default {
       default: () => [],
     },
   },
-  emits: ['close', 'assessment-created'],
+  emits: ["close", "assessment-created"],
   data() {
     return {
       assessment: {
-        name: '',
+        name: "",
         selectedQuestionIds: [],
       },
       isSubmitting: false,
@@ -197,7 +185,7 @@ export default {
   methods: {
     resetForm() {
       this.assessment = {
-        name: '',
+        name: "",
         selectedQuestionIds: [],
       };
       this.isSubmitting = false;
@@ -218,10 +206,10 @@ export default {
       );
 
       if (!this.assessment.name || selectedQuestions.length === 0) {
-        this.$emit('validation-error', {
-          type: 'warn',
-          title: 'Missing Data',
-          message: 'Please enter a name and select at least one question.',
+        this.$emit("validation-error", {
+          type: "warn",
+          title: "Missing Data",
+          message: "Please enter a name and select at least one question.",
         });
         return;
       }
@@ -229,9 +217,9 @@ export default {
       this.isSubmitting = true;
 
       try {
-        const authToken = storage.get('authToken');
+        const authToken = storage.get("authToken");
         const res = await axios.post(
-          process.env.VUE_APP_API_BASE_URL + '/api/assessments',
+          process.env.VUE_APP_API_BASE_URL + "/api/assessments",
           {
             name: this.assessment.name,
             question_ids: this.assessment.selectedQuestionIds,
@@ -240,18 +228,18 @@ export default {
         );
 
         if (res.data && res.data.assessment) {
-          this.$emit('assessment-created', res.data.assessment);
+          this.$emit("assessment-created", res.data.assessment);
           this.resetForm();
-          this.$emit('close');
+          this.$emit("close");
         }
       } catch (e) {
-        console.error('Error creating assessment', e);
-        this.$emit('error', {
-          type: 'error',
-          title: 'Error',
+        console.error("Error creating assessment", e);
+        this.$emit("error", {
+          type: "error",
+          title: "Error",
           message:
             (e.response && e.response.data && e.response.data.message) ||
-            'Failed to create assessment. Please try again.',
+            "Failed to create assessment. Please try again.",
         });
       } finally {
         this.isSubmitting = false;

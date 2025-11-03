@@ -12,30 +12,21 @@
             <FormRow>
               <div class="schedule-demo-field">
                 <FormLabel>Select Organization</FormLabel>
-                <FormDropdown
-                  v-model="organization"
-                  icon="fas fa-building"
-                >
+                <FormDropdown v-model="organization" icon="fas fa-building">
                   <option value="">Select</option>
                   <!-- Add more options here -->
                 </FormDropdown>
               </div>
               <div class="schedule-demo-field">
                 <FormLabel>Select Admin</FormLabel>
-                <FormDropdown
-                  v-model="admin"
-                  icon="fas fa-user-tie"
-                >
+                <FormDropdown v-model="admin" icon="fas fa-user-tie">
                   <option value="">Select</option>
                   <!-- Add more options here -->
                 </FormDropdown>
               </div>
               <div class="schedule-demo-field">
                 <FormLabel>Select User</FormLabel>
-                <FormDropdown
-                  v-model="user"
-                  icon="fas fa-user"
-                >
+                <FormDropdown v-model="user" icon="fas fa-user">
                   <option value="">Select</option>
                   <!-- Add more options here -->
                 </FormDropdown>
@@ -44,17 +35,11 @@
             <FormRow>
               <div class="schedule-demo-field">
                 <FormLabel>Subject</FormLabel>
-                <FormInput
-                  v-model="subject"
-                  placeholder="Type here"
-                />
+                <FormInput v-model="subject" placeholder="Type here" />
               </div>
               <div class="schedule-demo-field">
                 <FormLabel>Select Method</FormLabel>
-                <FormDropdown
-                  v-model="method"
-                  icon="fas fa-cogs"
-                >
+                <FormDropdown v-model="method" icon="fas fa-cogs">
                   <option value="">Select</option>
                   <!-- Add more options here -->
                 </FormDropdown>
@@ -67,20 +52,13 @@
                     type="date"
                     placeholder="MM/DD/YYYY"
                   />
-                  <FormInput
-                    v-model="time"
-                    type="time"
-                    placeholder="00:00"
-                  />
+                  <FormInput v-model="time" type="time" placeholder="00:00" />
                 </div>
               </div>
             </FormRow>
             <!-- Button moved outside FormRow for proper right alignment -->
             <div class="schedule-demo-actions">
-              <button
-                type="submit"
-                class="btn btn-primary"
-              >
+              <button type="submit" class="btn btn-primary">
                 {{ submitText }}
               </button>
             </div>
@@ -92,35 +70,35 @@
 </template>
 
 <script>
-import MainLayout from '@/components/layout/MainLayout.vue';
 import {
-  FormInput,
   FormDropdown,
-  FormRow,
+  FormInput,
   FormLabel,
-} from '@/components/Common/Common_UI/Form';
+  FormRow,
+} from "@/components/Common/Common_UI/Form";
+import MainLayout from "@/components/layout/MainLayout.vue";
 export default {
-  name: 'ScheduleDemo',
+  name: "ScheduleDemo",
   components: { MainLayout, FormInput, FormDropdown, FormRow, FormLabel },
   data() {
     return {
-      organization: '',
-      admin: '',
-      user: '',
-      subject: '',
-      method: '',
-      date: '',
-      time: '',
+      organization: "",
+      admin: "",
+      user: "",
+      subject: "",
+      method: "",
+      date: "",
+      time: "",
     };
   },
   computed: {
     titleText() {
       const mode = this.$route && this.$route.query && this.$route.query.mode;
-      return mode === 'followup' ? 'Schedule Follow up' : 'Schedule Demo';
+      return mode === "followup" ? "Schedule Follow up" : "Schedule Demo";
     },
     submitText() {
       const mode = this.$route && this.$route.query && this.$route.query.mode;
-      return mode === 'followup' ? 'Schedule Follow up' : 'Schedule Demo';
+      return mode === "followup" ? "Schedule Follow up" : "Schedule Demo";
     },
   },
 };
@@ -229,8 +207,8 @@ export default {
 .schedule-demo-schedule-inputs .form-input-noicon-wrap {
   width: 100%;
 }
-.schedule-demo-schedule-inputs input.form-input[type='date'],
-.schedule-demo-schedule-inputs input.form-input[type='time'] {
+.schedule-demo-schedule-inputs input.form-input[type="date"],
+.schedule-demo-schedule-inputs input.form-input[type="time"] {
   width: 100%;
   background: #fafafa;
   border: 1.5px solid #e0e0e0;
@@ -242,8 +220,8 @@ export default {
   transition: border 0.2s;
   box-sizing: border-box;
 }
-.schedule-demo-schedule-inputs input.form-input[type='date']::placeholder,
-.schedule-demo-schedule-inputs input.form-input[type='time']::placeholder {
+.schedule-demo-schedule-inputs input.form-input[type="date"]::placeholder,
+.schedule-demo-schedule-inputs input.form-input[type="time"]::placeholder {
   color: #888;
   opacity: 1;
 }

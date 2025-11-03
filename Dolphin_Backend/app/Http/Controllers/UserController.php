@@ -107,11 +107,11 @@ class UserController extends Controller
             }
         }
 
-    $validatedData = $request->validate($rules);
+        $validatedData = $request->validate($rules);
 
-    // Capture the user's current primary role (if any) so we can detect
-    // transitions (e.g. organizationadmin -> user) and react accordingly.
-    $oldRoleName = $user->roles()->first()->name ?? null;
+        // Capture the user's current primary role (if any) so we can detect
+        // transitions (e.g. organizationadmin -> user) and react accordingly.
+        $oldRoleName = $user->roles()->first()->name ?? null;
 
         try {
             DB::transaction(function () use ($user, $validatedData, $request) {

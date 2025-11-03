@@ -13,10 +13,7 @@
       />
     </div>
     <div :class="['main-content', { 'sidebar-expanded': sidebarExpanded }]">
-      <Navbar
-        class="fixed-navbar"
-        :sidebarExpanded="sidebarExpanded"
-      />
+      <Navbar class="fixed-navbar" :sidebarExpanded="sidebarExpanded" />
       <Sidebar
         :role="userRole"
         :expanded="sidebarExpanded"
@@ -41,20 +38,20 @@
 </template>
 
 <script>
-import Sidebar from './Sidebar.vue';
-import Navbar from '@/components/layout/Navbar.vue';
-import Footer from '@/components/layout/Footer.vue';
-import Toast from 'primevue/toast';
+import Footer from "@/components/layout/Footer.vue";
+import Navbar from "@/components/layout/Navbar.vue";
+import Toast from "primevue/toast";
+import Sidebar from "./Sidebar.vue";
 
-import authMiddleware from '../../middleware/authMiddleware.js';
-import storage from '@/services/storage';
+import storage from "@/services/storage";
+import authMiddleware from "../../middleware/authMiddleware.js";
 
 export default {
-  name: 'MainLayout',
+  name: "MainLayout",
   components: { Sidebar, Navbar, Footer, Toast },
   data() {
     return {
-      userRole: authMiddleware.getRole() || 'User',
+      userRole: authMiddleware.getRole() || "User",
       sidebarExpanded: false,
       windowWidth: window.innerWidth,
     };
@@ -62,16 +59,16 @@ export default {
   computed: {
     sidebarBtnLeft() {
       if (this.windowWidth <= 425) {
-        return this.sidebarExpanded ? `calc(200px - 15px)` : '-15px';
+        return this.sidebarExpanded ? `calc(200px - 15px)` : "-15px";
       }
       return this.sidebarExpanded ? `calc(200px - 15px)` : `calc(65px - 15px)`;
     },
     isSubscriptionActive() {
-      if (!storage || typeof storage.get !== 'function') return false;
-      const role = storage.get('role') || '';
-      const status = storage.get('subscription_status');
-      if (role === 'organizationadmin') {
-        return status === 'active';
+      if (!storage || typeof storage.get !== "function") return false;
+      const role = storage.get("role") || "";
+      const status = storage.get("subscription_status");
+      if (role === "organizationadmin") {
+        return status === "active";
       }
       return true;
     },
@@ -79,7 +76,7 @@ export default {
   methods: {
     toggleSidebar() {
       this.sidebarExpanded = !this.sidebarExpanded;
-      storage.set('sidebarExpanded', this.sidebarExpanded ? '1' : '0');
+      storage.set("sidebarExpanded", this.sidebarExpanded ? "1" : "0");
     },
 
     handleSidebarClick() {
@@ -93,10 +90,10 @@ export default {
     },
   },
   mounted() {
-    window.addEventListener('resize', this.handleResize);
+    window.addEventListener("resize", this.handleResize);
     // Restore sidebar state from encrypted storage
-    const saved = storage.get('sidebarExpanded');
-    if (saved === '1') {
+    const saved = storage.get("sidebarExpanded");
+    if (saved === "1") {
       this.sidebarExpanded = true;
     } else {
       this.sidebarExpanded = false;
@@ -105,7 +102,7 @@ export default {
     // ToastService is registered globally during app bootstrap in main.js
   },
   beforeDestroy() {
-    window.removeEventListener('resize', this.handleResize);
+    window.removeEventListener("resize", this.handleResize);
   },
 };
 </script>

@@ -11,7 +11,7 @@ class MemberRole extends Model
 
     protected $fillable = [
         'name',
-      
+
     ];
 
     public function members()

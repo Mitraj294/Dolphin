@@ -1,18 +1,7 @@
 <template>
-  <div
-    class="modal-overlay"
-    @click.self="$emit('close')"
-  >
-    <div
-      class="modal-card"
-      style="max-width: 900px"
-    >
-      <button
-        class="modal-close-btn"
-        @click="$emit('close')"
-      >
-        &times;
-      </button>
+  <div class="modal-overlay" @click.self="$emit('close')">
+    <div class="modal-card" style="max-width: 900px">
+      <button class="modal-close-btn" @click="$emit('close')">&times;</button>
       <div class="modal-title">Schedule an Assessment</div>
       <div
         class="modal-desc"
@@ -43,7 +32,7 @@
               ? new Date(
                   `${scheduledDetails.schedule.date}T${scheduledDetails.schedule.time}`
                 ).toLocaleDateString()
-              : ''
+              : ""
           }}
         </p>
         <p>
@@ -53,7 +42,7 @@
               ? new Date(
                   `${scheduledDetails.schedule.date}T${scheduledDetails.schedule.time}`
                 ).toLocaleTimeString()
-              : ''
+              : ""
           }}
         </p>
         <p>
@@ -63,26 +52,18 @@
               scheduledDetails.emails[0] &&
               (scheduledDetails.emails[0].recipient_email ||
                 scheduledDetails.emails[0].email)) ||
-            'Selected members/groups'
+            "Selected members/groups"
           }}
         </p>
         <div class="modal-form-actions">
-          <button
-            type="button"
-            class="org-edit-cancel"
-            @click="$emit('close')"
-          >
+          <button type="button" class="org-edit-cancel" @click="$emit('close')">
             Close
           </button>
         </div>
       </div>
 
       <!-- Scheduling Form -->
-      <form
-        v-else
-        class="modal-form"
-        @submit.prevent="schedule"
-      >
+      <form v-else class="modal-form" @submit.prevent="schedule">
         <FormRow
           class="modal-form-row"
           style="
@@ -93,33 +74,19 @@
             flex-direction: row;
           "
         >
-          <div
-            class="modal-form-row-div"
-            style="flex: 1; min-width: 0"
-          >
+          <div class="modal-form-row-div" style="flex: 1; min-width: 0">
             <FormLabel
               style="font-size: 1rem !important; margin: 0 0 6px 0 !important"
               >Select Date</FormLabel
             >
-            <FormInput
-              v-model="scheduleDate"
-              type="date"
-              required
-            />
+            <FormInput v-model="scheduleDate" type="date" required />
           </div>
-          <div
-            class="modal-form-row-div"
-            style="flex: 1; min-width: 0"
-          >
+          <div class="modal-form-row-div" style="flex: 1; min-width: 0">
             <FormLabel
               style="font-size: 1rem !important; margin: 0 0 6px 0 !important"
               >Select Time</FormLabel
             >
-            <FormInput
-              v-model="scheduleTime"
-              type="time"
-              required
-            />
+            <FormInput v-model="scheduleTime" type="time" required />
           </div>
         </FormRow>
         <FormRow
@@ -132,10 +99,7 @@
             flex-direction: row;
           "
         >
-          <div
-            class="modal-form-row-div"
-            style="flex: 1; min-width: 0"
-          >
+          <div class="modal-form-row-div" style="flex: 1; min-width: 0">
             <FormLabel
               style="font-size: 1rem !important; margin: 0 0 6px 0 !important"
               >Select Group</FormLabel
@@ -150,10 +114,7 @@
               :enableSelectAll="true"
             />
           </div>
-          <div
-            class="modal-form-row-div"
-            style="flex: 1; min-width: 0"
-          >
+          <div class="modal-form-row-div" style="flex: 1; min-width: 0">
             <FormLabel
               style="font-size: 1rem !important; margin: 0 0 6px 0 !important"
               >Select Member</FormLabel
@@ -177,13 +138,9 @@
             :disabled="isSubmitting"
           >
             <i class="fas fa-calendar-check"></i>
-            {{ isSubmitting ? 'Scheduling...' : 'Schedule' }}
+            {{ isSubmitting ? "Scheduling..." : "Schedule" }}
           </button>
-          <button
-            type="button"
-            class="org-edit-cancel"
-            @click="$emit('close')"
-          >
+          <button type="button" class="org-edit-cancel" @click="$emit('close')">
             Cancel
           </button>
         </div>
@@ -193,16 +150,16 @@
 </template>
 
 <script>
-import FormInput from '@/components/Common/Common_UI/Form/FormInput.vue';
-import FormLabel from '@/components/Common/Common_UI/Form/FormLabel.vue';
-import MultiSelectDropdown from '@/components/Common/Common_UI/Form/MultiSelectDropdown.vue';
-import FormRow from '@/components/Common/Common_UI/Form/FormRow.vue';
-import axios from 'axios';
-import storage from '@/services/storage';
-import { useToast } from 'primevue/usetoast';
+import FormInput from "@/components/Common/Common_UI/Form/FormInput.vue";
+import FormLabel from "@/components/Common/Common_UI/Form/FormLabel.vue";
+import FormRow from "@/components/Common/Common_UI/Form/FormRow.vue";
+import MultiSelectDropdown from "@/components/Common/Common_UI/Form/MultiSelectDropdown.vue";
+import storage from "@/services/storage";
+import axios from "axios";
+import { useToast } from "primevue/usetoast";
 
 export default {
-  name: 'ScheduleAssessmentModal',
+  name: "ScheduleAssessmentModal",
   components: {
     FormInput,
     FormLabel,
@@ -231,8 +188,8 @@ export default {
       members: [],
       selectedGroupIds: [],
       selectedMemberIds: [],
-      scheduleDate: '',
-      scheduleTime: '',
+      scheduleDate: "",
+      scheduleTime: "",
     };
   },
   computed: {
@@ -360,20 +317,20 @@ export default {
           })),
         };
 
-        this.$emit('schedule', payload);
+        this.$emit("schedule", payload);
         this.toast.add({
-          severity: 'success',
-          summary: 'Success',
-          detail: 'Assessment scheduled (sending)...',
+          severity: "success",
+          summary: "Success",
+          detail: "Assessment scheduled (sending)...",
           life: 3000,
         });
-        this.$emit('close');
+        this.$emit("close");
       } catch (error) {
-        console.error('Failed to schedule assessment:', error);
-        const errorDetail = error.response?.data?.message || '';
+        console.error("Failed to schedule assessment:", error);
+        const errorDetail = error.response?.data?.message || "";
         this.toast.add({
-          severity: 'error',
-          summary: 'Error',
+          severity: "error",
+          summary: "Error",
           detail: errorDetail,
           life: 4000,
         });
@@ -384,14 +341,14 @@ export default {
 
     async checkExistingSchedule() {
       if (!this.assessment_id) {
-        console.warn('[ScheduleAssessmentModal] assessment_id is missing.');
+        console.warn("[ScheduleAssessmentModal] assessment_id is missing.");
         this.scheduledLoading = false;
         return;
       }
 
       this.scheduledLoading = true;
       try {
-        const authToken = storage.get('authToken');
+        const authToken = storage.get("authToken");
         const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
         const url = `${API_BASE_URL}/api/scheduled-email/show?assessment_id=${encodeURIComponent(
           this.assessment_id
@@ -403,7 +360,7 @@ export default {
 
         // The backend returns { scheduled: bool, schedule: ..., emails: ..., ... }
         if (response.data?.scheduled) {
-          this.scheduledStatus = 'scheduled';
+          this.scheduledStatus = "scheduled";
           // store the whole response so callers can access schedule/emails/groups_with_members etc.
           this.scheduledDetails = response.data;
         } else {
@@ -412,14 +369,14 @@ export default {
         }
       } catch (error) {
         this.scheduledStatus = null;
-        console.error('Error checking schedule status:', error);
+        console.error("Error checking schedule status:", error);
       } finally {
         this.scheduledLoading = false;
       }
     },
 
     async fetchGroups() {
-      const authToken = storage.get('authToken');
+      const authToken = storage.get("authToken");
       const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
       const response = await axios.get(`${API_BASE_URL}/api/groups`, {
         headers: { Authorization: `Bearer ${authToken}` },
@@ -429,7 +386,7 @@ export default {
     },
 
     async fetchMembers() {
-      const authToken = storage.get('authToken');
+      const authToken = storage.get("authToken");
       const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
       const response = await axios.get(`${API_BASE_URL}/api/members`, {
         headers: { Authorization: `Bearer ${authToken}` },
@@ -454,11 +411,11 @@ export default {
         this.groups = groups;
         this.members = members;
       } catch (error) {
-        console.error('Error fetching modal data:', error);
+        console.error("Error fetching modal data:", error);
         this.toast.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Could not load groups or members.',
+          severity: "error",
+          summary: "Error",
+          detail: "Could not load groups or members.",
           life: 4000,
         });
       } finally {

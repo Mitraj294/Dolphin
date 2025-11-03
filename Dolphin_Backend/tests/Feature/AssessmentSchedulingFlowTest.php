@@ -127,7 +127,7 @@ class AssessmentSchedulingFlowTest extends TestCase
 
         $scheduledEmail = ScheduledEmail::first();
         $this->assertNotNull($scheduledEmail);
-    $this->assertEquals($member->email, $scheduledEmail->recipient_email);
+        $this->assertEquals($member->email, $scheduledEmail->recipient_email);
         $this->assertEquals($assessment->id, $scheduledEmail->assessment_id);
         $this->assertEquals($group->id, $scheduledEmail->group_id);
         $this->assertEquals($member->id, $scheduledEmail->member_id);

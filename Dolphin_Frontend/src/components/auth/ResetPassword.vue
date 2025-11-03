@@ -1,11 +1,7 @@
 <template>
   <div class="login-bg">
     <Toast />
-    <img
-      src="@/assets/images/Lines.svg"
-      alt="Lines"
-      class="bg-lines"
-    />
+    <img src="@/assets/images/Lines.svg" alt="Lines" class="bg-lines" />
     <img
       src="@/assets/images/Image.svg"
       alt="Illustration"
@@ -18,12 +14,7 @@
           <span class="icon">
             <i class="fas fa-envelope"></i>
           </span>
-          <input
-            type="email"
-            v-model="email"
-            placeholder="Email ID"
-            required
-          />
+          <input type="email" v-model="email" placeholder="Email ID" required />
         </div>
         <div class="input-group password-group">
           <span class="icon">
@@ -47,12 +38,8 @@
             required
           />
         </div>
-        <button
-          type="submit"
-          class="login-btn"
-          :disabled="loading"
-        >
-          {{ loading ? 'Resetting...' : 'Reset Password' }}
+        <button type="submit" class="login-btn" :disabled="loading">
+          {{ loading ? "Resetting..." : "Reset Password" }}
         </button>
       </form>
       <div class="footer">
@@ -68,12 +55,12 @@
 </template>
 
 <script>
-import axios from 'axios';
-import Toast from 'primevue/toast';
-import { useToast } from 'primevue/usetoast';
+import axios from "axios";
+import Toast from "primevue/toast";
+import { useToast } from "primevue/usetoast";
 
 export default {
-  name: 'ResetPassword',
+  name: "ResetPassword",
   components: { Toast },
   setup() {
     const toast = useToast();
@@ -81,17 +68,17 @@ export default {
   },
   data() {
     return {
-      email: '',
-      password: '',
-      password_confirmation: '',
+      email: "",
+      password: "",
+      password_confirmation: "",
       loading: false,
-      token: '',
+      token: "",
     };
   },
   mounted() {
     // Get token and email from query string
-    this.token = this.$route.query.token || '';
-    this.email = this.$route.query.email || '';
+    this.token = this.$route.query.token || "";
+    this.email = this.$route.query.email || "";
   },
   methods: {
     async submit() {
@@ -105,22 +92,22 @@ export default {
           token: this.token,
         });
         this.toast.add({
-          severity: 'success',
-          summary: 'Success',
-          detail: 'Password reset successful! You can now log in.',
+          severity: "success",
+          summary: "Success",
+          detail: "Password reset successful! You can now log in.",
           life: 3500,
         });
-        this.email = '';
-        this.password = '';
-        this.password_confirmation = '';
+        this.email = "";
+        this.password = "";
+        this.password_confirmation = "";
         setTimeout(() => {
-          this.$router.push('/login');
+          this.$router.push("/login");
         }, 2000);
       } catch (err) {
         this.toast.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: err.response?.data?.message || 'Reset failed.',
+          severity: "error",
+          summary: "Error",
+          detail: err.response?.data?.message || "Reset failed.",
           life: 3500,
         });
       } finally {
@@ -176,13 +163,13 @@ export default {
   font-weight: 600;
   color: #234056;
   margin-bottom: 8px;
-  font-family: 'Helvetica Neue LT Std', Arial, sans-serif;
+  font-family: "Helvetica Neue LT Std", Arial, sans-serif;
 }
 .login-subtitle {
   font-size: 1rem;
   color: #787878;
   margin-bottom: 32px;
-  font-family: 'Inter', Arial, sans-serif;
+  font-family: "Inter", Arial, sans-serif;
 }
 .input-group {
   position: relative;
@@ -249,7 +236,7 @@ export default {
 .copyright {
   color: #787878;
   font-size: 14px;
-  font-family: 'Inter', Arial, sans-serif;
+  font-family: "Inter", Arial, sans-serif;
   text-align: center;
   margin-top: 4px;
 }

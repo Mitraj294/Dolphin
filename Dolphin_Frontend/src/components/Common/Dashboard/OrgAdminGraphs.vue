@@ -24,17 +24,17 @@
 </template>
 
 <script setup>
-import { Bar } from "vue-chartjs";
+import Dropdown from "@/components/Common/Common_UI/Dropdown.vue";
 import {
-  Chart,
   BarElement,
   CategoryScale,
+  Chart,
+  Legend,
   LinearScale,
   Tooltip,
-  Legend,
 } from "chart.js";
 import { ref } from "vue";
-import Dropdown from "@/components/Common/Common_UI/Dropdown.vue";
+import { Bar } from "vue-chartjs";
 
 Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 

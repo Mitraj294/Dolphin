@@ -53,10 +53,7 @@
             <div class="table-scroll">
               <table class="table">
                 <!-- Table Header -->
-                <TableHeader
-                  :columns="tableColumns"
-                  @sort="sortBy"
-                />
+                <TableHeader :columns="tableColumns" @sort="sortBy" />
                 <!-- Table Body -->
                 <tbody>
                   <tr
@@ -84,14 +81,11 @@
                           lead.status.toLowerCase().replace(/\s+/g, '-')
                         "
                       >
-                        {{ lead.status || 'Lead Stage' }}
+                        {{ lead.status || "Lead Stage" }}
                       </span>
                     </td>
                     <td data-label="Notes">
-                      <button
-                        class="btn-view"
-                        @click="openNotesModal(lead)"
-                      >
+                      <button class="btn-view" @click="openNotesModal(lead)">
                         <!-- Notes Action Icon -->
                         <template v-if="lead.notesAction === 'View'">
                           <img
@@ -111,10 +105,7 @@
                         </template>
                       </button>
                     </td>
-                    <td
-                      data-label="Actions"
-                      style="position: relative"
-                    >
+                    <td data-label="Actions" style="position: relative">
                       <!-- Actions Menu Trigger -->
                       <div class="actions-row">
                         <button
@@ -160,7 +151,7 @@
           @click.self="closeNotesModal"
         >
           <div class="notes-modal">
-            <h3>{{ notesModalMode === 'add' ? 'Add Notes' : 'Notes' }}</h3>
+            <h3>{{ notesModalMode === "add" ? "Add Notes" : "Notes" }}</h3>
             <textarea
               v-model="notesInput"
               rows="5"
@@ -168,16 +159,10 @@
               class="notes-textarea"
             ></textarea>
             <div class="notes-modal-actions">
-              <button
-                class="btn btn-primary"
-                @click="updateLeadNotes"
-              >
-                {{ notesModalMode === 'add' ? 'Submit' : 'Update' }}
+              <button class="btn btn-primary" @click="updateLeadNotes">
+                {{ notesModalMode === "add" ? "Submit" : "Update" }}
               </button>
-              <button
-                class="btn btn-secondary"
-                @click="closeNotesModal"
-              >
+              <button class="btn btn-secondary" @click="closeNotesModal">
                 Cancel
               </button>
             </div>
@@ -212,28 +197,28 @@
 
 <script>
 // Vue composition API imports
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
-import { useRouter } from 'vue-router';
-import axios from 'axios';
-import { useToast } from 'primevue/usetoast';
-import { useConfirm } from 'primevue/useconfirm';
+import axios from "axios";
+import { useConfirm } from "primevue/useconfirm";
+import { useToast } from "primevue/usetoast";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
 
 // Component imports
-import MainLayout from '@/components/layout/MainLayout.vue';
-import Pagination from '@/components/layout/Pagination.vue';
-import TableHeader from '@/components/Common/Common_UI/TableHeader.vue';
-import FormDropdown from '@/components/Common/Common_UI/Form/FormDropdown.vue';
-import Toast from 'primevue/toast';
+import FormDropdown from "@/components/Common/Common_UI/Form/FormDropdown.vue";
+import TableHeader from "@/components/Common/Common_UI/TableHeader.vue";
+import MainLayout from "@/components/layout/MainLayout.vue";
+import Pagination from "@/components/layout/Pagination.vue";
+import Toast from "primevue/toast";
 
 // Utility imports
-import { findUsOptions, orgSizeOptions } from '@/utils/formUtils';
-import storage from '@/services/storage.js';
+import storage from "@/services/storage.js";
+import { findUsOptions, orgSizeOptions } from "@/utils/formUtils";
 
 //Leads Management Component
 //Handles the display, filtering, pagination, and actions for all leads.
 
 export default {
-  name: 'Leads',
+  name: "Leads",
   components: {
     MainLayout,
     Pagination,
@@ -249,12 +234,12 @@ export default {
 
     // States
     const leads = ref([]);
-    const search = ref('');
+    const search = ref("");
     const form = ref({ organization_size: null, find_us: null });
     const isLoading = ref(false);
 
     // Table and pagination state
-    const sortKey = ref('');
+    const sortKey = ref("");
     const sortAsc = ref(true);
     const pageSize = ref(10);
     const currentPage = ref(1);
@@ -264,46 +249,46 @@ export default {
     const menuOpen = ref(null);
     const menuPosition = ref({ top: 0, left: 0 });
     const showNotesModal = ref(false);
-    const notesModalMode = ref('add');
-    const notesInput = ref('');
+    const notesModalMode = ref("add");
+    const notesInput = ref("");
     const currentLead = ref(null);
 
     // Menu options for each lead
     const customMenuOptions = [
-      'Schedule Follow up',
-      'Schedule Demo',
-      'Schedule Class/Training',
-      'Send Assessment',
-      'Send Agreement/Payment Link',
-      'Convert to Client',
-      'Delete Lead',
+      "Schedule Follow up",
+      "Schedule Demo",
+      "Schedule Class/Training",
+      "Send Assessment",
+      "Send Agreement/Payment Link",
+      "Convert to Client",
+      "Delete Lead",
     ];
 
     // Table columns definition
     const tableColumns = [
-      { label: 'Contact', key: 'contact', sortable: true, width: '170px' },
-      { label: 'Email', key: 'email', width: '250px' },
-      { label: 'Phone Number', key: 'phone', width: '150px' },
+      { label: "Contact", key: "contact", sortable: true, width: "170px" },
+      { label: "Email", key: "email", width: "250px" },
+      { label: "Phone Number", key: "phone", width: "150px" },
       {
-        label: 'Organization',
-        key: 'organization',
+        label: "Organization",
+        key: "organization",
         sortable: true,
-        width: '175px',
+        width: "175px",
       },
-      { label: 'Size', width: '250px' },
-      { label: 'Source', width: '120px' },
-      { label: 'Status', key: 'status', sortable: true, width: '150px' },
-      { label: 'Notes', key: 'notesAction', width: '100px' },
-      { label: 'Actions', key: 'actions', width: '80px' },
+      { label: "Size", width: "250px" },
+      { label: "Source", width: "120px" },
+      { label: "Status", key: "status", sortable: true, width: "150px" },
+      { label: "Notes", key: "notesAction", width: "100px" },
+      { label: "Actions", key: "actions", width: "80px" },
     ];
 
     // Dropdown options
     const orgSizeOptionsWithDefault = [
-      { value: null, text: 'Select', disabled: true },
+      { value: null, text: "Select", disabled: true },
       ...orgSizeOptions.map((o) => ({ value: o, text: o })),
     ];
     const findUsOptionsWithDefault = [
-      { value: null, text: 'Select', disabled: true },
+      { value: null, text: "Select", disabled: true },
       ...findUsOptions.map((o) => ({ value: o, text: o })),
     ];
 
@@ -311,9 +296,9 @@ export default {
     const fetchLeads = async () => {
       isLoading.value = true;
       try {
-        const token = storage.get('authToken');
+        const token = storage.get("authToken");
         if (!token) {
-          router.push('/login');
+          router.push("/login");
           return;
         }
         const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
@@ -328,16 +313,16 @@ export default {
           organization: lead.organization_name,
           size: lead.organization_size,
           source: lead.find_us,
-          status: lead.registered_at ? 'Registered' : lead.status,
+          status: lead.registered_at ? "Registered" : lead.status,
           notes: lead.notes,
-          notesAction: lead.notes ? 'View' : 'Add',
+          notesAction: lead.notes ? "View" : "Add",
         }));
       } catch (error) {
-        console.error('Error fetching leads:', error);
+        console.error("Error fetching leads:", error);
         toast.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to fetch leads.',
+          severity: "error",
+          summary: "Error",
+          detail: "Failed to fetch leads.",
           life: 3000,
         });
       } finally {
@@ -350,17 +335,17 @@ export default {
       if (!lead || !lead.id) return;
       confirm.require({
         message: `Are you sure you want to delete lead "${lead.contact}"? This will archive the lead.`,
-        header: 'Confirm Delete',
-        icon: 'pi pi-trash',
-        acceptLabel: 'OK',
-        rejectLabel: 'Cancel',
+        header: "Confirm Delete",
+        icon: "pi pi-trash",
+        acceptLabel: "OK",
+        rejectLabel: "Cancel",
         acceptProps: {
-          style: 'background-color: #e53935; color: white; font-weight: bold;',
+          style: "background-color: #e53935; color: white; font-weight: bold;",
         },
-        rejectProps: { style: 'background-color: gray;' },
+        rejectProps: { style: "background-color: gray;" },
         accept: async () => {
           try {
-            const token = storage.get('authToken');
+            const token = storage.get("authToken");
             const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
             await axios.delete(`${API_BASE_URL}/api/leads/${lead.id}`, {
               headers: { Authorization: `Bearer ${token}` },
@@ -370,17 +355,17 @@ export default {
               leads.value.splice(idx, 1);
             }
             toast.add({
-              severity: 'success',
-              summary: 'Lead deleted',
-              detail: 'Lead archived successfully',
+              severity: "success",
+              summary: "Lead deleted",
+              detail: "Lead archived successfully",
               life: 3000,
             });
           } catch (error) {
-            console.error('Error deleting lead:', error);
+            console.error("Error deleting lead:", error);
             toast.add({
-              severity: 'error',
-              summary: 'Delete failed',
-              detail: 'Failed to delete lead',
+              severity: "error",
+              summary: "Delete failed",
+              detail: "Failed to delete lead",
               life: 4000,
             });
           }
@@ -393,7 +378,7 @@ export default {
     const updateLeadNotes = async () => {
       if (!currentLead.value) return;
       try {
-        const token = storage.get('authToken');
+        const token = storage.get("authToken");
         const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
         await axios.patch(
           `${API_BASE_URL}/api/leads/${currentLead.value.id}`,
@@ -401,23 +386,23 @@ export default {
           { headers: { Authorization: `Bearer ${token}` } }
         );
         toast.add({
-          severity: 'success',
-          summary: 'Success',
-          detail: 'Notes updated successfully.',
+          severity: "success",
+          summary: "Success",
+          detail: "Notes updated successfully.",
           life: 3000,
         });
         const lead = leads.value.find((l) => l.id === currentLead.value.id);
         if (lead) {
           lead.notes = notesInput.value;
-          lead.notesAction = notesInput.value ? 'View' : 'Add';
+          lead.notesAction = notesInput.value ? "View" : "Add";
         }
         closeNotesModal();
       } catch (error) {
-        console.error('Error updating notes:', error);
+        console.error("Error updating notes:", error);
         toast.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to update notes.',
+          severity: "error",
+          summary: "Error",
+          detail: "Failed to update notes.",
           life: 3000,
         });
       }
@@ -449,8 +434,8 @@ export default {
     });
 
     const STATUS_ORDER = {
-      'Lead Stage': 1,
-      'Assessment Sent': 2,
+      "Lead Stage": 1,
+      "Assessment Sent": 2,
       Registered: 3,
     };
     const sortedLeads = computed(() => {
@@ -458,9 +443,9 @@ export default {
       const leadsToSort = [...filteredLeads.value];
       leadsToSort.sort((a, b) => {
         let comparison = 0;
-        if (sortKey.value === 'status') {
-          const orderA = STATUS_ORDER[a.status || 'Lead Stage'] || 0;
-          const orderB = STATUS_ORDER[b.status || 'Lead Stage'] || 0;
+        if (sortKey.value === "status") {
+          const orderA = STATUS_ORDER[a.status || "Lead Stage"] || 0;
+          const orderB = STATUS_ORDER[b.status || "Lead Stage"] || 0;
           comparison = orderA - orderB;
         } else {
           const valA = a[sortKey.value];
@@ -531,46 +516,46 @@ export default {
     // Notes modal
     const openNotesModal = (lead) => {
       currentLead.value = lead;
-      notesInput.value = lead.notes || '';
-      notesModalMode.value = lead.notes ? 'view' : 'add';
+      notesInput.value = lead.notes || "";
+      notesModalMode.value = lead.notes ? "view" : "add";
       showNotesModal.value = true;
     };
     const closeNotesModal = () => {
       showNotesModal.value = false;
       currentLead.value = null;
-      notesInput.value = '';
+      notesInput.value = "";
     };
 
     // Lead detail navigation
     const goToLeadDetail = (lead) => {
-      router.push({ name: 'LeadDetail', params: { id: lead.id } });
+      router.push({ name: "LeadDetail", params: { id: lead.id } });
     };
 
     // Lead actions from menu
     const selectCustomAction = (lead, option) => {
       menuOpen.value = null;
-      if (option === 'Schedule Demo') {
-        router.push({ name: 'ScheduleDemo', query: { lead_id: lead.id } });
-      } else if (option === 'Schedule Follow up') {
+      if (option === "Schedule Demo") {
+        router.push({ name: "ScheduleDemo", query: { lead_id: lead.id } });
+      } else if (option === "Schedule Follow up") {
         router.push({
-          name: 'ScheduleDemo',
-          query: { lead_id: lead.id, mode: 'followup' },
+          name: "ScheduleDemo",
+          query: { lead_id: lead.id, mode: "followup" },
         });
-      } else if (option === 'Schedule Class/Training') {
+      } else if (option === "Schedule Class/Training") {
         router.push({
-          name: 'ScheduleClassTraining',
+          name: "ScheduleClassTraining",
           query: { lead_id: lead.id },
         });
-      } else if (option === 'Send Assessment') {
-        router.push({ name: 'SendAssessment', params: { id: lead.id } });
-      } else if (option === 'Send Agreement/Payment Link') {
-        router.push({ name: 'SendAgreement', params: { id: lead.id } });
-      } else if (option === 'Delete Lead') {
+      } else if (option === "Send Assessment") {
+        router.push({ name: "SendAssessment", params: { id: lead.id } });
+      } else if (option === "Send Agreement/Payment Link") {
+        router.push({ name: "SendAgreement", params: { id: lead.id } });
+      } else if (option === "Delete Lead") {
         deleteLead(lead);
       } else {
         toast.add({
-          severity: 'info',
-          summary: 'Info',
+          severity: "info",
+          summary: "Info",
           detail: `Action "${option}" is not implemented yet.`,
           life: 3000,
         });
@@ -580,25 +565,25 @@ export default {
     // Close menu handlers
     const handleClickOutside = (event) => {
       if (!menuOpen.value) return;
-      const clickedInActions = event.target.closest('.actions-row');
-      const clickedInMenu = event.target.closest('.teleported-leads-menu');
+      const clickedInActions = event.target.closest(".actions-row");
+      const clickedInMenu = event.target.closest(".teleported-leads-menu");
       if (!clickedInActions && !clickedInMenu) {
         menuOpen.value = null;
       }
     };
     const onKeyDown = (event) => {
-      if (event.key === 'Escape' && menuOpen.value) menuOpen.value = null;
+      if (event.key === "Escape" && menuOpen.value) menuOpen.value = null;
     };
 
     // Lifecycle hooks
     onMounted(() => {
       fetchLeads();
-      document.addEventListener('click', handleClickOutside);
-      document.addEventListener('keydown', onKeyDown);
+      document.addEventListener("click", handleClickOutside);
+      document.addEventListener("keydown", onKeyDown);
     });
     onBeforeUnmount(() => {
-      document.removeEventListener('click', handleClickOutside);
-      document.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener("click", handleClickOutside);
+      document.removeEventListener("keydown", onKeyDown);
     });
 
     // Return to template
@@ -884,7 +869,7 @@ export default {
   background: #f8f8f8;
   font-size: 14px;
   outline: none;
-  background-image: url('@/assets/images/Search.svg');
+  background-image: url("@/assets/images/Search.svg");
   background-repeat: no-repeat;
   background-position: 8px center;
   background-size: 16px 16px;

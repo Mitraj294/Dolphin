@@ -9,7 +9,9 @@
             </button>
           </div>
           <div class="lead-detail-main-cols">
-            <div class="lead-detail-main-cols-group lead-detail-main-cols-group--row">
+            <div
+              class="lead-detail-main-cols-group lead-detail-main-cols-group--row"
+            >
               <div class="lead-detail-col lead-detail-col-left">
                 <h3 class="lead-detail-section-title">Lead Detail</h3>
                 <div class="lead-detail-list-card lead-detail-list-card--box">
@@ -23,10 +25,11 @@
                     <span>Admin Phone</span><b>{{ leadData.phone }}</b>
                   </div>
                   <div class="lead-detail-list-row">
-                    <span>Sales Person</span><b>{{
+                    <span>Sales Person</span
+                    ><b>{{
                       leadData.sales_person ??
                       (orgData?.sales_person || orgData?.sales_person_id)
-                      }}</b>
+                    }}</b>
                   </div>
                   <div class="lead-detail-list-row">
                     <span>Source</span><b>{{ leadData.source }}</b>
@@ -41,11 +44,12 @@
                 <div class="lead-detail-list-card lead-detail-list-card--box">
                   <template v-if="organizationChecked && isOrganizationCreated">
                     <div class="lead-detail-list-row">
-                      <span>Organization Name</span><b>{{
+                      <span>Organization Name</span
+                      ><b>{{
                         orgData.name ||
                         orgData.organization_name ||
                         leadData.organization
-                        }}</b>
+                      }}</b>
                     </div>
                     <div class="lead-detail-list-row">
                       <span>Organization Size</span>
@@ -53,16 +57,16 @@
                         orgData.size ||
                         orgData.organization_size ||
                         leadData.size
-                        }}</b>
+                      }}</b>
                     </div>
                     <div class="lead-detail-list-row">
                       <span>Contract Start</span>
                       <b>{{
                         formatContractDate(
                           orgData?.contract_start ||
-                          orgData?.contract_start_date ||
-                          leadData.contract_start
-                        ) || 'N/A'
+                            orgData?.contract_start_date ||
+                            leadData.contract_start
+                        ) || "N/A"
                       }}</b>
                     </div>
                     <div class="lead-detail-list-row">
@@ -70,40 +74,42 @@
                       <b>{{
                         formatContractDate(
                           orgData?.contract_end ||
-                          orgData?.contract_end_date ||
-                          leadData.contract_end
-                        ) || 'N/A'
+                            orgData?.contract_end_date ||
+                            leadData.contract_end
+                        ) || "N/A"
                       }}</b>
                     </div>
                     <div class="lead-detail-list-row">
                       <span>Address</span>
                       <b>
-                        <template v-if="
-                          (orgData &&
-                            (orgData.address ||
-                              orgData.city ||
-                              orgData.state ||
-                              orgData.zip ||
-                              orgData.country)) ||
-                          addressDisplay.length
-                        ">
-                          {{
-                            orgData &&
+                        <template
+                          v-if="
+                            (orgData &&
                               (orgData.address ||
                                 orgData.city ||
                                 orgData.state ||
                                 orgData.zip ||
-                                orgData.country)
+                                orgData.country)) ||
+                            addressDisplay.length
+                          "
+                        >
+                          {{
+                            orgData &&
+                            (orgData.address ||
+                              orgData.city ||
+                              orgData.state ||
+                              orgData.zip ||
+                              orgData.country)
                               ? [
-                                orgData.address,
-                                orgData.city,
-                                orgData.state,
-                                orgData.zip,
-                                orgData.country,
-                              ]
-                                .filter(Boolean)
-                                .join(', ')
-                              : addressDisplay.join(', ')
+                                  orgData.address,
+                                  orgData.city,
+                                  orgData.state,
+                                  orgData.zip,
+                                  orgData.country,
+                                ]
+                                  .filter(Boolean)
+                                  .join(", ")
+                              : addressDisplay.join(", ")
                           }}
                         </template>
                         <template v-else>N/A</template>
@@ -112,27 +118,30 @@
                   </template>
                   <template v-else>
                     <div class="lead-detail-list-row">
-                      <span>Organization Name</span><b>{{ leadData.organization }}</b>
+                      <span>Organization Name</span
+                      ><b>{{ leadData.organization }}</b>
                     </div>
                     <div class="lead-detail-list-row">
                       <span>Organization Size</span>
                       <b>{{ leadData.size }}</b>
                     </div>
                     <div class="lead-detail-list-row">
-                      <span>Contract Start</span><b>{{
-                        formatContractDate(leadData.contract_start) || 'N/A'
-                        }}</b>
+                      <span>Contract Start</span
+                      ><b>{{
+                        formatContractDate(leadData.contract_start) || "N/A"
+                      }}</b>
                     </div>
                     <div class="lead-detail-list-row">
-                      <span>Contract End</span><b>{{
-                        formatContractDate(leadData.contract_end) || 'N/A'
-                        }}</b>
+                      <span>Contract End</span
+                      ><b>{{
+                        formatContractDate(leadData.contract_end) || "N/A"
+                      }}</b>
                     </div>
                     <div class="lead-detail-list-row">
                       <span>Address</span>
                       <b>
                         <template v-if="addressDisplay.length">
-                          {{ addressDisplay.join(', ') }}
+                          {{ addressDisplay.join(", ") }}
                         </template>
                         <template v-else>N/A</template>
                       </b>
@@ -149,9 +158,9 @@
 </template>
 
 <script>
-import MainLayout from '@/components/layout/MainLayout.vue';
-import axios from 'axios';
-import storage from '@/services/storage';
+import MainLayout from "@/components/layout/MainLayout.vue";
+import storage from "@/services/storage";
+import axios from "axios";
 /*
   Refactor notes:
   - Extracted complex logic from the `created()` lifecycle hook into small helpers:
@@ -160,26 +169,26 @@ import storage from '@/services/storage';
   - Behavior preserved; API calls and fallbacks remain the same.
 */
 export default {
-  name: 'LeadDetail',
+  name: "LeadDetail",
   components: { MainLayout },
   props: {
     lead: {
       type: Object,
       default: () => ({
-        contact: '',
-        email: '',
-        phone: '',
-        source: '',
-        sales_person: '',
+        contact: "",
+        email: "",
+        phone: "",
+        source: "",
+        sales_person: "",
         sales_person_id: null,
-        status: '',
-        organization: '',
-        size: '',
-        address: '',
-        city: '',
-        state: '',
-        zip: '',
-        country: '',
+        status: "",
+        organization: "",
+        size: "",
+        address: "",
+        city: "",
+        state: "",
+        zip: "",
+        country: "",
         country_id: null,
         state_id: null,
         city_id: null,
@@ -189,9 +198,9 @@ export default {
   data() {
     return {
       localLead: { ...this.lead },
-      countryName: '',
-      stateName: '',
-      cityName: '',
+      countryName: "",
+      stateName: "",
+      cityName: "",
       // organization related
       orgData: null,
       orgUser: null,
@@ -223,21 +232,21 @@ export default {
         this.orgUserDetails &&
         (this.orgUserDetails.first_name || this.orgUserDetails.last_name)
       ) {
-        const fn = this.orgUserDetails.first_name || '';
-        const ln = this.orgUserDetails.last_name || '';
-        const full = (fn + ' ' + ln).trim();
+        const fn = this.orgUserDetails.first_name || "";
+        const ln = this.orgUserDetails.last_name || "";
+        const full = (fn + " " + ln).trim();
         if (full) return full;
       }
       if (this.leadData && this.leadData.contact) return this.leadData.contact;
-      return 'N/A';
+      return "N/A";
     },
   },
   methods: {
     goToEditLead() {
       const id =
-        this.$route.params.id || this.$route.query.id || this.leadData.id || '';
+        this.$route.params.id || this.$route.query.id || this.leadData.id || "";
       if (id) {
-        this.$router.push({ name: 'EditLead', params: { id } });
+        this.$router.push({ name: "EditLead", params: { id } });
       }
     },
     formatContractDate(dateVal) {
@@ -245,20 +254,20 @@ export default {
         // accept timestamps or 'YYYY-MM-DD' or Date objects
         const d = new Date(dateVal);
         if (Number.isNaN(d.getTime())) return null;
-        const day = String(d.getDate()).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, "0");
         const months = [
-          'JAN',
-          'FEB',
-          'MAR',
-          'APR',
-          'MAY',
-          'JUN',
-          'JUL',
-          'AUG',
-          'SEP',
-          'OCT',
-          'NOV',
-          'DEC',
+          "JAN",
+          "FEB",
+          "MAR",
+          "APR",
+          "MAY",
+          "JUN",
+          "JUL",
+          "AUG",
+          "SEP",
+          "OCT",
+          "NOV",
+          "DEC",
         ];
         const mon = months[d.getMonth()];
         const yr = d.getFullYear();
@@ -268,45 +277,45 @@ export default {
       return null;
     },
     async lookupLocationNames() {
-      const API_BASE_URL = process.env.VUE_APP_API_BASE_URL || '';
+      const API_BASE_URL = process.env.VUE_APP_API_BASE_URL || "";
       if (this.leadData.country_id) {
         try {
           const res = await axios.get(
             `${API_BASE_URL}/api/countries/${this.leadData.country_id}`
           );
-          this.countryName = res.data?.name || '';
+          this.countryName = res.data?.name || "";
         } catch (e) {
-          console.error('Error fetching country name:', e);
-          this.countryName = '';
+          console.error("Error fetching country name:", e);
+          this.countryName = "";
         }
       } else {
-        this.countryName = this.leadData.country || '';
+        this.countryName = this.leadData.country || "";
       }
       if (this.leadData.state_id) {
         try {
           const res = await axios.get(
             `${API_BASE_URL}/api/states/${this.leadData.state_id}`
           );
-          this.stateName = res.data?.name || '';
+          this.stateName = res.data?.name || "";
         } catch (e) {
-          console.error('Error fetching state name:', e);
-          this.stateName = '';
+          console.error("Error fetching state name:", e);
+          this.stateName = "";
         }
       } else {
-        this.stateName = this.leadData.state || '';
+        this.stateName = this.leadData.state || "";
       }
       if (this.leadData.city_id) {
         try {
           const res = await axios.get(
             `${API_BASE_URL}/api/cities/${this.leadData.city_id}`
           );
-          this.cityName = res.data?.name || '';
+          this.cityName = res.data?.name || "";
         } catch (e) {
-          console.error('Error fetching city name:', e);
-          this.cityName = '';
+          console.error("Error fetching city name:", e);
+          this.cityName = "";
         }
       } else {
-        this.cityName = this.leadData.city || '';
+        this.cityName = this.leadData.city || "";
       }
     },
     async fetchOrganizationIfExists() {
@@ -329,8 +338,8 @@ export default {
         null;
       if (orgId) {
         try {
-          const API_BASE_URL = process.env.VUE_APP_API_BASE_URL || '';
-          const token = storage.get('authToken');
+          const API_BASE_URL = process.env.VUE_APP_API_BASE_URL || "";
+          const token = storage.get("authToken");
           const headers = token ? { Authorization: `Bearer ${token}` } : {};
           // fetch organization
           const orgRes = await axios.get(
@@ -348,7 +357,7 @@ export default {
               );
               this.orgUser = userRes.data || null;
             } catch (e) {
-              console.error('Error fetching organization user:', e);
+              console.error("Error fetching organization user:", e);
               this.orgUser = null;
             }
             try {
@@ -358,12 +367,12 @@ export default {
               );
               this.orgUserDetails = detailsRes.data || null;
             } catch (e) {
-              console.error('Error fetching organization user details:', e);
+              console.error("Error fetching organization user details:", e);
               this.orgUserDetails = null;
             }
           }
         } catch (e) {
-          console.error('Error fetching organization:', e);
+          console.error("Error fetching organization:", e);
           this.orgData = null;
           this.isOrganizationCreated = false;
         } finally {
@@ -378,27 +387,27 @@ export default {
     normalizeLeadObj(leadObj) {
       return {
         contact:
-          (leadObj.first_name || '') +
-          (leadObj.last_name ? ' ' + leadObj.last_name : ''),
-        email: leadObj.email || '',
-        phone: leadObj.phone || '',
-        source: leadObj.find_us || '',
-        sales_person: leadObj.sales_person || '',
+          (leadObj.first_name || "") +
+          (leadObj.last_name ? " " + leadObj.last_name : ""),
+        email: leadObj.email || "",
+        phone: leadObj.phone || "",
+        source: leadObj.find_us || "",
+        sales_person: leadObj.sales_person || "",
         sales_person_id: leadObj.sales_person_id || null,
-        status: leadObj.status || '',
-        organization: leadObj.organization_name || '',
-        size: leadObj.organization_size || '',
-        address: leadObj.address ?? '',
-        city: leadObj.city ?? '',
-        state: leadObj.state ?? '',
-        zip: leadObj.zip ?? '',
-        country: leadObj.country ?? '',
+        status: leadObj.status || "",
+        organization: leadObj.organization_name || "",
+        size: leadObj.organization_size || "",
+        address: leadObj.address ?? "",
+        city: leadObj.city ?? "",
+        state: leadObj.state ?? "",
+        zip: leadObj.zip ?? "",
+        country: leadObj.country ?? "",
         country_id: leadObj.country_id || null,
         state_id: leadObj.state_id || null,
         city_id: leadObj.city_id || null,
         id: leadObj.id || null,
-        first_name: leadObj.first_name || '',
-        last_name: leadObj.last_name || '',
+        first_name: leadObj.first_name || "",
+        last_name: leadObj.last_name || "",
       };
     },
 
@@ -406,14 +415,14 @@ export default {
     async loadLeadById(id) {
       if (id) {
         try {
-          const API_BASE_URL = process.env.VUE_APP_API_BASE_URL || '';
-          const token = storage.get('authToken');
+          const API_BASE_URL = process.env.VUE_APP_API_BASE_URL || "";
+          const token = storage.get("authToken");
           const res = await axios.get(`${API_BASE_URL}/api/leads/${id}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           return res.data || null;
         } catch (e) {
-          console.error('Error fetching lead details', e);
+          console.error("Error fetching lead details", e);
           return null;
         }
       }
@@ -431,8 +440,8 @@ export default {
         this.isOrganizationCreated = true;
         this.organizationChecked = true;
       }
-      for (const f of ['address', 'city', 'state', 'zip', 'country']) {
-        if (this.localLead[f] === undefined) this.localLead[f] = '';
+      for (const f of ["address", "city", "state", "zip", "country"]) {
+        if (this.localLead[f] === undefined) this.localLead[f] = "";
       }
       await this.lookupLocationNames();
       if (this.isOrganizationCreated) {
@@ -447,38 +456,42 @@ export default {
           this.$route.query &&
           Object.keys(this.$route.query).length
         ) {
-          this.$router.replace({ name: 'LeadDetail', params: { id } });
+          this.$router.replace({ name: "LeadDetail", params: { id } });
         }
       } catch (e) {
-        console.warn('Failed to replace route', e);
+        console.warn("Failed to replace route", e);
       }
     },
 
     // Initialize component state from route query params
     async initFromQuery() {
-      if (this.$route && this.$route.query && Object.keys(this.$route.query).length) {
+      if (
+        this.$route &&
+        this.$route.query &&
+        Object.keys(this.$route.query).length
+      ) {
         const q = this.$route.query;
         this.localLead = {
-          contact: q.contact || '',
-          email: q.email || '',
-          phone: q.phone || '',
-          source: q.source || '',
-          sales_person: q.sales_person || '',
+          contact: q.contact || "",
+          email: q.email || "",
+          phone: q.phone || "",
+          source: q.source || "",
+          sales_person: q.sales_person || "",
           sales_person_id: q.sales_person_id || null,
-          status: q.status || '',
-          organization: q.organization || '',
-          size: q.size || '',
-          address: q.address ?? '',
-          city: q.city ?? '',
-          state: q.state ?? '',
-          zip: q.zip ?? '',
-          country: q.country ?? '',
+          status: q.status || "",
+          organization: q.organization || "",
+          size: q.size || "",
+          address: q.address ?? "",
+          city: q.city ?? "",
+          state: q.state ?? "",
+          zip: q.zip ?? "",
+          country: q.country ?? "",
           country_id: q.country_id || null,
           state_id: q.state_id || null,
           city_id: q.city_id || null,
         };
-        for (const f of ['address', 'city', 'state', 'zip', 'country']) {
-          if (this.localLead[f] === undefined) this.localLead[f] = '';
+        for (const f of ["address", "city", "state", "zip", "country"]) {
+          if (this.localLead[f] === undefined) this.localLead[f] = "";
         }
         await this.lookupLocationNames();
         await this.fetchOrganizationIfExists();
@@ -504,31 +517,31 @@ export default {
   },
 
   watch: {
-    '$route.query': {
+    "$route.query": {
       handler(newQuery) {
         if (newQuery && Object.keys(newQuery).length) {
           this.localLead = {
-            contact: newQuery.contact || '',
-            email: newQuery.email || '',
-            phone: newQuery.phone || '',
-            source: newQuery.source || '',
-            sales_person: newQuery.sales_person || '',
+            contact: newQuery.contact || "",
+            email: newQuery.email || "",
+            phone: newQuery.phone || "",
+            source: newQuery.source || "",
+            sales_person: newQuery.sales_person || "",
             sales_person_id: newQuery.sales_person_id || null,
-            status: newQuery.status || '',
-            organization: newQuery.organization || '',
-            size: newQuery.size || '',
-            address: newQuery.address ?? '',
-            city: newQuery.city ?? '',
-            state: newQuery.state ?? '',
-            zip: newQuery.zip ?? '',
-            country: newQuery.country ?? '',
+            status: newQuery.status || "",
+            organization: newQuery.organization || "",
+            size: newQuery.size || "",
+            address: newQuery.address ?? "",
+            city: newQuery.city ?? "",
+            state: newQuery.state ?? "",
+            zip: newQuery.zip ?? "",
+            country: newQuery.country ?? "",
             country_id: newQuery.country_id || null,
             state_id: newQuery.state_id || null,
             city_id: newQuery.city_id || null,
           };
-            for (const f of ['address', 'city', 'state', 'zip', 'country']) {
-              if (this.localLead[f] === undefined) this.localLead[f] = '';
-            }
+          for (const f of ["address", "city", "state", "zip", "country"]) {
+            if (this.localLead[f] === undefined) this.localLead[f] = "";
+          }
           this.lookupLocationNames();
           this.fetchOrganizationIfExists();
         }
@@ -625,7 +638,7 @@ export default {
 }
 
 .lead-detail-section-title {
-  font-family: 'Helvetica Neue LT Std', Helvetica, Arial, sans-serif;
+  font-family: "Helvetica Neue LT Std", Helvetica, Arial, sans-serif;
   font-weight: 600;
   font-size: 20px;
   color: #222;
@@ -668,7 +681,7 @@ export default {
   min-width: 160px;
   text-align: left;
   font-size: 19px;
-  font-family: 'Inter', Arial, sans-serif;
+  font-family: "Inter", Arial, sans-serif;
   line-height: 1.7;
   letter-spacing: 0.01em;
   flex: 1 1 50%;
@@ -680,7 +693,7 @@ export default {
   text-align: left;
   word-break: break-word;
   font-size: 17px;
-  font-family: 'Inter', Arial, sans-serif;
+  font-family: "Inter", Arial, sans-serif;
   line-height: 1.7;
   letter-spacing: 0.01em;
   flex: 1 1 50%;

@@ -3,15 +3,8 @@
     <div class="assessments-card">
       <div class="assessments-header-row">
         <div class="assessments-header-actions">
-          <button
-            class="btn btn-primary"
-            @click="showCreateModal = true"
-          >
-            <img
-              src="@/assets/images/Add.svg"
-              alt="Add"
-              class="btn-icon"
-            />
+          <button class="btn btn-primary" @click="showCreateModal = true">
+            <img src="@/assets/images/Add.svg" alt="Add" class="btn-icon" />
             Create Assessments
           </button>
         </div>
@@ -26,23 +19,14 @@
             ]"
           />
           <tbody>
-            <tr
-              v-for="item in paginatedAssessments"
-              :key="item.id"
-            >
+            <tr v-for="item in paginatedAssessments" :key="item.id">
               <td>
-                <button
-                  class="assessment-link"
-                  @click="goToSummary(item)"
-                >
+                <button class="assessment-link" @click="goToSummary(item)">
                   {{ item.name }}
                 </button>
               </td>
               <td>
-                <div
-                  v-if="item.schedule"
-                  class="scheduled-details"
-                ></div>
+                <div v-if="item.schedule" class="scheduled-details"></div>
                 <button
                   class="schedule-btn"
                   :id="'schedule-btn-' + item.id"
@@ -53,7 +37,7 @@
                     :alt="item.schedule ? 'Details' : 'Schedule'"
                     class="btn-icon"
                   />
-                  {{ item.schedule ? 'Details' : 'Schedule' }}
+                  {{ item.schedule ? "Details" : "Schedule" }}
                 </button>
               </td>
             </tr>
@@ -71,10 +55,7 @@
         @error="handleError"
       />
 
-      <div
-        v-if="showScheduleModal"
-        class="modal-overlay"
-      >
+      <div v-if="showScheduleModal" class="modal-overlay">
         <ScheduleAssessmentModal
           :assessmentName="selectedAssessment?.name"
           :assessment_id="selectedAssessment?.id"
@@ -106,17 +87,17 @@
 </template>
 
 <script>
-import Pagination from '@/components/layout/Pagination.vue';
-import ScheduleAssessmentModal from '@/components/Common/Leads_Assessment/ScheduleAssessmentModal.vue';
-import ScheduleDetailsModal from '@/components/Common/Leads_Assessment/ScheduleDetailsModal.vue';
-import CreateAssessmentModal from '@/components/Common/Leads_Assessment/CreateAssessmentModal.vue';
-import TableHeader from '@/components/Common/Common_UI/TableHeader.vue';
-import axios from 'axios';
-import storage from '@/services/storage';
-import { useToast } from 'primevue/usetoast';
+import TableHeader from "@/components/Common/Common_UI/TableHeader.vue";
+import CreateAssessmentModal from "@/components/Common/Leads_Assessment/CreateAssessmentModal.vue";
+import ScheduleAssessmentModal from "@/components/Common/Leads_Assessment/ScheduleAssessmentModal.vue";
+import ScheduleDetailsModal from "@/components/Common/Leads_Assessment/ScheduleDetailsModal.vue";
+import Pagination from "@/components/layout/Pagination.vue";
+import storage from "@/services/storage";
+import axios from "axios";
+import { useToast } from "primevue/usetoast";
 
 export default {
-  name: 'OrganizationAdminAssessmentsCard',
+  name: "OrganizationAdminAssessmentsCard",
   components: {
     Pagination,
     ScheduleAssessmentModal,
@@ -159,12 +140,12 @@ export default {
     },
     memberNameMap() {
       return (this.allMembers || []).reduce((map, m) => {
-        const first = (m.first_name || m.name || '').toString().trim();
-        const last = (m.last_name || '').toString().trim();
-        const role = (m.member_role || m.role || '').toString().trim();
+        const first = (m.first_name || m.name || "").toString().trim();
+        const last = (m.last_name || "").toString().trim();
+        const role = (m.member_role || m.role || "").toString().trim();
         let full = first;
         if (last) full = full ? `${full} ${last}` : last;
-        if (!full) full = m.email || m.id || 'Unknown';
+        if (!full) full = m.email || m.id || "Unknown";
         if (role) full = `${full} — ${role}`;
         map[m.id] = full;
         return map;
@@ -172,15 +153,15 @@ export default {
     },
     memberDetailMap() {
       return (this.allMembers || []).reduce((map, m) => {
-        const first = (m.first_name || m.name || '').toString().trim();
-        const last = (m.last_name || '').toString().trim();
+        const first = (m.first_name || m.name || "").toString().trim();
+        const last = (m.last_name || "").toString().trim();
         let name = first;
         if (last) name = name ? `${name} ${last}` : last;
         if (!name) name = m.email || `Member ${m.id}`;
         map[m.id] = {
           name,
-          email: m.email || '',
-          role: (m.member_role || m.role || '').toString().trim() || '',
+          email: m.email || "",
+          role: (m.member_role || m.role || "").toString().trim() || "",
         };
         return map;
       }, {});
@@ -197,34 +178,34 @@ export default {
     async initializeComponent() {
       this.loading = true;
       try {
-        const authToken = storage.get('authToken');
+        const authToken = storage.get("authToken");
         const params = await this.getRequestParams(authToken);
 
         if (!params.organization_id && !params.user_id) {
-          console.warn('[AssessmentsCard] No orgId or userId found.');
+          console.warn("[AssessmentsCard] No orgId or userId found.");
           return;
         }
         await this.fetchData(authToken, params);
       } catch (e) {
         console.error(
-          '[AssessmentsCard] Failed to fetch initial data',
+          "[AssessmentsCard] Failed to fetch initial data",
           e?.message
         );
         this.assessments = [];
         this.questions = [];
-        this._showToast('error', 'Error', 'Could not load assessment data.');
+        this._showToast("error", "Error", "Could not load assessment data.");
       } finally {
         this.loading = false;
       }
     },
     async getRequestParams(authToken) {
-      const userId = storage.get('user_id');
+      const userId = storage.get("user_id");
       let orgId =
-        storage.get('organization_id') ||
-        storage.get('org_id') ||
-        storage.get('organizationId') ||
-        storage.get('orgId') ||
-        (storage.get('user') && storage.get('user').organization_id) ||
+        storage.get("organization_id") ||
+        storage.get("org_id") ||
+        storage.get("organizationId") ||
+        storage.get("orgId") ||
+        (storage.get("user") && storage.get("user").organization_id) ||
         null;
 
       if (!orgId && authToken) {
@@ -239,14 +220,14 @@ export default {
             (prof.user && prof.user.organization_id) ||
             null;
         } catch (e) {
-          console.warn('[AssessmentsCard] Failed to fetch profile', e?.message);
+          console.warn("[AssessmentsCard] Failed to fetch profile", e?.message);
         }
       }
 
       const params = {};
       if (orgId) params.organization_id = orgId;
       else if (userId) params.user_id = userId;
-      else console.warn('[AssessmentsCard] No orgId or userId found.');
+      else console.warn("[AssessmentsCard] No orgId or userId found.");
 
       return params;
     },
@@ -264,10 +245,10 @@ export default {
           axios.get(`${base}/api/members`, { headers }),
         ]);
 
-      this.assessments = this.parseApiResponse(assessmentsRes, 'assessments');
-      this.questions = this.parseApiResponse(questionsRes, 'questions');
-      this.allGroups = this.parseApiResponse(groupsRes, 'groups');
-      this.allMembers = this.parseApiResponse(membersRes, 'members');
+      this.assessments = this.parseApiResponse(assessmentsRes, "assessments");
+      this.questions = this.parseApiResponse(questionsRes, "questions");
+      this.allGroups = this.parseApiResponse(groupsRes, "groups");
+      this.allMembers = this.parseApiResponse(membersRes, "members");
 
       await this.fetchScheduleStatuses(authToken);
     },
@@ -287,7 +268,7 @@ export default {
         this.assessments = updatedItems;
       } catch (err) {
         console.warn(
-          '[AssessmentsCard] Failed to pre-fetch schedule statuses.',
+          "[AssessmentsCard] Failed to pre-fetch schedule statuses.",
           err
         );
       }
@@ -367,15 +348,15 @@ export default {
 
       if (!this.selectedAssessment || !date || !time) {
         return this._showToast(
-          'warn',
-          'Missing Data',
-          'Please select assessment, date, and time.'
+          "warn",
+          "Missing Data",
+          "Please select assessment, date, and time."
         );
       }
 
       this.loading = true;
       try {
-        const authToken = storage.get('authToken');
+        const authToken = storage.get("authToken");
         const base = process.env.VUE_APP_API_BASE_URL;
 
         // Compute sendAt (interpret date/time as frontend local time) and convert to UTC ISO
@@ -412,7 +393,7 @@ export default {
                 `${base}/api/schedule-email`,
                 {
                   recipient_email: member.email,
-                  subject: 'Assessment Scheduled',
+                  subject: "Assessment Scheduled",
                   body: `You have an assessment scheduled: ${this.selectedAssessment.name}`,
                   send_at: sendAt,
                   assessment_id: this.selectedAssessment.id,
@@ -428,14 +409,14 @@ export default {
 
         const results = await Promise.allSettled(emailPromises);
         const failed = results
-          .filter((r) => r.status === 'fulfilled' && r.value && r.value.error)
+          .filter((r) => r.status === "fulfilled" && r.value && r.value.error)
           .map((r) => r.value && r.value.member?.email)
           .filter(Boolean);
 
         const msg = failed.length
-          ? 'Assessment scheduled - ' + failed.length + ' email(s) failed'
-          : 'Assessment scheduled';
-        this._showToast('success', 'Scheduled', msg);
+          ? "Assessment scheduled - " + failed.length + " email(s) failed"
+          : "Assessment scheduled";
+        this._showToast("success", "Scheduled", msg);
 
         // Close modal then refresh the single assessment's schedule to avoid
         // a full re-initialize (less disruptive and faster).
@@ -452,20 +433,20 @@ export default {
         } catch (error_) {
           // If single refresh fails, fall back to full refresh (best-effort)
           console.warn(
-            '[AssessmentsCard] Failed to refresh single schedule, falling back to full refresh.',
+            "[AssessmentsCard] Failed to refresh single schedule, falling back to full refresh.",
             error_
           );
           await this.initializeComponent();
         }
       } catch (e) {
-        console.error('Failed to schedule assessment', e);
+        console.error("Failed to schedule assessment", e);
       } finally {
         this.loading = false;
       }
     },
     goToSummary(item) {
       this.$router.push({
-        name: 'AssessmentSummary',
+        name: "AssessmentSummary",
         params: { assessmentId: item.id },
       });
     },
@@ -486,30 +467,30 @@ export default {
     formatLocalDateTime(dateStr, timeStr) {
       try {
         const date = this._parseDateTime(dateStr, timeStr);
-        if (!date) return `${dateStr || ''} ${timeStr || ''}`.trim();
+        if (!date) return `${dateStr || ""} ${timeStr || ""}`.trim();
 
         const options = {
-          day: '2-digit',
-          month: 'short',
-          year: 'numeric',
-          hour: 'numeric',
-          minute: '2-digit',
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
           hour12: true,
         };
-        const formatter = new Intl.DateTimeFormat('en-US', options);
-        return formatter.format(date).replace(',', '');
+        const formatter = new Intl.DateTimeFormat("en-US", options);
+        return formatter.format(date).replace(",", "");
       } catch (e) {
-        console.error('Failed to format date/time', e);
-        return `${dateStr || ''} ${timeStr || ''}`.trim();
+        console.error("Failed to format date/time", e);
+        return `${dateStr || ""} ${timeStr || ""}`.trim();
       }
     },
     _parseDateTime(dateStr, timeStr) {
       if (!dateStr) return null;
       const dateTimeString = `${String(dateStr).trim()} ${String(
-        timeStr || '00:00:00'
+        timeStr || "00:00:00"
       ).trim()}`;
       const date = new Date(dateTimeString);
-  return Number.isNaN(date.getTime()) ? null : date;
+      return Number.isNaN(date.getTime()) ? null : date;
     },
     _showToast(severity, summary, detail, life = 3500) {
       this.toast.add({ severity, summary, detail, life });

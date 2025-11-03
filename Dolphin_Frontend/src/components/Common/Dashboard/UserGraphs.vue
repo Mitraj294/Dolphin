@@ -12,10 +12,7 @@
                 v-model="originalSelf"
               />
             </div>
-            <Bar
-              :data="originalChartData"
-              :options="chartOptions"
-            />
+            <Bar :data="originalChartData" :options="chartOptions" />
           </div>
         </div>
         <div class="user-graph-section">
@@ -28,10 +25,7 @@
                 v-model="adjustedSelf"
               />
             </div>
-            <Bar
-              :data="adjustedChartData"
-              :options="chartOptions"
-            />
+            <Bar :data="adjustedChartData" :options="chartOptions" />
           </div>
         </div>
       </div>
@@ -40,27 +34,27 @@
 </template>
 
 <script setup>
-import { Bar } from 'vue-chartjs';
 import {
-  Chart,
   BarElement,
   CategoryScale,
+  Chart,
+  Legend,
   LinearScale,
   Tooltip,
-  Legend,
-} from 'chart.js';
-import { ref } from 'vue';
+} from "chart.js";
+import { ref } from "vue";
+import { Bar } from "vue-chartjs";
 
-import Dropdown from '@/components/Common/Common_UI/Dropdown.vue';
+import Dropdown from "@/components/Common/Common_UI/Dropdown.vue";
 
 Chart.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 const originalChartData = {
-  labels: ['Info 1', 'Info 2', 'Info 3', 'Info 4', 'Info 5', 'Info 6'],
+  labels: ["Info 1", "Info 2", "Info 3", "Info 4", "Info 5", "Info 6"],
   datasets: [
     {
-      label: 'Original Self',
-      backgroundColor: '#0164A5',
+      label: "Original Self",
+      backgroundColor: "#0164A5",
       data: [40, 100, 30, 30, 10, 40],
       borderRadius: 0,
       barPercentage: 0.7,
@@ -70,11 +64,11 @@ const originalChartData = {
 };
 
 const adjustedChartData = {
-  labels: ['Info 1', 'Info 2', 'Info 3', 'Info 4', 'Info 5', 'Info 6'],
+  labels: ["Info 1", "Info 2", "Info 3", "Info 4", "Info 5", "Info 6"],
   datasets: [
     {
-      label: 'Adjusted Self',
-      backgroundColor: '#0164A5',
+      label: "Adjusted Self",
+      backgroundColor: "#0164A5",
       data: [40, 60, 40, 10, 20, 30],
       borderRadius: 0,
       barPercentage: 0.7,
@@ -99,17 +93,17 @@ const chartOptions = {
 };
 
 const originalSelfOptions = [
-  { label: 'Original Self 1', value: 'Original Self 1' },
-  { label: 'Original Self 2', value: 'Original Self 2' },
-  { label: 'Original Self 3', value: 'Original Self 3' },
+  { label: "Original Self 1", value: "Original Self 1" },
+  { label: "Original Self 2", value: "Original Self 2" },
+  { label: "Original Self 3", value: "Original Self 3" },
 ];
 const adjustedSelfOptions = [
-  { label: 'Adjusted Self 1', value: 'Adjusted Self 1' },
-  { label: 'Adjusted Self 2', value: 'Adjusted Self 2' },
-  { label: 'Adjusted Self 3', value: 'Adjusted Self 3' },
+  { label: "Adjusted Self 1", value: "Adjusted Self 1" },
+  { label: "Adjusted Self 2", value: "Adjusted Self 2" },
+  { label: "Adjusted Self 3", value: "Adjusted Self 3" },
 ];
-const originalSelf = ref('Original Self 1');
-const adjustedSelf = ref('Adjusted Self 1');
+const originalSelf = ref("Original Self 1");
+const adjustedSelf = ref("Adjusted Self 1");
 </script>
 
 <style scoped>

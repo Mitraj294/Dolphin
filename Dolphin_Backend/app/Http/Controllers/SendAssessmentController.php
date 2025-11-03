@@ -43,7 +43,6 @@ class SendAssessmentController extends Controller
             }
 
             return $this->generateSuccessResponse();
-
         } catch (Exception $e) {
             Log::error('SendAssessmentController@send failed', [
                 'error' => $e->getMessage(),
@@ -107,7 +106,7 @@ class SendAssessmentController extends Controller
 
         return $htmlBody;
     }
-    
+
     /**
      * Updates the lead's status after sending the assessment.
      */
@@ -127,10 +126,9 @@ class SendAssessmentController extends Controller
                     $lead->registered_at = now();
                 }
             }
-            
+
             $lead->save();
             Log::info('Lead status updated successfully.', ['lead_id' => $lead->id]);
-
         } catch (Exception $e) {
             Log::error('Failed to update lead status.', [
                 'lead_id' => $lead->id,

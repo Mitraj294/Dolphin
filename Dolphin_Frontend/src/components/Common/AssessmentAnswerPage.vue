@@ -1,10 +1,6 @@
 <template>
   <div class="assessment-answer-page">
-    <img
-      src="@/assets/images/Lines.svg"
-      alt="Lines"
-      class="bg-lines"
-    />
+    <img src="@/assets/images/Lines.svg" alt="Lines" class="bg-lines" />
     <img
       src="@/assets/images/Image.svg"
       alt="Illustration"
@@ -32,11 +28,7 @@
             required
           />
         </div>
-        <button
-          type="submit"
-          :disabled="loading"
-          class="submit-btn"
-        >
+        <button type="submit" :disabled="loading" class="submit-btn">
           <span v-if="loading">Submitting...</span>
           <span v-else>Submit</span>
         </button>
@@ -47,12 +39,12 @@
 </template>
 
 <script>
-import axios from 'axios';
-import Toast from 'primevue/toast';
-import { useToast } from 'primevue/usetoast';
+import axios from "axios";
+import Toast from "primevue/toast";
+import { useToast } from "primevue/usetoast";
 
 export default {
-  name: 'AssessmentAnswerPage',
+  name: "AssessmentAnswerPage",
   components: { Toast },
   setup() {
     const toast = useToast();
@@ -62,11 +54,11 @@ export default {
     // Check if this assessment has already been completed
     const token = to.params.token;
     const completedAssessments = JSON.parse(
-      localStorage.getItem('completedAssessments') || '[]'
+      localStorage.getItem("completedAssessments") || "[]"
     );
 
-    if (completedAssessments.includes(token) || from.path === '/thanks') {
-      next('/thanks?already=1');
+    if (completedAssessments.includes(token) || from.path === "/thanks") {
+      next("/thanks?already=1");
     } else {
       next();
     }
@@ -83,10 +75,10 @@ export default {
 
     // Check if we're returning from a completed assessment
     const completedAssessments = JSON.parse(
-      localStorage.getItem('completedAssessments') || '[]'
+      localStorage.getItem("completedAssessments") || "[]"
     );
     if (completedAssessments.includes(token)) {
-      this.$router.replace('/thanks?already=1');
+      this.$router.replace("/thanks?already=1");
       return;
     }
 
@@ -99,7 +91,7 @@ export default {
       this.group_id = res.data.group ? res.data.group.id : null;
       this.member_id = res.data.member ? res.data.member.id : null;
       for (const q of this.assessment.questions) {
-        this.answers[q.assessment_question_id] = '';
+        this.answers[q.assessment_question_id] = "";
       }
     } catch (e) {
       // Check if the assessment has already been submitted
@@ -110,17 +102,17 @@ export default {
             e.response.data.message &&
             e.response.data.message
               .toLowerCase()
-              .includes('already submitted')))
+              .includes("already submitted")))
       ) {
         // Mark as completed and replace current route
         this.markAssessmentCompleted(token);
-        this.$router.replace('/thanks?already=1');
+        this.$router.replace("/thanks?already=1");
         return;
       }
 
       this.toast.add({
-        severity: 'error',
-        summary: 'Failed to load assessment.',
+        severity: "error",
+        summary: "Failed to load assessment.",
         life: 3500,
       });
     }
@@ -151,7 +143,7 @@ export default {
         this.markAssessmentCompleted(token);
 
         // Replace current route to prevent back button navigation
-        this.$router.replace('/thanks');
+        this.$router.replace("/thanks");
       } catch (e) {
         // Check if the assessment has already been submitted during submission attempt
         if (
@@ -161,17 +153,17 @@ export default {
               e.response.data.message &&
               e.response.data.message
                 .toLowerCase()
-                .includes('already submitted')))
+                .includes("already submitted")))
         ) {
           // Mark as completed and replace current route to prevent back button navigation
           this.markAssessmentCompleted(token);
-          this.$router.replace('/thanks?already=1');
+          this.$router.replace("/thanks?already=1");
           return;
         }
 
         this.toast.add({
-          severity: 'error',
-          summary: 'Submission failed.',
+          severity: "error",
+          summary: "Submission failed.",
           life: 3500,
         });
       } finally {
@@ -181,12 +173,12 @@ export default {
     markAssessmentCompleted(token) {
       // Store completed assessment token in localStorage to prevent re-access
       const completedAssessments = JSON.parse(
-        localStorage.getItem('completedAssessments') || '[]'
+        localStorage.getItem("completedAssessments") || "[]"
       );
       if (!completedAssessments.includes(token)) {
         completedAssessments.push(token);
         localStorage.setItem(
-          'completedAssessments',
+          "completedAssessments",
           JSON.stringify(completedAssessments)
         );
       }
@@ -238,7 +230,7 @@ export default {
   font-weight: 600;
   color: #234056;
   margin-bottom: 8px;
-  font-family: 'Helvetica Neue LT Std', Arial, sans-serif;
+  font-family: "Helvetica Neue LT Std", Arial, sans-serif;
 }
 .question-block {
   margin-bottom: 24px;

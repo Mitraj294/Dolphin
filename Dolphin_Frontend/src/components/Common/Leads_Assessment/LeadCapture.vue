@@ -5,10 +5,7 @@
       <div class="lead-capture-outer">
         <div class="lead-capture-card">
           <h3 class="lead-capture-card-title">Enter Lead Details</h3>
-          <form
-            class="lead-capture-form"
-            @submit.prevent="handleSaveLead"
-          >
+          <form class="lead-capture-form" @submit.prevent="handleSaveLead">
             <FormRow>
               <div>
                 <FormLabel>First Name</FormLabel>
@@ -18,11 +15,9 @@
                   placeholder="Type here"
                   required
                 />
-                <FormLabel
-                  v-if="errors.firstName"
-                  class="error-message"
-                  >{{ errors.firstName[0] }}</FormLabel
-                >
+                <FormLabel v-if="errors.firstName" class="error-message">{{
+                  errors.firstName[0]
+                }}</FormLabel>
               </div>
               <div>
                 <FormLabel>Last Name</FormLabel>
@@ -32,11 +27,9 @@
                   placeholder="Type here"
                   required
                 />
-                <FormLabel
-                  v-if="errors.lastName"
-                  class="error-message"
-                  >{{ errors.lastName[0] }}</FormLabel
-                >
+                <FormLabel v-if="errors.lastName" class="error-message">{{
+                  errors.lastName[0]
+                }}</FormLabel>
               </div>
               <div>
                 <FormLabel>Email</FormLabel>
@@ -47,11 +40,9 @@
                   placeholder="abc@gmail.com"
                   required
                 />
-                <FormLabel
-                  v-if="errors.email"
-                  class="error-message"
-                  >{{ errors.email[0] }}</FormLabel
-                >
+                <FormLabel v-if="errors.email" class="error-message">{{
+                  errors.email[0]
+                }}</FormLabel>
               </div>
             </FormRow>
             <FormRow>
@@ -63,11 +54,9 @@
                   placeholder="Type here"
                   required
                 />
-                <FormLabel
-                  v-if="errors.phone"
-                  class="error-message"
-                  >{{ errors.phone[0] }}</FormLabel
-                >
+                <FormLabel v-if="errors.phone" class="error-message">{{
+                  errors.phone[0]
+                }}</FormLabel>
               </div>
               <div>
                 <FormLabel>How did you find us?</FormLabel>
@@ -80,11 +69,9 @@
                   ]"
                   required
                 />
-                <FormLabel
-                  v-if="errors.find_us"
-                  class="error-message"
-                  >{{ errors.find_us[0] }}</FormLabel
-                >
+                <FormLabel v-if="errors.find_us" class="error-message">{{
+                  errors.find_us[0]
+                }}</FormLabel>
               </div>
               <div></div>
             </FormRow>
@@ -131,11 +118,9 @@
                   placeholder="153, Maggie Loop Pottsville"
                   required
                 />
-                <FormLabel
-                  v-if="errors.address"
-                  class="error-message"
-                  >{{ errors.address[0] }}</FormLabel
-                >
+                <FormLabel v-if="errors.address" class="error-message">{{
+                  errors.address[0]
+                }}</FormLabel>
               </div>
               <div>
                 <FormLabel>Country</FormLabel>
@@ -149,11 +134,9 @@
                   ]"
                   required
                 />
-                <FormLabel
-                  v-if="errors.country_id"
-                  class="error-message"
-                  >{{ errors.country_id[0] }}</FormLabel
-                >
+                <FormLabel v-if="errors.country_id" class="error-message">{{
+                  errors.country_id[0]
+                }}</FormLabel>
               </div>
               <div>
                 <FormLabel>State</FormLabel>
@@ -167,11 +150,9 @@
                   ]"
                   required
                 />
-                <FormLabel
-                  v-if="errors.state_id"
-                  class="error-message"
-                  >{{ errors.state_id[0] }}</FormLabel
-                >
+                <FormLabel v-if="errors.state_id" class="error-message">{{
+                  errors.state_id[0]
+                }}</FormLabel>
               </div>
             </FormRow>
             <FormRow>
@@ -189,11 +170,9 @@
                   ]"
                   required
                 />
-                <FormLabel
-                  v-if="errors.city_id"
-                  class="error-message"
-                  >{{ errors.city_id[0] }}</FormLabel
-                >
+                <FormLabel v-if="errors.city_id" class="error-message">{{
+                  errors.city_id[0]
+                }}</FormLabel>
               </div>
               <div>
                 <FormLabel>Zip Code</FormLabel>
@@ -203,11 +182,9 @@
                   placeholder="Enter PIN code"
                   required
                 />
-                <FormLabel
-                  v-if="errors.zip"
-                  class="error-message"
-                  >{{ errors.zip[0] }}</FormLabel
-                >
+                <FormLabel v-if="errors.zip" class="error-message">{{
+                  errors.zip[0]
+                }}</FormLabel>
               </div>
               <div></div>
             </FormRow>
@@ -219,12 +196,7 @@
               >
                 Cancel
               </button>
-              <button
-                type="submit"
-                class="org-edit-update"
-              >
-                Save Lead
-              </button>
+              <button type="submit" class="org-edit-update">Save Lead</button>
             </div>
           </form>
         </div>
@@ -234,20 +206,20 @@
 </template>
 
 <script>
-import MainLayout from '@/components/layout/MainLayout.vue';
 import {
-  FormRow,
-  FormLabel,
-  FormInput,
-  FormDropdown,
   FormBox,
-} from '@/components/Common/Common_UI/Form';
-import Toast from 'primevue/toast';
-import { useToast } from 'primevue/usetoast';
-import axios from 'axios';
-import { findUsOptions, orgSizeOptions } from '@/utils/formUtils';
+  FormDropdown,
+  FormInput,
+  FormLabel,
+  FormRow,
+} from "@/components/Common/Common_UI/Form";
+import MainLayout from "@/components/layout/MainLayout.vue";
+import { findUsOptions, orgSizeOptions } from "@/utils/formUtils";
+import axios from "axios";
+import Toast from "primevue/toast";
+import { useToast } from "primevue/usetoast";
 export default {
-  name: 'LeadCapture',
+  name: "LeadCapture",
   components: {
     MainLayout,
     FormRow,
@@ -268,35 +240,35 @@ export default {
       findUsOptions,
       orgSizeOptions,
       form: {
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: '',
-        password: '',
-        findUs: '',
-        organization_name: '',
-        organization_size: '',
-        address: '',
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        password: "",
+        findUs: "",
+        organization_name: "",
+        organization_size: "",
+        address: "",
         country_id: null,
         state_id: null,
         city_id: null,
-        zip: '',
+        zip: "",
       },
       countries: [],
       states: [],
       cities: [],
       loading: false,
-      successMessage: '',
-      errorMessage: '',
+      successMessage: "",
+      errorMessage: "",
       errors: {},
     };
   },
   watch: {
-    'form.country_id'(val) {
+    "form.country_id"(val) {
       console.log(
         `[LeadCapture] [FRONTEND] country_id changed:`,
         val,
-        'type:',
+        "type:",
         typeof val
       );
     },
@@ -307,11 +279,11 @@ export default {
     },
     async fetchCountries() {
       const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
-      console.log('[LeadCapture] [FRONTEND] Fetching countries...');
+      console.log("[LeadCapture] [FRONTEND] Fetching countries...");
       const res = await axios.get(`${API_BASE_URL}/api/countries`);
       this.countries = res.data;
       console.log(
-        '[LeadCapture] [FRONTEND] Countries fetched:',
+        "[LeadCapture] [FRONTEND] Countries fetched:",
         this.countries
       );
     },
@@ -319,7 +291,7 @@ export default {
       if (!this.form.country_id) {
         this.states = [];
         console.log(
-          '[LeadCapture] [FRONTEND] No country selected, states cleared.'
+          "[LeadCapture] [FRONTEND] No country selected, states cleared."
         );
         return;
       }
@@ -331,13 +303,13 @@ export default {
         `${API_BASE_URL}/api/states?country_id=${this.form.country_id}`
       );
       this.states = res.data;
-      console.log('[LeadCapture] [FRONTEND] States fetched:', this.states);
+      console.log("[LeadCapture] [FRONTEND] States fetched:", this.states);
     },
     async fetchCities() {
       if (!this.form.state_id) {
         this.cities = [];
         console.log(
-          '[LeadCapture] [FRONTEND] No state selected, cities cleared.'
+          "[LeadCapture] [FRONTEND] No state selected, cities cleared."
         );
         return;
       }
@@ -349,12 +321,12 @@ export default {
         `${API_BASE_URL}/api/cities?state_id=${this.form.state_id}`
       );
       this.cities = res.data;
-      console.log('[LeadCapture] [FRONTEND] Cities fetched:', this.cities);
+      console.log("[LeadCapture] [FRONTEND] Cities fetched:", this.cities);
     },
     onCountryChange() {
       let val = this.form.country_id;
 
-      if (val !== null && val !== '' && typeof val !== 'number') {
+      if (val !== null && val !== "" && typeof val !== "number") {
         const num = Number(val);
         if (!Number.isNaN(num)) {
           this.form.country_id = num;
@@ -364,10 +336,10 @@ export default {
       console.log(
         `[LeadCapture] [FRONTEND] Country changed:`,
         val,
-        'type:',
+        "type:",
         typeof val
       );
-      if (val && typeof val === 'number') {
+      if (val && typeof val === "number") {
         this.form.state_id = null;
         this.form.city_id = null;
         this.states = [];
@@ -379,13 +351,13 @@ export default {
         this.states = [];
         this.cities = [];
         console.log(
-          '[LeadCapture] [FRONTEND] No country selected, states cleared.'
+          "[LeadCapture] [FRONTEND] No country selected, states cleared."
         );
       }
     },
     onStateChange() {
       let val = this.form.state_id;
-      if (val !== null && val !== '' && typeof val !== 'number') {
+      if (val !== null && val !== "" && typeof val !== "number") {
         const num = Number(val);
         if (!Number.isNaN(num)) {
           this.form.state_id = num;
@@ -395,10 +367,10 @@ export default {
       console.log(
         `[LeadCapture] [FRONTEND] State changed:`,
         val,
-        'type:',
+        "type:",
         typeof val
       );
-      if (val && typeof val === 'number') {
+      if (val && typeof val === "number") {
         this.form.city_id = null;
         this.cities = [];
         this.fetchCities();
@@ -406,19 +378,19 @@ export default {
         this.form.city_id = null;
         this.cities = [];
         console.log(
-          '[LeadCapture] [FRONTEND] No state selected, cities cleared.'
+          "[LeadCapture] [FRONTEND] No state selected, cities cleared."
         );
       }
     },
     async handleSaveLead() {
       this.loading = true;
-      this.successMessage = '';
-      this.errorMessage = '';
+      this.successMessage = "";
+      this.errorMessage = "";
       try {
-        const storage = require('@/services/storage').default;
-        const token = storage.get('authToken');
+        const storage = require("@/services/storage").default;
+        const token = storage.get("authToken");
         if (!token) {
-          this.errorMessage = 'Authentication token not found. Please log in.';
+          this.errorMessage = "Authentication token not found. Please log in.";
           this.loading = false;
           return;
         }
@@ -448,25 +420,25 @@ export default {
           }
         );
         this.successMessage =
-          response.data.message || 'Lead saved successfully!';
+          response.data.message || "Lead saved successfully!";
         this.resetForm();
-        this.$router.push('/leads');
+        this.$router.push("/leads");
       } catch (error) {
-        console.error('Error saving lead:', error);
+        console.error("Error saving lead:", error);
 
         if (error.response?.data) {
           const { message, errors } = error.response.data;
 
-          this.errorMessage = message || 'Failed to save lead.';
+          this.errorMessage = message || "Failed to save lead.";
           this.errors = errors || {};
         } else {
-          this.errorMessage = 'An unexpected error occurred.';
+          this.errorMessage = "An unexpected error occurred.";
         }
 
         // Use PrimeVue Toast for error notification
         this.$toast.add({
-          severity: 'error',
-          summary: 'Validation Error',
+          severity: "error",
+          summary: "Validation Error",
           detail: this.errorMessage,
           life: 5000,
         });
@@ -476,19 +448,19 @@ export default {
     },
     resetForm() {
       this.form = {
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: '',
-        password: '',
-        findUs: '',
-        organization_name: '',
-        organization_size: '',
-        address: '',
-        country_id: '',
-        state_id: '',
-        city_id: '',
-        zip: '',
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        password: "",
+        findUs: "",
+        organization_name: "",
+        organization_size: "",
+        address: "",
+        country_id: "",
+        state_id: "",
+        city_id: "",
+        zip: "",
       };
       this.states = [];
       this.cities = [];

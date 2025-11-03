@@ -166,7 +166,7 @@ class GroupController extends Controller
             }
 
             $group = Group::where('organization_id', $orgId)->findOrFail($id);
-            
+
             $group->update([
                 'name' => $validated['name'],
             ]);
@@ -175,8 +175,8 @@ class GroupController extends Controller
                 $group->members()->sync($validated['member_ids']);
             }
 
-        $status_code = 200;
-        $response_data = $group->load('members');
+            $status_code = 200;
+            $response_data = $group->load('members');
         } catch (ModelNotFoundException $e) {
             $status_code = 404;
             $response_data['error'] = 'Group not found.';

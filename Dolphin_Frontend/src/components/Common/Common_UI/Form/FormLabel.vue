@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  name: 'FormLabel',
+  name: "FormLabel",
 };
 </script>
 
