@@ -83,31 +83,8 @@ class GeneralNotification extends Notification implements ShouldQueue
      */
     public function toMail($notifiable)
     {
-        $displayName = '';
-
-        if (is_object($notifiable)) {
-            if (property_exists($notifiable, 'name') && $notifiable->name) {
-                $displayName = $notifiable->name;
-            } else {
-                $first = $notifiable->first_name ?? '';
-                $last = $notifiable->last_name ?? '';
-                $displayName = trim($first . ' ' . $last) ?: ($notifiable->email ?? '');
-            }
-        } elseif (is_string($notifiable)) {
-            $displayName = $notifiable;
-        } elseif ($notifiable instanceof \Illuminate\Notifications\AnonymousNotifiable) {
-            try {
-                $route = $notifiable->routeNotificationFor('mail');
-                if (is_string($route)) {
-                    $displayName = $route;
-                } elseif (is_array($route)) {
-                    $displayName = implode(', ', array_values($route));
-                }
-            } catch (\Exception $e) {
-                Log::warning('[Notification] Failed to read AnonymousNotifiable mail route', ['error' => $e->getMessage()]);
-            }
-        }
-
+        // *** FIX: Use your own private function here ***
+        $displayName = $this->resolveDisplayName($notifiable);
         $subject = $this->announcement->subject ?? 'New Announcement';
 
         // Get the recipient's email address

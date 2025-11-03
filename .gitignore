@@ -5,9 +5,40 @@ Dolphin_Backup/
 .env.local
 .env.*.local
 
-# Node modules
+# Node modules (root + subprojects)
 node_modules/
+Dolphin_Backend/node_modules/
+Dolphin_Frontend/node_modules/
+
+# PHP vendor (Laravel backend)
+Dolphin_Backend/vendor/
+
+# Build outputs
+Dolphin_Frontend/dist/
+Dolphin_Backend/public/build/
+Dolphin_Backend/public/hot
+Dolphin_Backend/mix-manifest.json
+
+# Laravel caches and logs
+Dolphin_Backend/storage/logs/
+Dolphin_Backend/storage/framework/cache/
+Dolphin_Backend/storage/framework/sessions/
+Dolphin_Backend/storage/framework/views/
+Dolphin_Backend/bootstrap/cache/
+
+# Misc OS/editor cruft
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
 
 # Logs
 *.log
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local/temporary backups
+**/*.sqlite
+Dolphin_Backend/backup.sql

@@ -40,7 +40,9 @@ class AnnouncementMailable extends Mailable
         $displayableActionUrl = $this->actionUrl;
 
         return $this->subject($this->subjectLine)
-            ->markdown('vendor.notifications.email')
+            // Send proper HTML and explicit plain-text alternative
+            ->view('vendor.notifications.email')
+            ->text('vendor.notifications.email_plain')
             ->with([
                 'announcement' => $this->announcement,
                 'greeting' => $greeting,
