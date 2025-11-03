@@ -5,8 +5,8 @@ namespace App\Notifications;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
+use App\Mail\AnnouncementMailable;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Notifications\Messages\MailMessage;
 
 class GeneralNotification extends Notification implements ShouldQueue
 {
@@ -31,28 +31,32 @@ class GeneralNotification extends Notification implements ShouldQueue
     {
         $channels = [];
 
+        // If recipient is a User model, include database channel and mail if they have email
         if ($notifiable instanceof \App\Models\User) {
             $channels[] = 'database';
-            if (filter_var($notifiable->email, FILTER_VALIDATE_EMAIL)) {
+            if ($this->hasValidEmail($notifiable->email ?? null)) {
                 $channels[] = 'mail';
             }
-        } elseif ($notifiable instanceof \Illuminate\Notifications\AnonymousNotifiable) {
-            try {
+            return array_unique($channels);
+        }
+
+        // For anonymous notifiables or generic objects, check whether a valid email can be resolved
+        try {
+            // AnonymousNotifiable::routeNotificationFor('mail') may return string or array
+            if ($notifiable instanceof \Illuminate\Notifications\AnonymousNotifiable) {
                 $route = $notifiable->routeNotificationFor('mail');
-                if (is_string($route) && filter_var($route, FILTER_VALIDATE_EMAIL)) {
+                if ($this->routeHasValidEmail($route)) {
                     $channels[] = 'mail';
-                } elseif (is_array($route)) {
-                    foreach ($route as $r) {
-                        if (is_string($r) && filter_var($r, FILTER_VALIDATE_EMAIL)) {
-                            $channels[] = 'mail';
-                            break;
-                        }
-                    }
                 }
-            } catch (\Exception $e) {
-                // ignore
+                return array_unique($channels);
             }
-        } elseif (is_object($notifiable) && property_exists($notifiable, 'email') && filter_var($notifiable->email, FILTER_VALIDATE_EMAIL)) {
+        } catch (\Exception $e) {
+            // ignore and fall through to object checks
+            Log::warning('[Notification] Failed to inspect AnonymousNotifiable route', ['error' => $e->getMessage()]);
+        }
+
+        // Generic object with public email property
+        if (is_object($notifiable) && property_exists($notifiable, 'email') && $this->hasValidEmail($notifiable->email)) {
             $channels[] = 'mail';
         }
 
@@ -106,15 +110,107 @@ class GeneralNotification extends Notification implements ShouldQueue
 
         $subject = $this->announcement->subject ?? 'New Announcement';
 
-        $mailMessage = (new MailMessage)
-            ->subject($subject);
-
-        if ($displayName) {
-            $mailMessage->greeting('Hello ' . $displayName . ',');
+        // Get the recipient's email address
+        $toEmail = $notifiable->email ?? null;
+        if (!$toEmail && $notifiable instanceof \Illuminate\Notifications\AnonymousNotifiable) {
+            try {
+                $toEmail = $notifiable->routeNotificationFor('mail');
+            } catch (\Exception $e) {
+                // ignore
+            }
         }
 
-        $mailMessage->line($this->announcement->body);
+        // Return your Mailable class instead of the default MailMessage
+        return (new AnnouncementMailable(
+            $this->announcement,
+            $displayName,
+            $subject
+        ))->to($toEmail);
+    }
 
-        return $mailMessage;
+    /**
+     * Return true if the provided value is a valid email address
+     */
+    private function hasValidEmail($email): bool
+    {
+        return is_string($email) && filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+    }
+
+    /**
+     * Normalize and check routes returned by AnonymousNotifiable for a valid email
+     */
+    private function routeHasValidEmail($route): bool
+    {
+        if (is_string($route)) {
+            return $this->hasValidEmail($route);
+        }
+
+        if (is_array($route)) {
+            foreach ($route as $r) {
+                if ($this->hasValidEmail($r)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Resolve a human-friendly display name for the notifiable
+     */
+    private function resolveDisplayName($notifiable): string
+    {
+        $name = '';
+
+        if (is_string($notifiable)) {
+            $name = $notifiable;
+        } elseif ($notifiable instanceof \Illuminate\Notifications\AnonymousNotifiable) {
+            try {
+                $route = $notifiable->routeNotificationFor('mail');
+                $name = $this->anonymousRouteDisplayName($route);
+            } catch (\Exception $e) {
+                Log::warning('[Notification] Failed to read AnonymousNotifiable mail route', ['error' => $e->getMessage()]);
+                $name = '';
+            }
+        } elseif (is_object($notifiable)) {
+            $name = $this->objectDisplayName($notifiable);
+        }
+
+        return (string) $name;
+    }
+
+    /**
+     * Get display name from an anonymous notifiable route value
+     */
+    private function anonymousRouteDisplayName($route): string
+    {
+        if (is_string($route)) {
+            return $route;
+        }
+
+        if (is_array($route)) {
+            return implode(', ', array_values($route));
+        }
+
+        return '';
+    }
+
+    /**
+     * Get display name from an object notifiable
+     */
+    private function objectDisplayName($notifiable): string
+    {
+        if (property_exists($notifiable, 'name') && $notifiable->name) {
+            return $notifiable->name;
+        }
+
+        $first = $notifiable->first_name ?? '';
+        $last = $notifiable->last_name ?? '';
+        if ($first || $last) {
+            return trim($first . ' ' . $last);
+        }
+
+        return $notifiable->email ?? '';
     }
 }
