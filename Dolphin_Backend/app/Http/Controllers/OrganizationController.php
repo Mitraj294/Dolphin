@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Organization;
+use App\Models\Subscription;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -32,7 +33,27 @@ class OrganizationController extends Controller
             return response()->json(['message' => 'Unauthorized.'], 403);
         }
 
-        $organizations = $query->get()->map(fn($org) => $this->formatOrganizationPayload($org));
+        $organizationsCollection = $query->get();
+
+        // Prefetch latest subscription per user_id to avoid N+1 queries.
+        $userIds = $organizationsCollection->pluck('user_id')->filter()->unique()->values()->all();
+        $latestSubscriptions = [];
+        if (!empty($userIds)) {
+            $subs = Subscription::whereIn('user_id', $userIds)
+                ->orderByDesc('subscription_end')
+                ->get()
+                ->groupBy('user_id')
+                ->map(fn($group) => $group->first())
+                ->toArray();
+
+            // normalize to user_id => subscription model (not array)
+            foreach ($subs as $uid => $s) {
+                // Re-fetch model instance for each id to keep typical model behavior
+                $latestSubscriptions[$uid] = Subscription::find($s['id']);
+            }
+        }
+
+        $organizations = $organizationsCollection->map(fn($org) => $this->formatOrganizationPayload($org, $latestSubscriptions[$org->user_id] ?? null));
 
         return response()->json($organizations);
     }
@@ -154,11 +175,21 @@ class OrganizationController extends Controller
     }
 
 
-    private function formatOrganizationPayload(Organization $org): array
+    private function formatOrganizationPayload(Organization $org, ?Subscription $providedLatestSubscription = null): array
     {
         $user = $org->user;
         $details = $user?->userDetails;
+        // activeSubscription is eager-loaded (if present) but we also need to
+        // inspect the latest subscription record for this organization's user
+        // to distinguish active / expired / no-subscription states.
         $subscription = $org->activeSubscription;
+        // Use the provided latest subscription (prefetched) if available to avoid extra queries.
+        $latestSubscription = $providedLatestSubscription;
+        if (!$latestSubscription && $org->user_id) {
+            $latestSubscription = Subscription::where('user_id', $org->user_id)
+                ->orderByDesc('subscription_end')
+                ->first();
+        }
 
 
 
@@ -197,6 +228,10 @@ class OrganizationController extends Controller
             'sales_person_id' => $org->sales_person_id,
             'sales_person' => $salesPersonName,
             'certified_staff' => $org->certified_staff,
+            // Subscription status flags (1 or 0) based on latest subscription row
+            'active_subscription' => ($latestSubscription && $latestSubscription->status === 'active') ? 1 : 0,
+            'expired_subscription' => ($latestSubscription && $latestSubscription->status === 'expired') ? 1 : 0,
+            'no_subscription' => $latestSubscription ? 0 : 1,
         ];
     }
 }

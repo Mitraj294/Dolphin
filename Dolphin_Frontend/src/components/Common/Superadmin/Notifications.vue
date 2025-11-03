@@ -102,8 +102,61 @@
         <div class="modal-row">
           <div class="modal-field">
             <FormLabel>Select Organizations</FormLabel>
+
+            <!-- Subscription status filters (UI only) -->
+            <div class="modal-row">
+              <div class="modal-field">
+                <div class="subscription-filters" @click.stop @mousedown.stop>
+                  <label class="subscription-option" @click.stop>
+                  <input
+                    type="radio"
+                    name="subscriptionFilter"
+                    value="active"
+                    v-model="subscriptionFilter"
+                    @mousedown.stop
+                  />
+                  <span class="label-text">Active Subscription</span>
+                  </label>
+
+                  <label class="subscription-option" @click.stop>
+                  <input
+                    type="radio"
+                    name="subscriptionFilter"
+                    value="expired"
+                    v-model="subscriptionFilter"
+                    @mousedown.stop
+                  />
+                  <span class="label-text">Expired Subscription</span>
+                  </label>
+
+                  <label class="subscription-option" @click.stop>
+                  <input
+                    type="radio"
+                    name="subscriptionFilter"
+                    value="none"
+                    v-model="subscriptionFilter"
+                    @mousedown.stop
+                  />
+                  <span class="label-text">No Subscription</span>
+                  </label>
+
+                  <!-- Red cross to clear the selected filter -->
+                  <button
+                  v-if="subscriptionFilter"
+                  type="button"
+                  class="subscription-option"
+                  title="Clear filter"
+                  @click.stop="subscriptionFilter = ''"
+                  @mousedown.stop
+                  style="background:#fff0f0;border:1px solid #f5c6cb;color:#c82333;padding:6px 10px;border-radius:18px;min-width:0;height:36px;display:inline-flex;align-items:center;justify-content:center;"
+                  >
+                  &times;
+                  </button>
+                </div>
+              </div>
+            </div>
             <MultiSelectDropdown
-              :options="organizations || []"
+              :options="filteredOrganizations || []"
               :selectedItems="selectedOrganizations"
               @update:selectedItems="selectedOrganizations = $event"
               option-label="organization_name"
@@ -243,6 +296,8 @@ export default {
       selectedAdmin: "",
       selectedAdmins: [],
       selectedGroups: [],
+      // UI-only binding for subscription filter radios (no logic implemented)
+      subscriptionFilter: "",
 
       // Scheduling
       scheduledDate: "",
@@ -285,6 +340,27 @@ export default {
         },
         { label: "Action", key: "action", minWidth: "200px" },
       ];
+    },
+
+    // Organizations filtered by subscription radio selection
+    filteredOrganizations() {
+      const all = Array.isArray(this.organizations) ? this.organizations : [];
+      if (!this.subscriptionFilter) return all;
+
+      const keyMap = {
+        active: "active_subscription",
+        expired: "expired_subscription",
+        none: "no_subscription",
+      };
+      const key = keyMap[this.subscriptionFilter];
+      if (!key) return all;
+
+      return all.filter((o) => {
+        if (!o) return false;
+        const v = o[key];
+        // normalize truthy values (1, '1', true)
+        return v === 1 || v === "1" || v === true;
+      });
     },
 
     // Total pages computed from notifications length
@@ -385,6 +461,18 @@ export default {
       const allowedGroupIds = new Set(this.filteredGroups.map((g) => g.id));
       this.selectedGroups = (this.selectedGroups || []).filter((g) =>
         allowedGroupIds.has(g.id)
+      );
+    },
+
+    // When subscription filter changes, remove any selected organizations that
+    // don't match the current filter so selectedOrganizations always reflects
+    // visible dropdown choices.
+    subscriptionFilter() {
+      const allowedIds = new Set(
+        (this.filteredOrganizations || []).map((o) => o.id)
+      );
+      this.selectedOrganizations = (this.selectedOrganizations || []).filter(
+        (s) => allowedIds.has(typeof s === "object" ? s.id : s)
       );
     },
   },
@@ -1072,5 +1160,48 @@ export default {
 }
 .form-box {
   padding: 0 !important;
+}
+
+/* Subscription filter UI styles */
+.subscription-filters {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.subscription-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #f5f7fb;
+  border: 1px solid #e6eaf2;
+  padding: 8px 12px;
+  border-radius: 18px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 14px;
+  color: #111;
+}
+
+.subscription-option input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #cfd7e6;
+  background: white;
+  display: inline-block;
+  position: relative;
+}
+
+.subscription-option input[type="radio"]:checked {
+  border-color: #2196f3;
+  background: radial-gradient(circle at center, #2196f3 0 60%, transparent 61%);
+}
+
+.subscription-option .label-text {
+  line-height: 1;
 }
 </style>
