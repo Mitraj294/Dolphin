@@ -428,15 +428,15 @@ export default {
         memberId = member;
       }
 
-      if (!memberId && member && member.id) {
+      if (memberId == null && member?.id) {
         memberId = member.id;
       }
 
-      if (!memberId) {
+      if (memberId) {
+        await this.fetchMemberById(memberId);
+      } else {
         // No valid ID provided — fallback to whatever was passed in
         this.selectedMemberEdit = this.normalizeMember(member);
-      } else {
-        await this.fetchMemberById(memberId);
       }
 
       // Update URL to include member ID for direct linking
@@ -476,7 +476,7 @@ export default {
         });
         // Fallback to existing member data if available
         const existingMember = this.members.find(
-          (m) => m.id === parseInt(memberId)
+          (m) => m.id === Number.parseInt(memberId)
         );
         if (existingMember) {
           this.selectedMemberEdit = this.normalizeMember(existingMember);
@@ -512,7 +512,7 @@ export default {
             const group = this.groupsForSelectMap[groupId];
             return group ? group.name : `Group ${groupId}`;
           })
-          .filter((name) => name); // Remove any null/undefined names
+          .filter(Boolean); // Remove any null/undefined names
 
         return groupNames.length > 0
           ? groupNames.join(", ")
@@ -526,7 +526,7 @@ export default {
       if (!dateString) return "Not available";
       try {
         const date = new Date(dateString);
-        if (isNaN(date.getTime())) return "Invalid date";
+        if (Number.isNaN(date.getTime())) return "Invalid date";
         return date.toLocaleDateString("en-US", {
           year: "numeric",
           month: "short",
@@ -616,7 +616,7 @@ export default {
         ) {
           payload.member_role = this.editMember.member_role_ids.map((r) => {
             // Ensure we're sending integers, not objects
-            return typeof r === "object" ? parseInt(r.id) : parseInt(r);
+            return typeof r === "object" ? Number.parseInt(r.id) : Number.parseInt(r);
           });
         }
 
@@ -737,14 +737,14 @@ export default {
 
     onSearch() {
       const query = this.searchQuery.trim().toLowerCase();
-      if (!query) {
-        this.filteredMembers = [...this.members];
-      } else {
+      if (query) {
         this.filteredMembers = this.members.filter((m) =>
           Object.values(m).some((val) =>
             String(val).toLowerCase().includes(query)
           )
         );
+      } else {
+        this.filteredMembers = [...this.members];
       }
       this.currentPage = 1;
     },
@@ -836,7 +836,7 @@ export default {
     const memberIdFromQuery = this.$route.query.member_id;
     if (memberIdFromQuery) {
       const member = this.members.find(
-        (m) => m.id === parseInt(memberIdFromQuery)
+        (m) => m.id === Number.parseInt(memberIdFromQuery)
       );
       if (member) {
         await this.openMemberModal(member);

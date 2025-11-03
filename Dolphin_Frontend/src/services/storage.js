@@ -121,7 +121,7 @@ const storage = {
 };
 
 // Listen for logout broadcasts from other tabs
-window.addEventListener("storage", (e) => {
+globalThis.addEventListener("storage", (e) => {
   if (!e.key) return;
   if (e.key === LOGOUT_BROADCAST_KEY) {
     // Clear local storage in this tab (do not remove the broadcast key so

@@ -15,6 +15,11 @@ use Illuminate\Support\Facades\Log;
 class GroupController extends Controller
 {
 
+    /**
+     * Message constant used when the user's organization cannot be resolved.
+     */
+    private const ORG_RESOLVE_ERROR = 'Could not resolve organization for the current user.';
+
     //Display a listing of the resource.
     //@param  \Illuminate\Http\Request  $request
     //@return \Illuminate\Http\JsonResponse
@@ -65,7 +70,7 @@ class GroupController extends Controller
 
             $orgId = $this->resolveOrganizationId($user);
             if (!$orgId) {
-                return response()->json(['error' => 'Could not resolve organization for the current user.'], 400);
+                return response()->json(['error' => self::ORG_RESOLVE_ERROR], 400);
             }
 
             $group = Group::create([
@@ -162,7 +167,7 @@ class GroupController extends Controller
             $orgId = $this->resolveOrganizationId($user);
             if (!$orgId) {
                 $status_code = 400;
-                $response_data['error'] = 'Could not resolve organization for the current user.';
+                $response_data['error'] = self::ORG_RESOLVE_ERROR;
             }
 
             $group = Group::where('organization_id', $orgId)->findOrFail($id);
@@ -210,7 +215,7 @@ class GroupController extends Controller
             $orgId = $this->resolveOrganizationId($user);
             if (!$orgId) {
                 $status_code = 400;
-                $response_data['error'] = 'Could not resolve organization for the current user.';
+                $response_data['error'] = self::ORG_RESOLVE_ERROR;
             }
 
             $group = Group::where('organization_id', $orgId)->findOrFail($id);

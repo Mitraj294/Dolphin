@@ -500,12 +500,12 @@ export default {
         const rect = btn.getBoundingClientRect();
         const menuWidth = 220;
         const padding = 8;
-        let left = rect.right + window.scrollX - menuWidth;
-        if (left < padding) left = rect.left + window.scrollX;
-        if (left + menuWidth > window.innerWidth - padding) {
-          left = Math.max(padding, window.innerWidth - menuWidth - padding);
+        let left = rect.right + globalThis.scrollX - menuWidth;
+        if (left < padding) left = rect.left + globalThis.scrollX;
+        if (left + menuWidth > globalThis.innerWidth - padding) {
+          left = Math.max(padding, globalThis.innerWidth - menuWidth - padding);
         }
-        const top = rect.bottom + window.scrollY + 6;
+        const top = rect.bottom + globalThis.scrollY + 6;
         menuPosition.value = { top, left };
       } catch {
         menuPosition.value = { top: 0, left: 0 };

@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
+use App\Services\AuthUserService;
 
 class AuthController extends Controller
 {
@@ -26,8 +27,9 @@ class AuthController extends Controller
     public function register(RegisterRequest $request)
     {
         try {
-            $user = $this->createUserAndDetails($request->validated());
-            $this->updateLeadStatus($user->email);
+            $service = new AuthUserService();
+            $user = $service->createUserAndDetails($request->validated());
+            $service->updateLeadStatus($user->email);
 
             return response()->json(['message' => 'User registered successfully', 'user' => $user], 201);
         } catch (\Exception $e) {
@@ -63,7 +65,8 @@ class AuthController extends Controller
         }
 
         // Rebuild user payload after potential org update
-        $userPayload = $this->buildUserPayload($user->fresh());
+        $service = new AuthUserService();
+        $userPayload = $service->buildUserPayload($user->fresh());
 
         return response()->json([
             'message'       => 'Login successful',
@@ -78,7 +81,7 @@ class AuthController extends Controller
 
     public function profile(Request $request)
     {
-        $userPayload = $this->buildUserPayload($request->user());
+        $userPayload = (new AuthUserService())->buildUserPayload($request->user());
         return response()->json($userPayload);
     }
 
@@ -87,18 +90,19 @@ class AuthController extends Controller
     public function updateProfile(UpdateProfileRequest $request)
     {
         $user = $request->user();
-
         DB::beginTransaction();
         try {
             $validated = $request->validated();
-            $this->updateUserRecord($user, $validated['user'] ?? [], $validated['user_details'] ?? []);
-            $this->updateUserDetailsRecord($user, $validated['user_details'] ?? []);
+
+            $service = new AuthUserService();
+            $service->updateUserRecord($user, $validated['user'] ?? [], $validated['user_details'] ?? []);
+            $service->updateUserDetailsRecord($user, $validated['user_details'] ?? []);
 
             DB::commit();
 
             return response()->json([
                 'message' => 'Profile updated successfully',
-                'user' => $this->buildUserPayload($user->fresh())
+                'user' => $service->buildUserPayload($user->fresh())
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -192,173 +196,14 @@ class AuthController extends Controller
     }
 
     // Private Helper Methods
-
-
-    // Create a user and their associated details in a transaction.
-
-    private function createUserAndDetails(array $data): User
-    {
-        return DB::transaction(function () use ($data) {
-            $user = User::create([
-                'first_name' => $data['first_name'],
-                'last_name' => $data['last_name'],
-                'email' => $data['email'],
-                'password' => Hash::make($data['password']),
-            ]);
-
-            UserDetail::create([
-                'user_id' => $user->id,
-                'phone' => $data['phone'],
-                'find_us' => $data['find_us'],
-                'address' => $data['address'],
-                'country_id' => $data['country'],
-                'state_id' => $data['state'],
-                'city_id' => $data['city'],
-                'zip' => $data['zip'],
-            ]);
-
-            Organization::create([
-                'user_id' => $user->id,
-                'organization_name' => $data['organization_name'],
-                'organization_size' => $data['organization_size'],
-            ]);
-
-            // Set the organization_id on the user to reference the created organization
-            $org = Organization::where('user_id', $user->id)->first();
-            if ($org) {
-                $user->organization_id = $org->id;
-                $user->save();
-            }
-
-            $user->roles()->attach(Role::where('name', 'user')->first());
-
-            return $user;
-        });
-    }
-
-
-    private function updateLeadStatus(string $email): void
-    {
-        try {
-            $lead = Lead::where('email', $email)->first();
-            if ($lead) {
-                $lead->update(['status' => 'Registered', 'registered_at' => now()]);
-            }
-        } catch (\Exception $e) {
-            Log::warning('Failed to update lead status after registration', ['email' => $email, 'error' => $e->getMessage()]);
-        }
-    }
-
-
-    private function buildUserPayload(User $user): array
-    {
-        $user->loadMissing(['userDetails.country', 'roles']);
-        $org = Organization::where('user_id', $user->id)->first();
-
-        return [
-            'id' => $user->id,
-            'email' => $user->email,
-            'role' => $user->roles->first()->name ?? 'user',
-            'first_name' => $user->first_name,
-            'last_name' => $user->last_name,
-            'phone' => $user->userDetails->phone ?? null,
-            'country' => $user->userDetails->country->name ?? null,
-            'country_id' => $user->userDetails->country_id ?? null,
-            'organization_id' => $org?->id,
-            'organization_name' => $org?->organization_name,
-        ];
-    }
-
-
-    private function updateUserRecord(User $user, array $userData, array $detailsData): void
-    {
-        $user->fill([
-            'email' => $userData['email'] ?? $detailsData['email'] ?? $user->email,
-            'first_name' => $detailsData['first_name'] ?? $user->first_name,
-            'last_name' => $detailsData['last_name'] ?? $user->last_name,
-        ]);
-
-        if ($user->isDirty()) {
-            $user->save();
-        }
-    }
-
-
-    private function updateUserDetailsRecord(User $user, array $detailsData): void
-    {
-        if (empty($detailsData)) {
-            return;
-        }
-
-        $userDetail = UserDetail::firstOrNew(['user_id' => $user->id]);
-        $userDetail->phone = $detailsData['phone'] ?? $userDetail->phone;
-
-        if (isset($detailsData['country'])) {
-            $userDetail->country_id = $this->resolveCountryId($detailsData['country']);
-        }
-
-        if ($userDetail->isDirty()) {
-            $userDetail->save();
-        }
-    }
-
-
-    private function resolveCountryId($countryInput): ?int
-    {
-        if (is_numeric($countryInput)) {
-            return (int) $countryInput;
-        }
-
-        if (is_string($countryInput) && !empty(trim($countryInput))) {
-            $country = Country::where('name', trim($countryInput))->orWhere('code', trim($countryInput))->first();
-            return $country?->id;
-        }
-
-        return null;
-    }
+    // Helper methods related to token issuance remain here; user-related helpers moved to AuthUserService.
 
 
     private function issueToken(Request $request)
 
     {
-        // Determine client id/secret: prefer config, otherwise fall back to DB lookup
-        $clientId = config('passport.password_client_id');
-        $clientSecret = config('passport.password_client_secret');
-
-        // If env-provided secret looks like a bcrypt hash, do not use it as plaintext.
-        if (!empty($clientSecret) && is_string($clientSecret) && preg_match('/^\$2[aby]\$/', $clientSecret)) {
-            Log::warning('PASSPORT_PASSWORD_CLIENT_SECRET appears to be a hashed value; ignoring env secret.', ['client_id' => $clientId]);
-            $clientSecret = null;
-        }
-
-        if (empty($clientId) || empty($clientSecret)) {
-            try {
-                $row = DB::table('oauth_clients')
-                    ->whereJsonContains('grant_types', 'password')
-                    ->orWhereRaw("JSON_CONTAINS(grant_types, '\"password\"')")
-                    ->limit(1)
-                    ->first();
-
-                if ($row) {
-                    $clientId = $clientId ?: $row->id;
-
-                    // If the DB-stored secret looks like a bcrypt/hash (starts with $2y$/$2a$/$2b$)
-                    // it's not the plaintext secret and cannot be passed as-is to /oauth/token.
-                    // Don't attempt to use the hashed value as the client_secret. Prefer env config.
-                    if (empty($clientSecret) && !empty($row->secret)) {
-                        if (is_string($row->secret) && preg_match('/^\$2[aby]\$/', $row->secret)) {
-                            Log::warning('Found hashed oauth client secret in DB; cannot use as plaintext for token requests.', ['client_id' => $row->id]);
-                            // leave $clientSecret empty so we return a clear error below
-                            $clientSecret = null;
-                        } else {
-                            $clientSecret = $row->secret;
-                        }
-                    }
-                }
-            } catch (\Exception $e) {
-                Log::warning('Failed to lookup oauth password client from DB', ['error' => $e->getMessage()]);
-            }
-        }
+        // Resolve client id/secret (prefer env, fall back to DB). Helpers keep logic small.
+        [$clientId, $clientSecret] = $this->resolveClientCredentials();
 
         if (empty($clientId) || empty($clientSecret)) {
             Log::error('Password grant client id/secret missing or unusable. Cannot issue OAuth token.', ['client_id' => $clientId]);
@@ -389,5 +234,60 @@ class AuthController extends Controller
         }
 
         return $response;
+    }
+
+    /**
+     * Helpers to resolve OAuth password client id/secret.
+     */
+    private function isBcryptHash(?string $val): bool
+    {
+        return !empty($val) && is_string($val) && preg_match('/^\$2[aby]\$/', $val);
+    }
+
+    private function fetchPasswordClientFromDb(): ?object
+    {
+        try {
+            return DB::table('oauth_clients')
+                ->whereJsonContains('grant_types', 'password')
+                ->orWhereRaw("JSON_CONTAINS(grant_types, '\"password\"')")
+                ->limit(1)
+                ->first();
+        } catch (\Exception $e) {
+            Log::warning('Failed to lookup oauth password client from DB', ['error' => $e->getMessage()]);
+            return null;
+        }
+    }
+
+    private function resolveClientCredentials(): array
+    {
+        $clientId = config('passport.password_client_id');
+        $clientSecret = config('passport.password_client_secret');
+
+        // If env-provided secret looks like a bcrypt hash, do not use it as plaintext.
+        if ($this->isBcryptHash($clientSecret)) {
+            Log::warning('PASSPORT_PASSWORD_CLIENT_SECRET appears to be a hashed value; ignoring env secret.', ['client_id' => $clientId]);
+            $clientSecret = null;
+        }
+
+        // If both provided via config, return early
+        if (!empty($clientId) && !empty($clientSecret)) {
+            return [$clientId, $clientSecret];
+        }
+
+        $row = $this->fetchPasswordClientFromDb();
+        if (empty($row)) {
+            return [$clientId, $clientSecret];
+        }
+
+        $clientId = $clientId ?: $row->id;
+        if (empty($clientSecret) && !empty($row->secret)) {
+            if ($this->isBcryptHash($row->secret)) {
+                Log::warning('Found hashed oauth client secret in DB; cannot use as plaintext for token requests.', ['client_id' => $row->id]);
+            } else {
+                $clientSecret = $row->secret;
+            }
+        }
+
+        return [$clientId, $clientSecret];
     }
 }

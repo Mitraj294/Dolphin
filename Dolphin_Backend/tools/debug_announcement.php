@@ -25,10 +25,14 @@ foreach ($a->organizations as $org) {
     } catch (\Exception $e) {
         $ou = [];
     }
-    if (empty($ou) && isset($org->user_id) && $org->user_id) $ou[] = $org->user_id;
+    if (empty($ou) && isset($org->user_id) && $org->user_id) {
+        $ou[] = $org->user_id;
+    }
     $u = array_merge($u, $ou);
     $orgAdminEmail = $org->admin_email ?? ($org->user->email ?? null);
-    if (!empty($orgAdminEmail)) $m[] = $orgAdminEmail;
+    if (!empty($orgAdminEmail)) {
+        $m[] = $orgAdminEmail;
+    }
 }
 if ($a->groups && $a->groups->isNotEmpty()) {
     foreach ($a->groups as $g) {
@@ -39,6 +43,8 @@ if ($a->groups && $a->groups->isNotEmpty()) {
                 $u = array_merge($u, $mu);
             }
         } catch (\Exception $e) {
+            // Log to stderr for this ad-hoc script so errors are visible when debugging
+            error_log('debug_announcement: error fetching group members for group ' . ($g->id ?? 'unknown') . ': ' . $e->getMessage());
         }
     }
 }

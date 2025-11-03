@@ -324,7 +324,7 @@ const fetchAllData = async () => {
   const authToken = storage.get("authToken");
   const headers = { Authorization: `Bearer ${authToken}` };
   const API_BASE_URL =
-    process.env.VUE_APP_API_BASE_URL || "http://122.0.0.1:8000";
+    process.env.VUE_APP_API_BASE_URL || "http://127.0.0.1:8000";
 
   isLoading.value = true;
   error.value = null;

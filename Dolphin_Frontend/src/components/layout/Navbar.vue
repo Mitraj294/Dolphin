@@ -438,7 +438,7 @@ export default {
       this.userEmail = storage.get("email") || "";
     },
     isGuestAccess() {
-      const urlParams = new URLSearchParams(window.location.search);
+      const urlParams = new URLSearchParams(globalThis.location.search);
       return (
         urlParams.has("guest_code") ||
         urlParams.has("guest_token") ||
@@ -701,11 +701,11 @@ export default {
       }
     },
     checkScreen() {
-      this.isVerySmallScreen = window.innerWidth <= 425;
+      this.isVerySmallScreen = globalThis.innerWidth <= 425;
     },
     updateNotificationCount() {
       const count = Number(storage.get("notificationCount"));
-      this.notificationCount = isNaN(count) ? 0 : count;
+      this.notificationCount = Number.isNaN(count) ? 0 : count;
     },
     goToProfile() {
       this.dropdownOpen = false;
@@ -715,7 +715,7 @@ export default {
   mounted() {
     this.isNavbarAlive = true;
     document.addEventListener("mousedown", this.handleClickOutside);
-    window.addEventListener("resize", this.checkScreen);
+    globalThis.addEventListener("resize", this.checkScreen);
     this.checkScreen();
     this.updateNotificationCount();
     this.updateUserInfo();
@@ -752,16 +752,16 @@ export default {
       this.fetchUnreadCount.bind(this),
       500
     );
-    window.addEventListener("notification-updated", this.boundFetchUnread);
-    window.addEventListener("auth-updated", this.boundAuthUpdated);
-    window.addEventListener("storage", this.boundUpdateNotificationCount);
+    globalThis.addEventListener("notification-updated", this.boundFetchUnread);
+    globalThis.addEventListener("auth-updated", this.boundAuthUpdated);
+    globalThis.addEventListener("storage", this.boundUpdateNotificationCount);
     this.boundCountSync = (event) => {
       const incoming = event?.detail?.count;
       if (typeof incoming !== "number" || Number.isNaN(incoming)) return;
       this.notificationCount = incoming;
       storage.set("notificationCount", String(incoming));
     };
-    window.addEventListener("notification-count-sync", this.boundCountSync);
+    globalThis.addEventListener("notification-count-sync", this.boundCountSync);
 
     if (this.$root && this.$root.$on) {
       this.$root.$on("page-title-override", (val) => {
@@ -803,18 +803,24 @@ export default {
   beforeUnmount() {
     this.isNavbarAlive = false;
     document.removeEventListener("mousedown", this.handleClickOutside);
-    window.removeEventListener("resize", this.checkScreen);
+    globalThis.removeEventListener("resize", this.checkScreen);
     if (this.boundUpdateNotificationCount) {
-      window.removeEventListener("storage", this.boundUpdateNotificationCount);
+      globalThis.removeEventListener(
+        "storage",
+        this.boundUpdateNotificationCount
+      );
     }
     if (this.boundFetchUnread) {
-      window.removeEventListener("notification-updated", this.boundFetchUnread);
+      globalThis.removeEventListener(
+        "notification-updated",
+        this.boundFetchUnread
+      );
     }
     if (this.boundAuthUpdated) {
-      window.removeEventListener("auth-updated", this.boundAuthUpdated);
+      globalThis.removeEventListener("auth-updated", this.boundAuthUpdated);
     }
     if (this.boundCountSync) {
-      window.removeEventListener(
+      globalThis.removeEventListener(
         "notification-count-sync",
         this.boundCountSync
       );

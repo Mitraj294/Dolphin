@@ -139,13 +139,13 @@ export default {
   },
   mounted() {
     document.addEventListener("mousedown", this.handleClickOutside);
-    window.addEventListener("resize", this.updateDropdownPosition);
-    window.addEventListener("scroll", this.updateDropdownPosition, true);
+    globalThis.addEventListener("resize", this.updateDropdownPosition);
+    globalThis.addEventListener("scroll", this.updateDropdownPosition, true);
   },
   beforeUnmount() {
     document.removeEventListener("mousedown", this.handleClickOutside);
-    window.removeEventListener("resize", this.updateDropdownPosition);
-    window.removeEventListener("scroll", this.updateDropdownPosition, true);
+    globalThis.removeEventListener("resize", this.updateDropdownPosition);
+    globalThis.removeEventListener("scroll", this.updateDropdownPosition, true);
   },
   watch: {
     showDropdown(newVal) {
@@ -238,8 +238,8 @@ export default {
               .map((k) => `${k}:${String(obj[k])}`);
             return parts.join(" ");
           }
-        } catch (e2) {
-          console.error("Error in fallback stringify", e2);
+        } catch (error) {
+          console.error("Error in fallback stringify", error);
         }
         return String(obj);
       }
@@ -322,7 +322,7 @@ export default {
       // primitive selected (id or label)
       if (typeof s === "string" || typeof s === "number") {
         const optLabel = this.getOptionLabelByValue(s);
-        return optLabel !== null ? optLabel : String(s);
+        return optLabel ?? String(s);
       }
 
       if (typeof s === "object") {
@@ -417,14 +417,14 @@ export default {
         case "ArrowDown":
         case "Down":
           event.preventDefault();
-          if (!this.showDropdown) {
-            this.toggleDropdown();
-          } else {
+          if (this.showDropdown) {
             this.focusedIndex = Math.min(
               this.focusedIndex + 1,
               this.filteredItems.length - 1
             );
             this.scrollToFocusedItem();
+          } else {
+            this.toggleDropdown();
           }
           break;
         case "ArrowUp":
@@ -437,10 +437,10 @@ export default {
           break;
         case "Enter":
           event.preventDefault();
-          if (!this.showDropdown) {
-            this.toggleDropdown();
-          } else {
+          if (this.showDropdown) {
             this.selectFocusedOption();
+          } else {
+            this.toggleDropdown();
           }
           break;
         case "Escape":
@@ -450,10 +450,12 @@ export default {
           break;
         case " ":
         case "Spacebar":
-          if (!this.showDropdown) {
-            event.preventDefault();
-            this.toggleDropdown();
+          if (this.showDropdown) {
+            // already open — no-op
+            break;
           }
+          event.preventDefault();
+          this.toggleDropdown();
           break;
       }
     },
@@ -487,35 +489,38 @@ export default {
     },
     toggleSelectAll() {
       if (this.isAllSelected) {
-        // Unselect all filtered
-        const filteredIds = this.filteredItems.map((i) => i[this.optionValue]);
+        // Unselect all filtered — use a Set for faster lookups
+        const filteredIds = new Set(
+          this.filteredItems.map((i) => i[this.optionValue])
+        );
         const newSelected = this.selectedItems.filter(
-          (i) => !filteredIds.includes(i[this.optionValue])
+          (i) => !filteredIds.has(i[this.optionValue])
         );
         this.$emit("update:selectedItems", newSelected);
       } else {
         // Select all filtered
         // Merge with already selected (avoid duplicates)
         const merged = [...this.selectedItems];
-        this.filteredItems.forEach((item) => {
+        for (const item of this.filteredItems) {
           if (
             !merged.some((i) => i[this.optionValue] === item[this.optionValue])
           ) {
             merged.push(item);
           }
-        });
+        }
         this.$emit("update:selectedItems", merged);
       }
     },
     handleClickOutside(event) {
-      if (!this.showDropdown) return;
-      const root = this.$refs.dropdownRoot;
-      const dropdownEl = this.$refs.dropdownEl;
-      const clickedInsideRoot = root && root.contains(event.target);
-      const clickedInsideDropdown =
-        dropdownEl && dropdownEl.contains(event.target);
-      if (!clickedInsideRoot && !clickedInsideDropdown) {
-        this.showDropdown = false;
+      if (this.showDropdown) {
+        const root = this.$refs.dropdownRoot;
+        const dropdownEl = this.$refs.dropdownEl;
+        const clickedInsideRoot = root && root.contains(event.target);
+        const clickedInsideDropdown =
+          dropdownEl && dropdownEl.contains(event.target);
+        if (!clickedInsideRoot && !clickedInsideDropdown) {
+          this.showDropdown = false;
+        }
       }
     },
     updateDropdownPosition() {
@@ -523,8 +528,8 @@ export default {
       const el = this.$refs.dropdownEl;
       if (!root || !el) return;
       const rect = root.getBoundingClientRect();
-      const top = rect.bottom + window.scrollY + 6;
-      const left = rect.left + window.scrollX;
+      const top = rect.bottom + globalThis.scrollY + 6;
+      const left = rect.left + globalThis.scrollX;
       const width = rect.width;
       this.dropdownStyle = {
         position: "absolute",

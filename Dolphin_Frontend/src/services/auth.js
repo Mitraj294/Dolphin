@@ -27,7 +27,7 @@ const authService = {
     const expiryTime = storage.get(TOKEN_EXPIRY_KEY);
     if (!expiryTime) return false;
 
-    const now = new Date().getTime();
+    const now = Date.now();
     const expiry = new Date(expiryTime).getTime();
     return now >= expiry;
   },
@@ -54,7 +54,7 @@ const authService = {
       });
       const { token, user, expires_at } = response.data;
       this.setToken(token, expires_at);
-      if (user && user.id) {
+      if (user?.id) {
         storage.set("user_id", user.id);
       }
       return { user, token };
@@ -84,8 +84,7 @@ const authService = {
   isTokenExpiringSoon() {
     const expiryTime = storage.get(TOKEN_EXPIRY_KEY);
     if (!expiryTime) return false;
-
-    const now = new Date().getTime();
+    const now = Date.now();
     const expiry = new Date(expiryTime).getTime();
     const oneMinute = 1 * 60 * 1000; // 1 minute in milliseconds
 

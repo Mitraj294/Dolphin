@@ -98,12 +98,12 @@ import storage from "@/services/storage";
 import { fetchCurrentUser } from "@/services/user";
 import Toast from "primevue/toast";
 import { useToast } from "primevue/usetoast";
-// Prefer a runtime-injected value (window.__env) so the built app can be
-// configured without a rebuild. Fall back to window.VUE_APP_API_BASE_URL or
+// Prefer a runtime-injected value (globalThis.__env) so the built app can be
+// configured without a rebuild. Fall back to globalThis.VUE_APP_API_BASE_URL or
 // the compiled process.env value.
 const API_BASE_URL =
-  (window.__env && window.__env.VUE_APP_API_BASE_URL) ||
-  window.VUE_APP_API_BASE_URL ||
+  (globalThis.__env && globalThis.__env.VUE_APP_API_BASE_URL) ||
+  globalThis.VUE_APP_API_BASE_URL ||
   process.env.VUE_APP_API_BASE_URL ||
   "";
 

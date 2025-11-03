@@ -799,7 +799,7 @@ export default {
           let matched = null;
           // try numeric id
           const asNum = Number(pref);
-          if (!isNaN(asNum) && asNum !== 0) {
+          if (!Number.isNaN(asNum) && asNum !== 0) {
             matched = this.countries.find((c) => Number(c.id) === asNum);
           }
           if (!matched) {
@@ -839,7 +839,7 @@ export default {
           const pref = this.organization_state;
           let matched = null;
           const asNum = Number(pref);
-          if (!isNaN(asNum) && asNum !== 0) {
+          if (!Number.isNaN(asNum) && asNum !== 0) {
             matched = this.states.find((s) => Number(s.id) === asNum);
           }
           if (!matched) {
@@ -878,7 +878,7 @@ export default {
           const pref = this.organization_city;
           let matched = null;
           const asNum = Number(pref);
-          if (!isNaN(asNum) && asNum !== 0) {
+          if (!Number.isNaN(asNum) && asNum !== 0) {
             matched = this.cities.find((c) => Number(c.id) === asNum);
           }
           if (!matched) {
@@ -907,7 +907,7 @@ export default {
         typeof this.country !== 'number'
       ) {
         const n = Number(this.country);
-        if (!isNaN(n)) this.country = n;
+        if (!Number.isNaN(n)) this.country = n;
       }
       this.organization_state = null;
       this.organization_city = null;
@@ -922,7 +922,7 @@ export default {
         typeof this.organization_state !== 'number'
       ) {
         const n = Number(this.organization_state);
-        if (!isNaN(n)) this.organization_state = n;
+        if (!Number.isNaN(n)) this.organization_state = n;
       }
       this.organization_city = null;
       this.cities = [];

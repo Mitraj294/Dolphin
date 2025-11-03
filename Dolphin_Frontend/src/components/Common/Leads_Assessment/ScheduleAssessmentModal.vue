@@ -216,12 +216,12 @@ export default {
     // The resulting array preserves the ordering of `this.members`.
     mergeMembersById(existing = [], toAdd = []) {
       const mergedById = {};
-      existing.forEach((m) => {
+      for (const m of existing) {
         if (m && m.id !== undefined) mergedById[m.id] = m;
-      });
-      toAdd.forEach((m) => {
+      }
+      for (const m of toAdd) {
         if (m && m.id !== undefined) mergedById[m.id] = m;
-      });
+      }
       return this.members.filter((m) => mergedById[m.id]);
     },
 
@@ -245,12 +245,13 @@ export default {
       }
 
       const selectedGroupIds = selectedGroups.map((g) => g.id);
+      const selectedGroupIdSet = new Set(selectedGroupIds);
 
       // Collect members who belong to any selected group
       const groupMembers = this.members.filter(
         (member) =>
           Array.isArray(member.group_ids) &&
-          member.group_ids.some((gid) => selectedGroupIds.includes(gid))
+          member.group_ids.some((gid) => selectedGroupIdSet.has(gid))
       );
 
       // Merge manual selections with group members (deduped)

@@ -88,16 +88,16 @@ export default {
       if (col.style) {
         // Parse CSS string and add to style object
         const cssRules = col.style.split(";").filter((rule) => rule.trim());
-        cssRules.forEach((rule) => {
+        for (const rule of cssRules) {
           const [property, value] = rule.split(":").map((s) => s.trim());
           if (property && value) {
             // Convert kebab-case to camelCase for Vue style binding
-            const camelProperty = property.replace(/-([a-z])/g, (g) =>
+            const camelProperty = property.replaceAll(/-([a-z])/g, (g) =>
               g[1].toUpperCase()
             );
             style[camelProperty] = value;
           }
-        });
+        }
       }
 
       return Object.keys(style).length > 0 ? style : null;

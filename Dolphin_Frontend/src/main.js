@@ -58,15 +58,15 @@ async function bootstrap() {
 
 // Check if this is a guest access scenario (like subscription plans with guest_code)
 const isGuestAccess = () => {
-  const urlParams = new URLSearchParams(window.location.search);
+  const urlParams = new URLSearchParams(globalThis.location.search);
   const hasGuestParams =
     urlParams.has("guest_code") ||
     urlParams.has("guest_token") ||
     urlParams.has("lead_id") ||
     urlParams.has("email");
   console.log("isGuestAccess check:", {
-    url: window.location.href,
-    search: window.location.search,
+    url: globalThis.location.href,
+    search: globalThis.location.search,
     hasGuestParams,
     guest_code: urlParams.get("guest_code"),
     guest_token: urlParams.get("guest_token"),
@@ -82,60 +82,57 @@ console.log("Main.js startup:", {
   isGuest: isGuestAccess(),
 });
 // Create the app instance then run startup logic that depends on it.
-bootstrap()
-  .then((app) => {
-    if (authToken && !isGuestAccess()) {
-      fetchCurrentUser()
-        .then((user) => {
-          // Also fetch subscription status so refreshing the page reflects current state immediately
-          fetchSubscriptionStatus()
-            .then((status) => {
-              if (status) {
-                storage.set("subscriptionStatus", status);
-              }
-            })
-            .catch((err) => {
-              console.warn(
-                "Could not fetch subscription status on startup",
-                err
-              );
-            });
-          if (user?.role) {
-            const localRole = storage.get("role");
-            if (user.role !== localRole) {
-              storage.set("role", user.role);
-            }
+try {
+  const app = await bootstrap();
 
-            // Start token monitoring after successful authentication check
-            tokenMonitor.startMonitoring({
-              checkInterval: 5 * 60 * 1000, // Check every 5 minutes
-              warningThreshold: 10 * 60 * 1000, // Warn when 10 minutes left
-              onExpiringSoon: (seconds) => {
-                console.warn(
-                  `Your session will expire in ${Math.round(
-                    seconds / 60
-                  )} minutes`
-                );
-                // You could show a toast notification here
-              },
-              onExpired: () => {
-                console.log("Session expired, redirecting to login");
-                // Force redirect to login page
-                window.location.href = "/login";
-              },
-            });
-          }
-        })
-        .finally(() => {
-          app.use(router);
-          app.mount("#app");
+  if (authToken && !isGuestAccess()) {
+    try {
+      const user = await fetchCurrentUser();
+
+      // Also fetch subscription status so refreshing the page reflects current state immediately
+      try {
+        const status = await fetchSubscriptionStatus();
+        if (status) {
+          storage.set("subscriptionStatus", status);
+        }
+      } catch (err) {
+        console.warn("Could not fetch subscription status on startup", err);
+      }
+
+      if (user?.role) {
+        const localRole = storage.get("role");
+        if (user.role !== localRole) {
+          storage.set("role", user.role);
+        }
+
+        // Start token monitoring after successful authentication check
+        tokenMonitor.startMonitoring({
+          checkInterval: 5 * 60 * 1000, // Check every 5 minutes
+          warningThreshold: 10 * 60 * 1000, // Warn when 10 minutes left
+          onExpiringSoon: (seconds) => {
+            console.warn(
+              `Your session will expire in ${Math.round(seconds / 60)} minutes`
+            );
+            // You could show a toast notification here
+          },
+          onExpired: () => {
+            console.log("Session expired, redirecting to login");
+            // Force redirect to login page
+            globalThis.location.href = "/login";
+          },
         });
-    } else {
+      }
+    } catch (err) {
+      console.warn("Could not fetch current user on startup", err);
+    } finally {
       app.use(router);
       app.mount("#app");
     }
-  })
-  .catch((err) => {
-    // If bootstrap fails (e.g. loadRuntimeEnv), log and fail gracefully
-    console.error("Failed to bootstrap app:", err);
-  });
+  } else {
+    app.use(router);
+    app.mount("#app");
+  }
+} catch (err) {
+  // If bootstrap fails (e.g. loadRuntimeEnv), log and fail gracefully
+  console.error("Failed to bootstrap app:", err);
+}

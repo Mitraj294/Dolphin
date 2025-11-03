@@ -1,5 +1,5 @@
-const fs = require("fs");
-const path = require("path");
+const fs = require("node:fs");
+const path = require("node:path");
 
 const src = path.resolve(__dirname, "..", "node_modules", "tinymce");
 const dest = path.resolve(__dirname, "..", "public", "tinymce");

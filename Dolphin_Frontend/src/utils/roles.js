@@ -13,9 +13,9 @@ export function formatRole(role) {
     map[key] || // try simple split on camel/case or underscores
     String(role)
       // insert spaces before capitals
-      .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
+      .replaceAll(/([a-z0-9])([A-Z])/g, "$1 $2")
       // replace underscores/dashes with space
-      .replace(/[_-]+/g, " ")
+      .replaceAll(/[_-]+/g, " ")
       // capitalize words
       .split(" ")
       .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())

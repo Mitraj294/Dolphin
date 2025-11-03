@@ -143,6 +143,7 @@ export default {
     width: 100%;
     display: flex;
     flex-direction: row;
+    margin: 8px 0 0 0;
   }
   .footer-logo-vertical.responsive-footer-logo {
     width: 22px;
@@ -150,9 +151,6 @@ export default {
   }
   .footer-text-vertical {
     font-size: 12px;
-  }
-  .center-footer-logo-block {
-    margin: 8px 0 0 0;
   }
 }
 </style>

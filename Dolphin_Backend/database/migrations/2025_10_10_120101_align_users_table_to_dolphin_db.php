@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 return new class extends Migration
 {
@@ -20,74 +21,12 @@ return new class extends Migration
         }
 
         // Step 1: Drop the 'role' column if it exists
-        if (Schema::hasColumn('users', 'role')) {
-            try {
-                DB::statement('ALTER TABLE `users` DROP COLUMN `role`');
-            } catch (\Exception $e) {
-                // Column may not exist or other error
-            }
-        }
+        $this->dropColumnIfExists('users', 'role');
 
         // Step 2: Convert timestamp columns to datetime to match dolphin_db
-        // We'll do this by creating new datetime columns, copying data, dropping old, and renaming
-
-        // Convert created_at from TIMESTAMP to DATETIME
-        if (Schema::hasColumn('users', 'created_at')) {
-            try {
-                // Check if it's currently timestamp
-                $columnType = DB::select("SELECT DATA_TYPE FROM information_schema.COLUMNS 
-                    WHERE TABLE_SCHEMA = DATABASE() 
-                    AND TABLE_NAME = 'users' 
-                    AND COLUMN_NAME = 'created_at'");
-
-                if (!empty($columnType) && strtolower($columnType[0]->DATA_TYPE) === 'timestamp') {
-                    // Create temp column, copy data, drop old, rename
-                    DB::statement('ALTER TABLE `users` ADD COLUMN `created_at_temp` DATETIME NULL');
-                    DB::statement('UPDATE `users` SET `created_at_temp` = `created_at`');
-                    DB::statement('ALTER TABLE `users` DROP COLUMN `created_at`');
-                    DB::statement('ALTER TABLE `users` CHANGE COLUMN `created_at_temp` `created_at` DATETIME NULL');
-                }
-            } catch (\Exception $e) {
-                // Best effort
-            }
-        }
-
-        // Convert updated_at from TIMESTAMP to DATETIME
-        if (Schema::hasColumn('users', 'updated_at')) {
-            try {
-                $columnType = DB::select("SELECT DATA_TYPE FROM information_schema.COLUMNS 
-                    WHERE TABLE_SCHEMA = DATABASE() 
-                    AND TABLE_NAME = 'users' 
-                    AND COLUMN_NAME = 'updated_at'");
-
-                if (!empty($columnType) && strtolower($columnType[0]->DATA_TYPE) === 'timestamp') {
-                    DB::statement('ALTER TABLE `users` ADD COLUMN `updated_at_temp` DATETIME NULL');
-                    DB::statement('UPDATE `users` SET `updated_at_temp` = `updated_at`');
-                    DB::statement('ALTER TABLE `users` DROP COLUMN `updated_at`');
-                    DB::statement('ALTER TABLE `users` CHANGE COLUMN `updated_at_temp` `updated_at` DATETIME NULL');
-                }
-            } catch (\Exception $e) {
-                // Best effort
-            }
-        }
-
-        // Convert deleted_at from TIMESTAMP to DATETIME
-        if (Schema::hasColumn('users', 'deleted_at')) {
-            try {
-                $columnType = DB::select("SELECT DATA_TYPE FROM information_schema.COLUMNS 
-                    WHERE TABLE_SCHEMA = DATABASE() 
-                    AND TABLE_NAME = 'users' 
-                    AND COLUMN_NAME = 'deleted_at'");
-
-                if (!empty($columnType) && strtolower($columnType[0]->DATA_TYPE) === 'timestamp') {
-                    DB::statement('ALTER TABLE `users` ADD COLUMN `deleted_at_temp` DATETIME NULL');
-                    DB::statement('UPDATE `users` SET `deleted_at_temp` = `deleted_at`');
-                    DB::statement('ALTER TABLE `users` DROP COLUMN `deleted_at`');
-                    DB::statement('ALTER TABLE `users` CHANGE COLUMN `deleted_at_temp` `deleted_at` DATETIME NULL');
-                }
-            } catch (\Exception $e) {
-                // Best effort
-            }
+        $cols = ['created_at', 'updated_at', 'deleted_at'];
+        foreach ($cols as $col) {
+            $this->convertTimestampToDatetime('users', $col);
         }
     }
 
@@ -104,60 +43,86 @@ return new class extends Migration
         }
 
         // Reverse: Add role column back
-        if (!Schema::hasColumn('users', 'role')) {
-            try {
-                DB::statement("ALTER TABLE `users` ADD COLUMN `role` VARCHAR(255) NOT NULL DEFAULT 'user' AFTER `password`");
-            } catch (\Exception $e) {
-                // Best effort
-            }
-        }
+        $this->addRoleIfMissing();
 
         // Convert datetime columns back to timestamp
-        // (Note: This may lose some precision, but it's a best-effort rollback)
-
-        if (Schema::hasColumn('users', 'created_at')) {
-            try {
-                $columnType = DB::select("SELECT DATA_TYPE FROM information_schema.COLUMNS 
-                    WHERE TABLE_SCHEMA = DATABASE() 
-                    AND TABLE_NAME = 'users' 
-                    AND COLUMN_NAME = 'created_at'");
-
-                if (!empty($columnType) && strtolower($columnType[0]->DATA_TYPE) === 'datetime') {
-                    DB::statement('ALTER TABLE `users` MODIFY COLUMN `created_at` TIMESTAMP NULL');
-                }
-            } catch (\Exception $e) {
-                // Best effort
-            }
+        $cols = ['created_at', 'updated_at', 'deleted_at'];
+        foreach ($cols as $col) {
+            $this->convertDatetimeToTimestamp('users', $col);
         }
+    }
 
-        if (Schema::hasColumn('users', 'updated_at')) {
-            try {
-                $columnType = DB::select("SELECT DATA_TYPE FROM information_schema.COLUMNS 
-                    WHERE TABLE_SCHEMA = DATABASE() 
-                    AND TABLE_NAME = 'users' 
-                    AND COLUMN_NAME = 'updated_at'");
-
-                if (!empty($columnType) && strtolower($columnType[0]->DATA_TYPE) === 'datetime') {
-                    DB::statement('ALTER TABLE `users` MODIFY COLUMN `updated_at` TIMESTAMP NULL');
-                }
-            } catch (\Exception $e) {
-                // Best effort
+    /**
+     * Drop a column if it exists (best-effort, logs on failure).
+     */
+    private function dropColumnIfExists(string $table, string $column): void
+    {
+        try {
+            if (Schema::hasColumn($table, $column)) {
+                DB::statement("ALTER TABLE `{$table}` DROP COLUMN `{$column}`");
             }
+        } catch (\Exception $e) {
+            Log::warning("Failed to drop column {$table}.{$column}: " . $e->getMessage());
         }
+    }
 
-        if (Schema::hasColumn('users', 'deleted_at')) {
-            try {
-                $columnType = DB::select("SELECT DATA_TYPE FROM information_schema.COLUMNS 
-                    WHERE TABLE_SCHEMA = DATABASE() 
-                    AND TABLE_NAME = 'users' 
-                    AND COLUMN_NAME = 'deleted_at'");
-
-                if (!empty($columnType) && strtolower($columnType[0]->DATA_TYPE) === 'datetime') {
-                    DB::statement('ALTER TABLE `users` MODIFY COLUMN `deleted_at` TIMESTAMP NULL');
-                }
-            } catch (\Exception $e) {
-                // Best effort
+    /**
+     * Convert a TIMESTAMP column to DATETIME by creating a temp column, copying data and renaming.
+     */
+    private function convertTimestampToDatetime(string $table, string $column): void
+    {
+        try {
+            if (! Schema::hasColumn($table, $column)) {
+                return;
             }
+
+            $columnType = DB::select("SELECT DATA_TYPE FROM information_schema.COLUMNS 
+                WHERE TABLE_SCHEMA = DATABASE() 
+                AND TABLE_NAME = ? 
+                AND COLUMN_NAME = ?", [$table, $column]);
+
+            if (!empty($columnType) && strtolower($columnType[0]->DATA_TYPE) === 'timestamp') {
+                DB::statement("ALTER TABLE `{$table}` ADD COLUMN `{$column}_temp` DATETIME NULL");
+                DB::statement("UPDATE `{$table}` SET `{$column}_temp` = `{$column}`");
+                DB::statement("ALTER TABLE `{$table}` DROP COLUMN `{$column}`");
+                DB::statement("ALTER TABLE `{$table}` CHANGE COLUMN `{$column}_temp` `{$column}` DATETIME NULL");
+            }
+        } catch (\Exception $e) {
+            Log::warning("convertTimestampToDatetime failed for {$table}.{$column}: " . $e->getMessage());
+        }
+    }
+
+    /**
+     * Convert a DATETIME column back to TIMESTAMP when appropriate.
+     */
+    private function convertDatetimeToTimestamp(string $table, string $column): void
+    {
+        try {
+            if (! Schema::hasColumn($table, $column)) {
+                return;
+            }
+
+            $columnType = DB::select("SELECT DATA_TYPE FROM information_schema.COLUMNS 
+                WHERE TABLE_SCHEMA = DATABASE() 
+                AND TABLE_NAME = ? 
+                AND COLUMN_NAME = ?", [$table, $column]);
+
+            if (!empty($columnType) && strtolower($columnType[0]->DATA_TYPE) === 'datetime') {
+                DB::statement("ALTER TABLE `{$table}` MODIFY COLUMN `{$column}` TIMESTAMP NULL");
+            }
+        } catch (\Exception $e) {
+            Log::warning("convertDatetimeToTimestamp failed for {$table}.{$column}: " . $e->getMessage());
+        }
+    }
+
+    private function addRoleIfMissing(): void
+    {
+        try {
+            if (! Schema::hasColumn('users', 'role')) {
+                DB::statement("ALTER TABLE `users` ADD COLUMN `role` VARCHAR(255) NOT NULL DEFAULT 'user' AFTER `password`");
+            }
+        } catch (\Exception $e) {
+            Log::warning('Failed to add role column: ' . $e->getMessage());
         }
     }
 };

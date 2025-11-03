@@ -145,9 +145,11 @@ export function canAccess(role, type, name) {
     return PERMISSIONS[role][type].some((pattern) => {
       if (pattern === name) return true;
       // Convert /organizations/:orgName to regex
-      const regex = new RegExp("^" + pattern.replace(/:[^/]+/g, "[^/]+") + "$");
+      const regex = new RegExp(
+        "^" + pattern.replaceAll(/:[^/]+/g, "[^/]+") + "$"
+      );
       return regex.test(name);
     });
   }
-  return PERMISSIONS[role][type] && PERMISSIONS[role][type].includes(name);
+  return PERMISSIONS[role][type]?.includes(name) || false;
 }

@@ -274,8 +274,8 @@ export default {
       const el = this.$refs.dropdownEl;
       if (!root || !el) return;
       const rect = root.getBoundingClientRect();
-      const top = rect.bottom + window.scrollY + 6; // small offset
-      const left = rect.left + window.scrollX;
+      const top = rect.bottom + globalThis.scrollY + 6; // small offset
+      const left = rect.left + globalThis.scrollX;
       const width = rect.width;
       // apply fixed-positioning so it stays in viewport during scroll
       this.dropdownStyle = {
@@ -290,8 +290,8 @@ export default {
   mounted() {
     document.addEventListener("mousedown", this.handleClickOutside);
     // keep position updated on resize/scroll
-    window.addEventListener("resize", this.updateDropdownPosition);
-    window.addEventListener("scroll", this.updateDropdownPosition, true);
+    globalThis.addEventListener("resize", this.updateDropdownPosition);
+    globalThis.addEventListener("scroll", this.updateDropdownPosition, true);
   },
   watch: {
     showDropdown(newVal) {
@@ -312,8 +312,8 @@ export default {
   },
   beforeUnmount() {
     document.removeEventListener("mousedown", this.handleClickOutside);
-    window.removeEventListener("resize", this.updateDropdownPosition);
-    window.removeEventListener("scroll", this.updateDropdownPosition, true);
+    globalThis.removeEventListener("resize", this.updateDropdownPosition);
+    globalThis.removeEventListener("scroll", this.updateDropdownPosition, true);
   },
 };
 </script>

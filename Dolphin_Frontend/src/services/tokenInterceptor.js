@@ -46,11 +46,11 @@ const handleSubscriptionExpired = (error, data) => {
     (page) => currentPath === page || currentPath.startsWith(page)
   );
 
-  if (!isOnAllowedPage) {
+  if (isOnAllowedPage) {
+    console.log("Already on allowed page, not redirecting");
+  } else {
     console.log("Redirecting to manage subscription page");
     router.push("/manage-subscription");
-  } else {
-    console.log("Already on allowed page, not redirecting");
   }
 
   return Promise.reject(error);
@@ -108,4 +108,7 @@ axios.interceptors.response.use(
   }
 );
 
-export default axios;
+// Export configured axios instance via a local alias to avoid re-exporting the
+// imported default directly (keeps interceptors applied and satisfies linter).
+const http = axios;
+export default http;

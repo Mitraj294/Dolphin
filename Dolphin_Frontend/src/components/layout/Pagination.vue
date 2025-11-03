@@ -346,28 +346,6 @@ export default {
 .notifications-pagination > .notifications-pagination-page:first-of-type {
   border-left: none;
 }
-.notifications-pagination-btn.prev img {
-  margin-right: 8px;
-  margin-left: 0;
-}
-.notifications-pagination-btn.next img {
-  margin-left: 8px;
-  margin-right: 0;
-}
-.notifications-pagination-btn:first-child {
-  border-top-left-radius: 16px;
-  border-bottom-left-radius: 16px;
-}
-.notifications-pagination-btn:last-child {
-  border-top-right-radius: 16px;
-  border-bottom-right-radius: 16px;
-  border-right: none;
-}
-.notifications-pagination-btn[disabled] {
-  color: #888;
-  background: #fff;
-  cursor: default;
-}
 .notifications-pagination-page.selected {
   background: #f5f5f5;
   font-weight: 600;

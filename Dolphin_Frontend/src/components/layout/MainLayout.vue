@@ -53,7 +53,7 @@ export default {
     return {
       userRole: authMiddleware.getRole() || "User",
       sidebarExpanded: false,
-      windowWidth: window.innerWidth,
+      windowWidth: globalThis.innerWidth,
     };
   },
   computed: {
@@ -86,11 +86,11 @@ export default {
     },
 
     handleResize() {
-      this.windowWidth = window.innerWidth;
+      this.windowWidth = globalThis.innerWidth;
     },
   },
   mounted() {
-    window.addEventListener("resize", this.handleResize);
+    globalThis.addEventListener("resize", this.handleResize);
     // Restore sidebar state from encrypted storage
     const saved = storage.get("sidebarExpanded");
     if (saved === "1") {
@@ -102,7 +102,7 @@ export default {
     // ToastService is registered globally during app bootstrap in main.js
   },
   beforeDestroy() {
-    window.removeEventListener("resize", this.handleResize);
+    globalThis.removeEventListener("resize", this.handleResize);
   },
 };
 </script>
@@ -122,11 +122,10 @@ export default {
   width: 30px;
   height: 30px;
   top: 55px;
-
+  border: 1px solid #dcdcdc;
   border-radius: 50%;
   border-width: 1px;
   background: #ffffff;
-  border: 1px solid #dcdcdc;
   z-index: 12;
   overflow: visible !important;
   display: flex;

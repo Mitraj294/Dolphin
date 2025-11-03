@@ -18,14 +18,10 @@ return [
     | array and always includes the local dev origin as a fallback.
     |
     */
-    'allowed_origins' => array_values(array_filter(array_unique(array_merge(
-        // origins supplied via FRONTEND_URLS (comma separated)
-        array_map('trim', explode(',', env('FRONTEND_URLS', ''))),
-        // single FRONTEND_URL for backwards compatibility
-        [env('FRONTEND_URL', 'http://127.0.0.1:8080')],
-        // local dev fallback
-        ['http://127.0.0.1:8080']
-    )))),
+    // Local-only: lock CORS to the Vue dev server
+    'allowed_origins' => [
+        'http://127.0.0.1:8080',
+    ],
     'allowed_headers' => ['*'],
     'exposed_headers' => [],
     'max_age' => 0,

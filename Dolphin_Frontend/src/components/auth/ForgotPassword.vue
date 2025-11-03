@@ -112,9 +112,6 @@ export default {
           this.email = "";
           this.cooldown = 30;
           this.startCooldown();
-          /*setTimeout(() => {
-            this.$router.push('/login');
-          }, 1000);*/
         })
         .catch(() => {
           this.loading = false;

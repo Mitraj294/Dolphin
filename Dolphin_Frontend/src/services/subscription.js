@@ -29,7 +29,7 @@ export async function fetchSubscriptionStatus() {
     throw err;
   }
   // Update subscription status in storage for router guards
-  if (res.data && res.data.status) {
+  if (res.data?.status) {
     storage.set("subscription_status", res.data.status);
   } else {
     // clear any existing status

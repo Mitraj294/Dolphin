@@ -78,7 +78,7 @@ const tokenMonitor = {
           }
         }
       } catch (error) {
-        if (error.response && error.response.status === 401) {
+        if (error.response?.status === 401) {
           console.log("Token validation failed with 401");
           handleExpired();
         } else {
@@ -125,7 +125,7 @@ const tokenMonitor = {
       return response.data;
     } catch (error) {
       console.error("Token status check failed:", error);
-      if (error.response && error.response.status === 401) {
+      if (error.response?.status === 401) {
         storage.clear();
       }
       return null;

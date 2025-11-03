@@ -152,6 +152,37 @@ export default {
 
     // Fetch questions, answers, and subscription status from backend
     const fetchQuestionsAndAnswers = async () => {
+      // Helper to fetch questions
+      const loadQuestions = async (headers, params) => {
+        const resQ = await axios.get(`${API_BASE_URL}/api/questions`, {
+          headers,
+          params,
+        });
+        if (Array.isArray(resQ.data)) {
+          questions.value = resQ.data;
+          // Initialize selectedWords array
+          selectedWords.value = resQ.data.map(() => []);
+        }
+      };
+
+      // Helper to fetch previous answers
+      const loadAnswers = async (headers, params) => {
+        const resA = await axios.get(`${API_BASE_URL}/api/answers`, {
+          headers,
+          params,
+        });
+        if (Array.isArray(resA.data)) {
+          for (const ans of resA.data) {
+            const idx = questions.value.findIndex(
+              (q) => String(q.id) === String(ans.question_id)
+            );
+            if (idx !== -1 && Array.isArray(ans.answer)) {
+              selectedWords.value[idx] = ans.answer;
+            }
+          }
+        }
+      };
+
       try {
         const storage = require("@/services/storage").default;
         const authToken = storage.get("authToken");
@@ -164,63 +195,47 @@ export default {
         if (userId) {
           params["user_id"] = userId;
         }
-        // Fetch questions
-        const resQ = await axios.get(`${API_BASE_URL}/api/questions`, {
-          headers,
-          params,
-        });
-        if (Array.isArray(resQ.data)) {
-          questions.value = resQ.data;
-          // Initialize selectedWords array
-          selectedWords.value = resQ.data.map(() => []);
-        }
-        // Fetch previous answers
-        const resA = await axios.get(`${API_BASE_URL}/api/answers`, {
-          headers,
-          params,
-        });
-        if (Array.isArray(resA.data)) {
-          // Map answers to selectedWords by question_id
-          resA.data.forEach((ans) => {
-            const idx = questions.value.findIndex(
-              (q) => String(q.id) === String(ans.question_id)
-            );
-            if (idx !== -1 && Array.isArray(ans.answer)) {
-              selectedWords.value[idx] = ans.answer;
-            }
-          });
-        }
 
-        // Fetch subscription status
-        try {
-          const resSub = await axios.get(
-            `${API_BASE_URL}/api/subscription/status`,
-            {
-              headers,
-            }
-          );
-          // Adjust this logic based on your backend response
-          isSubscribed.value = !!(
-            resSub.data &&
-            (resSub.data.active ||
-              resSub.data.status === "active" ||
-              resSub.data.subscribed)
-          );
-        } catch (e) {
-          isSubscribed.value = "expired";
-        }
-      } catch (error) {
-        if (error.response && error.response.status === 401) {
-          router.push("/login");
-        } else {
-          if (toast && typeof toast.add === "function") {
-            toast.add({
-              severity: "error",
-              summary: "Load failed",
-              detail: "Failed to load assessment questions or answers.",
-              sticky: true,
-            });
+        await loadQuestions(headers, params);
+        await loadAnswers(headers, params);
+
+        // Fetch subscription status (extracted to keep complexity down)
+        const fetchSub = async () => {
+          try {
+            const resSub = await axios.get(
+              `${API_BASE_URL}/api/subscription/status`,
+              {
+                headers,
+              }
+            );
+            // Adjust this logic based on your backend response
+            isSubscribed.value = !!(
+              resSub.data &&
+              (resSub.data.active ||
+                resSub.data.status === "active" ||
+                resSub.data.subscribed)
+            );
+          } catch (err) {
+            // Log the error for debugging and set a safe fallback
+            // eslint-disable-next-line no-console
+            console.warn("Failed to fetch subscription status:", err);
+            isSubscribed.value = "expired";
           }
+        };
+
+        await fetchSub();
+      } catch (error) {
+        if (error.response?.status === 401) {
+          router.push("/login");
+          return;
+        }
+        if (toast && typeof toast.add === "function") {
+          toast.add({
+            severity: "error",
+            summary: "Load failed",
+            detail: "Failed to load assessment questions or answers.",
+            sticky: true,
+          });
         }
       }
     };
@@ -254,41 +269,48 @@ export default {
         router.push("/login");
         return;
       }
+
       // Build answers array as expected by backend
-      const answersPayload = questions.value.map((q, idx) => ({
-        question_id: q.id,
-        answer: selectedWords.value[idx] || [],
-      }));
-      try {
-        await axios.post(
-          `${API_BASE_URL}/api/answers`,
-          { answers: answersPayload },
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${authToken}`,
-            },
+      const buildAnswersPayload = () =>
+        questions.value.map((q, idx) => ({
+          question_id: q.id,
+          answer: selectedWords.value[idx] || [],
+        }));
+
+      const answersPayload = buildAnswersPayload();
+
+      const submitAnswers = async (payload, token) => {
+        try {
+          await axios.post(
+            `${API_BASE_URL}/api/answers`,
+            { answers: payload },
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          submitted.value = true;
+        } catch (error) {
+          const isAuthError = error.response?.status === 401;
+          const errorMessage = isAuthError
+            ? "Your session has expired. Please log in again."
+            : "Failed to submit assessment. Please try again.";
+          if (isAuthError) router.push("/login");
+
+          if (toast && typeof toast.add === "function") {
+            toast.add({
+              severity: isAuthError ? "warn" : "error",
+              summary: "Submission failed",
+              detail: errorMessage,
+              sticky: true,
+            });
           }
-        );
-        submitted.value = true;
-      } catch (error) {
-        let errorMessage = "Failed to submit assessment. Please try again.";
-        if (error.response && error.response.status === 401) {
-          errorMessage = "Your session has expired. Please log in again.";
-          router.push("/login");
         }
-        if (toast && typeof toast.add === "function") {
-          toast.add({
-            severity:
-              error.response && error.response.status === 401
-                ? "warn"
-                : "error",
-            summary: "Submission failed",
-            detail: errorMessage,
-            sticky: true,
-          });
-        }
-      }
+      };
+
+      await submitAnswers(answersPayload, authToken);
     };
 
     onMounted(fetchQuestionsAndAnswers);
