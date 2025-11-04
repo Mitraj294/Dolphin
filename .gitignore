@@ -42,3 +42,9 @@ pnpm-debug.log*
 # Local/temporary backups
 **/*.sqlite
 Dolphin_Backend/backup.sql
+
+# Python virtual envs
+venv/
+.venv/
+env/
+ENV/
