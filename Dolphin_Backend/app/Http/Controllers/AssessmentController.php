@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Assessment;
+use App\Models\OrganizationAssessment;
 use App\Models\Member;
 use App\Models\Organization;
 use App\Http\Requests\StoreAssessmentRequest;
@@ -32,7 +32,7 @@ class AssessmentController extends Controller
     {
         try {
             $validated = $request->validated();
-            $query = Assessment::select('id', 'name', 'organization_id');
+            $query = OrganizationAssessment::select('id', 'name', 'organization_id');
 
             if (isset($validated['organization_id'])) {
                 $query->where('organization_id', $validated['organization_id']);
@@ -65,7 +65,7 @@ class AssessmentController extends Controller
             $validated = $request->validated();
             $orgId = $this->resolveOrganizationId($request, $validated);
 
-            $assessment = Assessment::create([
+            $assessment = OrganizationAssessment::create([
                 'name' => $validated['name'],
                 'user_id' => $request->user()->id,
                 'organization_id' => $orgId,
@@ -90,7 +90,7 @@ class AssessmentController extends Controller
     public function summary($id): JsonResponse
     {
         try {
-            $assessment = Assessment::findOrFail($id);
+            $assessment = OrganizationAssessment::findOrFail($id);
             $tokens = DB::table('assessment_answer_tokens')->where('assessment_id', $id)->get();
             $answers = DB::table('assessment_question_answers')->where('assessment_id', $id)->get();
 

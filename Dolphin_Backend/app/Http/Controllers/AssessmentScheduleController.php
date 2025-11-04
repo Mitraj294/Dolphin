@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreAssessmentScheduleRequest;
-use App\Models\Assessment;
+use App\Models\OrganizationAssessment;
 use App\Models\Member;
 use App\Notifications\AssessmentInvitation;
 use App\Services\AssessmentLinkService;
@@ -18,7 +18,7 @@ class AssessmentScheduleController extends Controller
     {
         try {
             $validated = $request->validated();
-            $assessment = Assessment::findOrFail($validated['assessment_id']);
+            $assessment = OrganizationAssessment::findOrFail($validated['assessment_id']);
             $memberIds = $this->resolveMemberIds($validated);
             $recipients = Member::whereIn('id', $memberIds)->get();
 
@@ -124,7 +124,7 @@ class AssessmentScheduleController extends Controller
     /**
      * Notify recipients by generating a per-recipient link and queuing the notification.
      */
-    private function notifyRecipients($recipients, AssessmentLinkService $linkService, Assessment $assessment, $sendAt): void
+    private function notifyRecipients($recipients, AssessmentLinkService $linkService, OrganizationAssessment $assessment, $sendAt): void
     {
         foreach ($recipients as $recipient) {
             $token = $linkService->createAnswerToken($assessment->id, $recipient->id, null);

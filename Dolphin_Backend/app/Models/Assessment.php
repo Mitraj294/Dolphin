@@ -1,29 +1,10 @@
 <?php
 
-namespace App\Models;
+// Deprecated model shim removed. The application now uses `OrganizationAssessment`.
+// This file intentionally left minimal to signal that `Assessment` is deprecated.
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+// Note: If any code still imports or instantiates `App\Models\Assessment` you
+// should update it to use `App\Models\OrganizationAssessment` instead. The
+// shim was removed to avoid silently carrying legacy behavior.
 
-class Assessment extends Model
-{
-    use HasFactory;
-    use SoftDeletes;
-
-    protected $fillable = [
-        'name',
-        'user_id',
-        'organization_id',
-    ];
-
-    public function questions()
-    {
-        return $this->belongsToMany(OrganizationAssessmentQuestion::class, 'assessment_question', 'assessment_id', 'question_id');
-    }
-
-    public function assessmentQuestions()
-    {
-        return $this->hasMany(AssessmentQuestion::class, 'assessment_id');
-    }
-}
+// (No class defined)

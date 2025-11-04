@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Log;
 class AssessmentAnswerController extends Controller
 {
 
-    // Display the assessment questions for a given token.
+    
     // @param  string  $token
     // @return \Illuminate\Http\JsonResponse
 

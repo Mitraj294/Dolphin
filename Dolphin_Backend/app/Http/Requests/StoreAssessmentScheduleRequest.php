@@ -24,7 +24,7 @@ class StoreAssessmentScheduleRequest extends FormRequest
     public function rules()
     {
         return [
-            'assessment_id' => 'required|exists:assessments,id',
+            'assessment_id' => 'required|exists:organization_assessments,id',
             'date' => 'required|date',
             'time' => 'required',
             'send_at' => 'sometimes|date',

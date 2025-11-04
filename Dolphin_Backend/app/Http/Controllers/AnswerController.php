@@ -13,21 +13,33 @@ use Illuminate\Support\Facades\Log;
 class AnswerController extends Controller
 {
 
-    // Retrieve all questions for the assessment.
+    
     // @return \Illuminate\Http\JsonResponse
 
     public function getQuestions(): JsonResponse
     {
         try {
-            // The questions table stores the question text in the 'question' column.
-            $questions = Question::all(['id', 'question', 'options'])->map(function ($q) {
-                return [
-                    'id' => $q->id,
-                    // Return 'question' key to match frontend expectations.
-                    'question' => $q->question,
-                    'options' => $q->options,
-                ];
-            });
+            // The questions table historically used a 'question' column but was
+            // renamed to 'text'. Detect which column exists so we don't attempt
+            // to select a non-existent column (which causes a SQL exception).
+            if (\Illuminate\Support\Facades\Schema::hasColumn('questions', 'text')) {
+                $questions = Question::all(['id', 'text', 'options'])->map(function ($q) {
+                    return [
+                        'id' => $q->id,
+                        // Keep the response key the frontend expects: 'question'.
+                        'question' => $q->text,
+                        'options' => $q->options,
+                    ];
+                });
+            } else {
+                $questions = Question::all(['id', 'question', 'options'])->map(function ($q) {
+                    return [
+                        'id' => $q->id,
+                        'question' => $q->question,
+                        'options' => $q->options,
+                    ];
+                });
+            }
 
             return response()->json($questions);
         } catch (\Exception $e) {

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SendAssessmentLinkRequest;
 use App\Http\Requests\SubmitAssessmentAnswersRequest;
-use App\Models\Assessment;
+use App\Models\OrganizationAssessment;
 use App\Models\AssessmentAnswerToken;
 use App\Models\AssessmentQuestion;
 use App\Models\Group;
@@ -30,7 +30,7 @@ class AssessmentAnswerLinkController extends Controller
     {
         try {
             $validated = $request->validated();
-            $assessment = Assessment::findOrFail($validated['assessment_id']);
+            $assessment = OrganizationAssessment::findOrFail($validated['assessment_id']);
             $member = Member::findOrFail($validated['member_id']);
 
             $token = $linkService->createAnswerToken($assessment->id, $member->id, $validated['group_id'] ?? null);
@@ -68,7 +68,7 @@ class AssessmentAnswerLinkController extends Controller
                 $response_data['message'] = 'This assessment link has expired.';
             } else {
                 // Happy path: Token is valid, not used, and not expired.
-                $assessment = Assessment::with('assessmentQuestions.question')->findOrFail($tokenRow->assessment_id);
+                $assessment = OrganizationAssessment::with('assessmentQuestions.question')->findOrFail($tokenRow->assessment_id);
                 $responseData = $this->buildAssessmentResponse($assessment, $tokenRow);
                 $status_code = 200;
                 $response_data['assessment'] = $responseData;
@@ -136,7 +136,7 @@ class AssessmentAnswerLinkController extends Controller
 
     // Private Helper Methods
 
-    private function buildAssessmentResponse(Assessment $assessment, AssessmentAnswerToken $tokenRow): array
+    private function buildAssessmentResponse(OrganizationAssessment $assessment, AssessmentAnswerToken $tokenRow): array
     {
         $questions = $assessment->assessmentQuestions->map(function ($aq) {
             return [

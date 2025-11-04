@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\OrganizationAssessment;
 
 class AssessmentSchedule extends Model
 {
@@ -23,6 +24,6 @@ class AssessmentSchedule extends Model
 
     public function assessment()
     {
-        return $this->belongsTo(Assessment::class);
+        return $this->belongsTo(OrganizationAssessment::class);
     }
 }

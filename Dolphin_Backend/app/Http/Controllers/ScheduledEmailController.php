@@ -105,9 +105,11 @@ class ScheduledEmailController extends Controller
             // If scheduling tables have been removed (refactor/migration), avoid throwing SQL errors
             if (!Schema::hasTable('assessment_schedules')) {
                 Log::warning('Attempted to fetch schedule but table assessment_schedules does not exist', ['assessment_id' => $assessmentId]);
-                $result['assessment'] = DB::table('assessments')->where('id', $assessmentId)->first();
+                // Fallback to the new organization_assessments table instead of the removed `assessments` table.
+                $result['assessment'] = DB::table('organization_assessments')->where('id', $assessmentId)->first();
                 return response()->json($result);
             }
+
             [$schedule, $assessment] = $this->fetchScheduleAndAssessment($assessmentId);
 
             if ($schedule) {
@@ -137,7 +139,8 @@ class ScheduledEmailController extends Controller
     private function fetchScheduleAndAssessment($assessmentId)
     {
         $schedule = DB::table('assessment_schedules')->where('assessment_id', $assessmentId)->first();
-        $assessment = DB::table('assessments')->where('id', $assessmentId)->first();
+        // Read assessment from the new organization_assessments table (legacy `assessments` was removed).
+        $assessment = DB::table('organization_assessments')->where('id', $assessmentId)->first();
         return [$schedule, $assessment];
     }
 

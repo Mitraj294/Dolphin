@@ -24,7 +24,7 @@ class SendAssessmentLinkRequest extends FormRequest
     public function rules()
     {
         return [
-            'assessment_id' => 'required|exists:assessments,id',
+            'assessment_id' => 'required|exists:organization_assessments,id',
             'member_id' => 'required|exists:members,id',
             'email' => 'required|email',
             'group_id' => 'nullable|exists:groups,id',
