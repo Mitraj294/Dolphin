@@ -47,39 +47,11 @@ class AnswerController extends Controller
             $answers = $request->validated()['answers'];
             $userId = Auth::id();
 
-            // Use a database transaction to ensure all answers are saved together.
-            DB::transaction(function () use ($answers, $userId) {
-                foreach ($answers as $answerData) {
-                    // The answers table stores the question as a string column named 'question'.
-                    // The incoming payload validates 'answers.*.question_id' (exists on questions.id),
-                    // so load the question text from the questions table and save by question text.
-                    $question = null;
-                    if (isset($answerData['question_id'])) {
-                        $q = \App\Models\Question::find($answerData['question_id']);
-                        $question = $q ? $q->text : null;
-                    }
+            $authUser = Auth::user();
+            $userEmail = $authUser ? $authUser->email : null;
 
-                    // If we couldn't resolve question text, fall back to any provided 'question' string in payload.
-                    if (!$question && isset($answerData['question'])) {
-                        $question = $answerData['question'];
-                    }
-
-                    if (!$question) {
-                        // Skip saving malformed entry instead of causing DB errors.
-                        continue;
-                    }
-
-                    Answer::updateOrCreate(
-                        [
-                            'user_id' => $userId,
-                            'question' => $question,
-                        ],
-                        [
-                            'answer' => json_encode($answerData['answer']),
-                        ]
-                    );
-                }
-            });
+            // Move processing into a dedicated method to keep this method simple.
+            $this->processAnswers($answers, $userId, $userEmail);
 
             return response()->json(['message' => 'Assessment answers saved successfully'], 201);
         } catch (\Exception $e) {
@@ -87,7 +59,103 @@ class AnswerController extends Controller
                 'user_id' => Auth::id(),
                 'error' => $e->getMessage()
             ]);
+
             return response()->json(['error' => 'An error occurred while saving answers.'], 500);
+        }
+    }
+
+    /**
+     * Process and persist answers inside a DB transaction. Kept as a separate
+     * method so the public `store()` remains short and readable.
+     *
+     * @param array $answers
+     * @param int|null $userId
+     * @param string|null $userEmail
+     * @return void
+     */
+    private function processAnswers(array $answers, $userId, $userEmail): void
+    {
+        DB::transaction(function () use ($answers, $userId, $userEmail) {
+            $collectedWords = [];
+
+            foreach ($answers as $answerData) {
+                [$questionId, $questionText] = $this->resolveQuestion($answerData);
+
+                if (! $questionId && ! $questionText) {
+                    continue;
+                }
+
+                $attributes = ['user_id' => $userId];
+                $values = ['answer' => json_encode($answerData['answer'])];
+
+                if ($questionId) {
+                    $attributes['question_id'] = $questionId;
+                    $values['question_id'] = $questionId;
+                }
+
+                if ($userEmail) {
+                    $values['email'] = $userEmail;
+                }
+
+                Answer::updateOrCreate($attributes, $values);
+
+                $this->collectWordsFromAnswer($answerData, $collectedWords);
+            }
+
+            if ($userEmail && ! empty($collectedWords)) {
+                $unique = array_values(array_unique($collectedWords));
+
+                DB::table('input')->updateOrInsert(
+                    ['email' => $userEmail],
+                    [
+                        'self_words' => json_encode($unique),
+                        'concept_words' => json_encode($unique),
+                    ]
+                );
+            }
+        });
+    }
+
+    /**
+     * Resolve question id and text from an incoming answer payload.
+     * Returns an array: [questionId|null, questionText|null]
+     */
+    private function resolveQuestion(array $answerData): array
+    {
+        $questionId = null;
+        $questionText = null;
+
+        if (isset($answerData['question_id'])) {
+            $q = Question::find($answerData['question_id']);
+            if ($q) {
+                $questionId = $q->id;
+                $questionText = $q->question ?? $q->text ?? null;
+            }
+        }
+
+        if (! $questionId && isset($answerData['question'])) {
+            $questionText = $answerData['question'];
+            $questionId = Question::where('question', $questionText)->value('id')
+                ?: Question::where('text', $questionText)->value('id');
+        }
+
+        return [$questionId, $questionText];
+    }
+
+    /**
+     * Collect non-empty tokens from the answer and append them into the collector array.
+     */
+    private function collectWordsFromAnswer(array $answerData, array &$collector): void
+    {
+        if (empty($answerData['answer'])) {
+            return;
+        }
+
+        foreach ((array) $answerData['answer'] as $token) {
+            $token = trim((string) $token);
+            if ($token !== '') {
+                $collector[] = $token;
+            }
         }
     }
 
@@ -99,20 +167,21 @@ class AnswerController extends Controller
     {
         try {
             $userId = Auth::id();
+            $authUser = Auth::user();
             $answers = Answer::where('user_id', $userId)->get();
 
             // Transform the data for a consistent API response. The answers table stores the
             // question as text in the 'question' column. Resolve the question's id when possible
             // so the frontend can correlate by question_id.
-            $formattedAnswers = $answers->map(function ($answer) {
-                $questionId = null;
-                if (!empty($answer->question)) {
-                    $questionId = Question::where('text', $answer->question)->value('id');
-                }
+            $formattedAnswers = $answers->map(function ($answer) use ($authUser) {
+                // Prefer explicit stored question_id. The 'question' text column is
+                // deprecated and removed from the schema; rely on question_id.
+                $questionId = $answer->question_id ?? null;
 
                 return [
                     'question_id' => $questionId,
                     'answer' => json_decode($answer->answer, true),
+                    'email' => $answer->email ?? ($authUser ? $authUser->email : null),
                 ];
             });
 

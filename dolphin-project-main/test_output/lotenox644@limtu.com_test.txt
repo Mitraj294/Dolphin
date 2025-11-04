@@ -1,0 +1,159 @@
+-----------------Test Results for lotenox644@limtu.com------------------
+
+Test Subject: lotenox644@limtu.com
+
+Self Total Words: 32
+Concept Total Words: 32
+Adjusted Total Words: 12
+
+################################
+####### Weight Results #########
+################################
+
+******* Self Projection *******
+
+A percent: 51.60%
+
+B percent: 44.96%
+
+C percent: 22.76%
+
+D percent: 35.06%
+
+Average: 38.60%
+
+Decision Approach: 34.19%
+
+A | ---------------------------------------------------0------------------------------------------------
+B | --------------------------------------------0-------------------------------------------------------
+C | ----------------------0-----------------------------------------------------------------------------
+D | ----------------------------------0-----------------------------------------------------------------
+DA| ---------------------------------0------------------------------------------------------------------
+L | --------------------------------------|-------------------------------------------------------------
+
+******* Concept Projection *******
+
+A percent: 52.29%
+
+B percent: 45.16%
+
+C percent: 27.59%
+
+D percent: 35.38%
+
+Average: 40.10%
+
+A | ---------------------------------------------------0------------------------------------------------
+B | --------------------------------------------0-------------------------------------------------------
+C | ---------------------------0------------------------------------------------------------------------
+D | ----------------------------------0-----------------------------------------------------------------
+L | ---------------------------------------|------------------------------------------------------------
+
+######################################
+### Count for Self word categories ###
+######################################
+A Count: 8
+B Count: 9
+C Count: 3
+D Count: 12
+
+---------- Self A words ----------
+assertive
+audacious
+competitive
+daring
+harmonious
+humble
+independent
+individualistic
+---------------------------------
+
+---------- Self B words ----------
+charismatic
+gregarious
+introspective
+logical
+optimistic
+outgoing
+persuasive
+reflective
+serious
+---------------------------------
+
+---------- Self C words ----------
+consistent
+relaxed
+stable
+---------------------------------
+
+---------- Self D words ----------
+accurate
+careful
+cautious
+conscientious
+disciplined
+dutiful
+loyal
+meticulous
+neat
+polite
+rebellious
+unconventional
+---------------------------------
+
+#########################################
+### Count for Concept word categories ###
+#########################################
+A Count: 8
+B Count: 9
+C Count: 3
+D Count: 12
+
+---------- Concept A words ----------
+assertive
+audacious
+competitive
+daring
+harmonious
+humble
+independent
+individualistic
+---------------------------------
+
+---------- Concept B words ----------
+charismatic
+gregarious
+introspective
+logical
+optimistic
+outgoing
+persuasive
+reflective
+serious
+---------------------------------
+
+---------- Concept C words ----------
+consistent
+relaxed
+stable
+---------------------------------
+
+---------- Concept D words ----------
+accurate
+careful
+cautious
+conscientious
+disciplined
+dutiful
+loyal
+meticulous
+neat
+polite
+rebellious
+unconventional
+---------------------------------
+
+----------------- End of lotenox644@limtu.com's test! ------------------
+
+
+
