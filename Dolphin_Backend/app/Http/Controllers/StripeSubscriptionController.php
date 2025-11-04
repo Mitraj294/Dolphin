@@ -30,148 +30,196 @@ class StripeSubscriptionController extends Controller
     {
         Log::info('createCheckoutSession request:', $request->all());
 
-        // Try optional authentication from Authorization header (Bearer token).
-        // The route is intentionally public to support guest checkouts, but when
-        // an Authorization header is present we should honor it and treat the
-        // request as authenticated (so organization admins don't get forced into
-        // the guest checkout branch).
+        // Attempt optional token auth if an Authorization header is present.
+        $optionalAuthUser = $this->attemptOptionalTokenAuth($request);
+
+        $user = $optionalAuthUser ?: Auth::user();
+        $priceId = $request->input('price_id');
+        $frontend = env('FRONTEND_URL', 'http://127.0.0.1:8080');
+
+        $response = [];
+        $status = 200;
+
+        if (!$priceId) {
+            $response = ['error' => 'Missing price_id'];
+            $status = 400;
+        } else {
+            // Validate guest inputs (when there's no authenticated user) and obtain customer email / lead id
+            $validation = $this->validateGuestAndEmail($request, $user);
+            if (!empty($validation['error'])) {
+                $response = ['error' => $validation['error']];
+                $status = $validation['status'] ?? 400;
+            } else {
+                $customerEmail = $validation['customerEmail'] ?? null;
+                $leadId = $validation['leadId'] ?? null;
+
+                // Build the success URL used by Stripe to redirect after checkout
+                $successUrl = $this->buildSuccessUrl($frontend, $customerEmail, $leadId, $request);
+                Log::info('Success URL:', ['url' => $successUrl]);
+
+                Stripe::setApiKey(config('services.stripe.secret'));
+
+                try {
+                    $session = StripeSession::create([
+                        'payment_method_types' => ['card'],
+                        'mode' => 'subscription',
+                        'customer_email' => $customerEmail,
+                        'line_items' => [[
+                            'price' => $priceId,
+                            'quantity' => 1,
+                        ]],
+                        'success_url' => $successUrl,
+                        'cancel_url' => $frontend . '/subscriptions/plans',
+                    ]);
+
+                    $response = ['id' => $session->id, 'url' => $session->url];
+                    $status = 200;
+                } catch (\Stripe\Exception\InvalidRequestException $e) {
+                    Log::error('Stripe InvalidRequestException creating checkout session', [
+                        'message' => $e->getMessage(),
+                        'params' => ['price_id' => $priceId, 'email' => $customerEmail, 'lead_id' => $leadId]
+                    ]);
+                    $response = ['error' => 'Stripe rejected the request: ' . $e->getMessage()];
+                    $status = 400;
+                } catch (\Throwable $e) {
+                    Log::error('Unexpected error creating Stripe checkout session: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+                    $response = ['error' => 'Could not create Stripe checkout session.'];
+                    $status = 500;
+                }
+            }
+        }
+
+        return response()->json($response, $status);
+    }
+
+    /**
+     * Attempt optional token authentication from Authorization header and set the auth user.
+     * Returns the resolved User or null.
+     */
+    private function attemptOptionalTokenAuth(Request $request): ?User
+    {
+        $found = null;
         try {
             $authHeader = $request->header('Authorization');
-            if ($authHeader && preg_match('/Bearer\s+(.*)$/i', $authHeader, $m)) {
-                $bearer = $m[1];
-                $accessTokenModel = null;
-                if (strpos($bearer, '|') !== false) {
-                    [$idPart] = explode('|', $bearer, 2);
-                    $accessTokenModel = DB::table('oauth_access_tokens')->where('id', $idPart)->first();
-                }
-                if (!$accessTokenModel && substr_count($bearer, '.') === 2) {
-                    try {
-                        $parts = explode('.', $bearer);
-                        $payloadB64 = $parts[1] ?? null;
-                        $payloadJson = $payloadB64 ? base64_decode(strtr($payloadB64, '-_', '+/')) : null;
-                        $payload = json_decode($payloadJson, true);
-                        if (is_array($payload) && !empty($payload['jti'])) {
-                            $accessTokenModel = DB::table('oauth_access_tokens')->where('id', $payload['jti'])->first();
-                        }
-                    } catch (\Exception $e) {
-                        // ignore malformed JWTs here
-                    }
-                }
-                if (!$accessTokenModel) {
-                    $accessTokenModel = DB::table('oauth_access_tokens')->where('id', $bearer)->first();
-                }
-                if ($accessTokenModel) {
-                    $now = Carbon::now();
-                    $expiresAt = isset($accessTokenModel->expires_at) ? Carbon::parse($accessTokenModel->expires_at) : null;
-                    if (empty($accessTokenModel->revoked) && (!$expiresAt || $expiresAt->gt($now))) {
-                        $authUser = User::find($accessTokenModel->user_id);
-                        if ($authUser) {
-                            Auth::setUser($authUser);
-                        }
+            if (!$authHeader || !preg_match('/Bearer\\s+(.*)$/i', $authHeader, $m)) {
+                return null;
+            }
+
+            $bearer = $m[1];
+
+            // Try three strategies to locate an access token id: pipe-prefixed id, JWT jti, or direct id.
+            $tokenId = $this->getTokenIdFromBearer($bearer);
+            if ($tokenId) {
+                $accessTokenModel = DB::table('oauth_access_tokens')->where('id', $tokenId)->first();
+            } else {
+                $accessTokenModel = DB::table('oauth_access_tokens')->where('id', $bearer)->first();
+            }
+
+            if ($accessTokenModel) {
+                $now = Carbon::now();
+                $expiresAt = isset($accessTokenModel->expires_at) ? Carbon::parse($accessTokenModel->expires_at) : null;
+                if (empty($accessTokenModel->revoked) && (!$expiresAt || $expiresAt->gt($now))) {
+                    $authUser = User::find($accessTokenModel->user_id);
+                    if ($authUser) {
+                        Auth::setUser($authUser);
+                        $found = $authUser;
                     }
                 }
             }
         } catch (\Exception $e) {
             Log::warning('Optional token authentication failed: ' . $e->getMessage());
         }
+        return $found;
+    }
 
-        $user = Auth::user();
-        // If we set a user via optional token parsing above, prefer that.
-        if (isset($authUser) && $authUser instanceof User) {
-            $user = $authUser;
-        }
-        $priceId = $request->input('price_id');
-        $frontend = env('FRONTEND_URL', 'http://127.0.0.1:8080');
-
-        $customerEmail = null;
-        $leadId = null;
-        $response = [];
-        $status = 200;
-
-        // Error collection
-        if (!$priceId) {
-            $response = ['error' => 'Missing price_id'];
-            $status = 400;
+    /**
+     * Extract a likely token id from a bearer string.
+     * Returns an id string when one of the heuristics matches, or null otherwise.
+     */
+    private function getTokenIdFromBearer(string $bearer): ?string
+    {
+        // 'id|...' format used by some tokens
+        if (strpos($bearer, '|') !== false) {
+            [$idPart] = explode('|', $bearer, 2);
+            return $idPart;
         }
 
-        if (empty($response)) {
-            if ($user) {
-                $customerEmail = $user->email;
+        // JWT-like token: attempt to decode the payload and extract jti
+        if (substr_count($bearer, '.') === 2) {
+            try {
+                $parts = explode('.', $bearer);
+                $payloadB64 = $parts[1] ?? null;
+                $payloadJson = $payloadB64 ? base64_decode(strtr($payloadB64, '-_', '+/')) : null;
+                $payload = json_decode($payloadJson, true);
+                if (is_array($payload) && !empty($payload['jti'])) {
+                    return $payload['jti'];
+                }
+            } catch (\Exception $e) {
+                // ignore malformed JWTs
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Validate guest inputs (email and lead_id) when no authenticated user exists.
+     * Returns array with keys: customerEmail, leadId, error, status.
+     */
+    private function validateGuestAndEmail(Request $request, ?User $user): array
+    {
+        $result = ['customerEmail' => null, 'leadId' => null, 'error' => null, 'status' => 200];
+
+        if ($user) {
+            $result['customerEmail'] = $user->email;
+        } else {
+            $customerEmail = trim((string)$request->input('email')) ?: null;
+            $leadId = $request->input('lead_id');
+
+            if (!$customerEmail || !$leadId) {
+                $result['error'] = 'Email and lead_id are required for guest checkout';
+                $result['status'] = 400;
             } else {
-                $customerEmail = trim((string)$request->input('email')) ?: null;
-                $leadId = $request->input('lead_id');
-
-                if (!$customerEmail || !$leadId) {
-                    $response = ['error' => 'Email and lead_id are required for guest checkout'];
-                    $status = 400;
+                $lower = strtolower($customerEmail);
+                if (in_array($lower, ['...', 'n/a', 'na', 'none', 'null', 'user@example.com'], true) || strlen($customerEmail) > 254) {
+                    Log::warning('Guest email rejected as placeholder or too long', ['email' => $customerEmail, 'lead_id' => $leadId]);
+                    $result['error'] = 'Invalid email address provided';
+                    $result['status'] = 400;
+                } elseif (!filter_var($customerEmail, FILTER_VALIDATE_EMAIL)) {
+                    Log::warning('Invalid guest email provided for checkout', ['email' => $customerEmail, 'lead_id' => $leadId]);
+                    $result['error'] = 'Invalid email address provided';
+                    $result['status'] = 400;
                 } else {
-                    $lower = strtolower($customerEmail);
-                    if (in_array($lower, ['...', 'n/a', 'na', 'none', 'null', 'user@example.com'], true) || strlen($customerEmail) > 254) {
-                        Log::warning('Guest email rejected as placeholder or too long', ['email' => $customerEmail, 'lead_id' => $leadId]);
-                        $response = ['error' => 'Invalid email address provided'];
-                        $status = 400;
-                    } elseif (!filter_var($customerEmail, FILTER_VALIDATE_EMAIL)) {
-                        Log::warning('Invalid guest email provided for checkout', ['email' => $customerEmail, 'lead_id' => $leadId]);
-                        $response = ['error' => 'Invalid email address provided'];
-                        $status = 400;
-                    } else {
-                        Log::info('Guest checkout email validated', ['email' => $customerEmail, 'lead_id' => $leadId]);
-                    }
+                    Log::info('Guest checkout email validated', ['email' => $customerEmail, 'lead_id' => $leadId]);
+                    $result['customerEmail'] = $customerEmail;
+                    $result['leadId'] = $leadId;
                 }
             }
         }
 
-        // Only try Stripe if no previous error
-        if (empty($response)) {
-            // Redirect to an explicit frontend success page after checkout completes.
-            // The frontend success page should display payment confirmation and a
-            // button that allows the user to proceed to login (instead of auto-login).
-            $successUrl = $frontend . '/subscriptions/success?checkout_session_id={CHECKOUT_SESSION_ID}';
-            if ($customerEmail && $leadId) {
-                $successUrl .= '&email=' . urlencode($customerEmail) . '&lead_id=' . $leadId;
-            }
-            // Prefer a short guest_code (new flow) but fall back to legacy guest_token
-            $guestCode = $request->input('guest_code');
-            $guestToken = $request->input('guest_token');
-            if ($guestCode) {
-                $successUrl .= '&guest_code=' . urlencode($guestCode);
-            } elseif ($guestToken) {
-                // Backwards compatibility: some emails still include the full personal access token
-                $successUrl .= '&guest_token=' . urlencode($guestToken);
-            }
-            Log::info('Success URL:', ['url' => $successUrl]);
+        return $result;
+    }
 
-            Stripe::setApiKey(config('services.stripe.secret'));
-
-            try {
-                $session = StripeSession::create([
-                    'payment_method_types' => ['card'],
-                    'mode' => 'subscription',
-                    'customer_email' => $customerEmail,
-                    'line_items' => [[
-                        'price' => $priceId,
-                        'quantity' => 1,
-                    ]],
-                    'success_url' => $successUrl,
-                    'cancel_url' => $frontend . '/subscriptions/plans',
-                ]);
-                $response = ['id' => $session->id, 'url' => $session->url];
-                $status = 200;
-            } catch (\Stripe\Exception\InvalidRequestException $e) {
-                Log::error('Stripe InvalidRequestException creating checkout session', [
-                    'message' => $e->getMessage(),
-                    'params' => ['price_id' => $priceId, 'email' => $customerEmail, 'lead_id' => $leadId]
-                ]);
-                $response = ['error' => 'Stripe rejected the request: ' . $e->getMessage()];
-                $status = 400;
-            } catch (\Throwable $e) {
-                Log::error('Unexpected error creating Stripe checkout session: ' . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
-                $response = ['error' => 'Could not create Stripe checkout session.'];
-                $status = 500;
-            }
+    /**
+     * Build the success URL with optional guest parameters.
+     */
+    private function buildSuccessUrl(string $frontend, ?string $customerEmail, $leadId, Request $request): string
+    {
+        $successUrl = $frontend . '/subscriptions/success?checkout_session_id={CHECKOUT_SESSION_ID}';
+        if ($customerEmail && $leadId) {
+            $successUrl .= '&email=' . urlencode($customerEmail) . '&lead_id=' . $leadId;
         }
 
-        return response()->json($response, $status);
+        $guestCode = $request->input('guest_code');
+        $guestToken = $request->input('guest_token');
+        if ($guestCode) {
+            $successUrl .= '&guest_code=' . urlencode($guestCode);
+        } elseif ($guestToken) {
+            // Backwards compatibility: some emails still include the full personal access token
+            $successUrl .= '&guest_token=' . urlencode($guestToken);
+        }
+
+        return $successUrl;
     }
 
 

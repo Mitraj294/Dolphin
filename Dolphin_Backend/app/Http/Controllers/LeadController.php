@@ -63,16 +63,9 @@ class LeadController extends Controller
         if (!$lead) {
             return response()->json(['message' => Message::MESSAGE], 404);
         }
-
         // PATCH for notes-only update
-        if ($request->isMethod('patch')) {
-            $payloadKeys = array_keys($request->all());
-            $onlyNotes = !empty($payloadKeys) && collect($payloadKeys)->every(fn($k) => $k === 'notes');
-            if ($request->has('notes') && $onlyNotes) {
-                $data = $request->validate(['notes' => LeadValidationRules::OPTIONAL_STRING]);
-                $lead->update($data);
-                return response()->json(['message' => 'Notes updated successfully', 'lead' => $lead]);
-            }
+        if ($request->isMethod('patch') && $this->isPatchNotesOnly($request) && $request->has('notes')) {
+            return $this->performNotesUpdate($request, $lead);
         }
 
         // Full update validation rules
@@ -94,6 +87,29 @@ class LeadController extends Controller
 
         $lead->update($data);
         return response()->json(['message' => 'Lead updated successfully', 'lead' => $lead]);
+    }
+
+    /**
+     * Detect whether the incoming PATCH request only contains the 'notes' key.
+     */
+    private function isPatchNotesOnly(Request $request): bool
+    {
+        if (! $request->isMethod('patch')) {
+            return false;
+        }
+
+        $payloadKeys = array_keys($request->all());
+        return ! empty($payloadKeys) && collect($payloadKeys)->every(fn($k) => $k === 'notes');
+    }
+
+    /**
+     * Validate and perform notes-only update, returning the JSON response.
+     */
+    private function performNotesUpdate(Request $request, Lead $lead)
+    {
+        $data = $request->validate(['notes' => LeadValidationRules::OPTIONAL_STRING]);
+        $lead->update($data);
+        return response()->json(['message' => 'Notes updated successfully', 'lead' => $lead]);
     }
 
 
@@ -208,94 +224,23 @@ class LeadController extends Controller
         if (!$lead) {
             return response()->json(['message' => Message::MESSAGE], 404);
         }
-
-        // Prepare registration link for the lead
-        $frontendBase = env('FRONTEND_URL', env('APP_URL', 'http://127.0.0.1:8080'));
-        $queryParams = [
-            'email'               => $lead->email,
-            'first_name'          => $lead->first_name ?? '',
-            'last_name'           => $lead->last_name ?? '',
-            'phone'               => $lead->phone ?? '',
-            'organization_name'   => $lead->organization_name ?? '',
-            'organization_size'   => $lead->organization_size ?? '',
-            'organization_address' => $lead->address ?? '',
-            'organization_city'   => (string)($lead->city_id ?? ''),
-            'organization_state'  => (string)($lead->state_id ?? ''),
-            'organization_zip'    => $lead->zip ?? '',
-            'country'             => (string)($lead->country_id ?? ''),
-            'find_us'             => $lead->find_us ?? '',
-            'lead_id'             => $lead->id,
-        ];
-        $registration_link = rtrim($frontendBase, '/') . '/register?' . http_build_query($queryParams);
-
+        $registration_link = $this->buildRegistrationLink($lead);
         Log::info('LeadController: prepared registration_link', [
             'registration_link' => $registration_link,
-            'lead_id'           => $lead->id
+            'lead_id' => $lead->id,
         ]);
-        $safeLink = htmlspecialchars($registration_link, ENT_QUOTES, 'UTF-8');
-        $safeName = htmlspecialchars((string)($lead->first_name ?? $lead->email), ENT_QUOTES, 'UTF-8');
 
-        $defaultTemplate = <<<HTML
-            <h2>Hello {$safeName},</h2>
-            <p>You've been invited to complete your signup. Please click the button below to enter your details and activate your account.</p>
-            <p style="text-align: center;">
-                <a href="{$safeLink}" style="display: inline-block; padding: 12px 24px; background-color: #0164A5; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold;">Complete Signup</a>
-            </p>
-            <p style="font-size: 13px; color: #888888; text-align: center;">If you did not request this, you can safely ignore this email.</p>
-        HTML;
+        $defaultTemplate = $this->buildDefaultTemplate($lead, $registration_link);
 
-        // Organization, user, and details resolution
-        $org = null;
-        $orgUser = null;
-        $orgUserDetails = null;
-        try {
-            $userModel = '\App\\Models\\User';
-            $user = $userModel::where('email', $lead->email)->first();
-            if ($user) {
-                $orgModel = '\App\\Models\\Organization';
-                $org = $orgModel::where('user_id', $user->id)->first();
-                if ($org) {
-                    $orgUser = $user;
-                    $detailsModel = '\App\\Models\\UserDetail';
-                    if (class_exists($detailsModel)) {
-                        $orgUserDetails = $detailsModel::where('user_id', $user->id)->first();
-                    }
-                }
-            }
-        } catch (\Exception $e) {
-            Log::warning('LeadController::show organization lookup failed: ' . $e->getMessage());
-        }
+        [$org, $orgUser, $orgUserDetails] = $this->lookupOrganizationAndDetails($lead);
 
         $resp = ['lead' => $lead, 'defaultTemplate' => $defaultTemplate];
 
-        // Sales person resolution
-        try {
-            $salesPersonId = null;
-            if (isset($lead->sales_person_id) && $lead->sales_person_id) {
-                $salesPersonId = $lead->sales_person_id;
-            } elseif (isset($org) && isset($org->sales_person_id) && $org->sales_person_id) {
-                $salesPersonId = $org->sales_person_id;
-            }
-
-            if ($salesPersonId) {
-                $userModel = '\\App\\Models\\User';
-                if (class_exists($userModel)) {
-                    $salesUser = $userModel::find($salesPersonId);
-                    if ($salesUser) {
-                        $resp['sales_person'] = [
-                            'id'         => $salesUser->id,
-                            'first_name' => $salesUser->first_name ?? null,
-                            'last_name'  => $salesUser->last_name ?? null,
-                            'full_name'  => trim(($salesUser->first_name ?? '') . ' ' . ($salesUser->last_name ?? '')),
-                            'email'      => $salesUser->email ?? null,
-                        ];
-                        $lead->sales_person = $resp['sales_person']['full_name'];
-                        $lead->sales_person_id = $salesUser->id;
-                    }
-                }
-            }
-        } catch (\Exception $e) {
-            Log::warning('LeadController::show sales person lookup failed: ' . $e->getMessage());
+        $salesPerson = $this->resolveSalesPersonForLead($lead, $org);
+        if ($salesPerson) {
+            $resp['sales_person'] = $salesPerson;
+            $lead->sales_person = $salesPerson['full_name'];
+            $lead->sales_person_id = $salesPerson['id'];
         }
 
         if ($org) {
@@ -305,6 +250,116 @@ class LeadController extends Controller
         }
 
         return response()->json($resp);
+    }
+
+    /**
+     * Build a registration link for a lead.
+     */
+    private function buildRegistrationLink(Lead $lead): string
+    {
+        $frontendBase = env('FRONTEND_URL', env('APP_URL', 'http://127.0.0.1:8080'));
+        $queryParams = [
+            'email' => $lead->email,
+            'first_name' => $lead->first_name ?? '',
+            'last_name' => $lead->last_name ?? '',
+            'phone' => $lead->phone ?? '',
+            'organization_name' => $lead->organization_name ?? '',
+            'organization_size' => $lead->organization_size ?? '',
+            'organization_address' => $lead->address ?? '',
+            'organization_city' => (string)($lead->city_id ?? ''),
+            'organization_state' => (string)($lead->state_id ?? ''),
+            'organization_zip' => $lead->zip ?? '',
+            'country' => (string)($lead->country_id ?? ''),
+            'find_us' => $lead->find_us ?? '',
+            'lead_id' => $lead->id,
+        ];
+
+        return rtrim($frontendBase, '/') . '/register?' . http_build_query($queryParams);
+    }
+
+    /**
+     * Build default registration email HTML template for a lead.
+     */
+    private function buildDefaultTemplate(Lead $lead, string $registrationLink): string
+    {
+        $safeLink = htmlspecialchars($registrationLink, ENT_QUOTES, 'UTF-8');
+        $safeName = htmlspecialchars((string)($lead->first_name ?? $lead->email), ENT_QUOTES, 'UTF-8');
+
+        return <<<HTML
+            <h2>Hello {$safeName},</h2>
+            <p>You've been invited to complete your signup. Please click the button below to enter your details and activate your account.</p>
+            <p style="text-align: center;">
+                <a href="{$safeLink}" style="display: inline-block; padding: 12px 24px; background-color: #0164A5; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: bold;">Complete Signup</a>
+            </p>
+            <p style="font-size: 13px; color: #888888; text-align: center;">If you did not request this, you can safely ignore this email.</p>
+        HTML;
+    }
+
+    /**
+     * Lookup organization, org user and user details for a lead's email.
+     * Returns [org|null, orgUser|null, orgUserDetails|null]
+     */
+    private function lookupOrganizationAndDetails(Lead $lead): array
+    {
+        $org = null;
+        $orgUser = null;
+        $orgUserDetails = null;
+
+        try {
+            $userModel = '\\App\\Models\\User';
+            $user = $userModel::where('email', $lead->email)->first();
+            if ($user) {
+                $orgModel = '\\App\\Models\\Organization';
+                $org = $orgModel::where('user_id', $user->id)->first();
+                if ($org) {
+                    $orgUser = $user;
+                    $detailsModel = '\\App\\Models\\UserDetail';
+                    if (class_exists($detailsModel)) {
+                        $orgUserDetails = $detailsModel::where('user_id', $user->id)->first();
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            Log::warning('LeadController::show organization lookup failed: ' . $e->getMessage());
+        }
+
+        return [$org, $orgUser, $orgUserDetails];
+    }
+
+    /**
+     * Resolve sales person details for the lead or its organization.
+     * Returns associative array or null.
+     */
+    private function resolveSalesPersonForLead(Lead $lead, $org): ?array
+    {
+        try {
+            $salesPersonId = null;
+            if (! empty($lead->sales_person_id)) {
+                $salesPersonId = $lead->sales_person_id;
+            } elseif (! empty($org) && ! empty($org->sales_person_id)) {
+                $salesPersonId = $org->sales_person_id;
+            }
+
+            if ($salesPersonId) {
+                $userModel = '\\App\\Models\\User';
+                if (class_exists($userModel)) {
+                    $salesUser = $userModel::find($salesPersonId);
+                    if ($salesUser) {
+                        return [
+                            'id' => $salesUser->id,
+                            'first_name' => $salesUser->first_name ?? null,
+                            'last_name' => $salesUser->last_name ?? null,
+                            'full_name' => trim(($salesUser->first_name ?? '') . ' ' . ($salesUser->last_name ?? '')),
+                            'email' => $salesUser->email ?? null,
+                        ];
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            Log::warning('LeadController::show sales person lookup failed: ' . $e->getMessage());
+        }
+
+        return null;
     }
 
 

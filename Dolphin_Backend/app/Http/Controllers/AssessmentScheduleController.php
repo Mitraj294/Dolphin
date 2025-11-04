@@ -19,18 +19,7 @@ class AssessmentScheduleController extends Controller
         try {
             $validated = $request->validated();
             $assessment = Assessment::findOrFail($validated['assessment_id']);
-
-            $memberIds = collect($validated['member_ids'] ?? []);
-
-            if (!empty($validated['group_ids'])) {
-                $groupIds = $validated['group_ids'];
-                // Get members from the provided groups.
-                $membersFromGroups = Member::whereHas('groups', function ($query) use ($groupIds) {
-                    $query->whereIn('groups.id', $groupIds);
-                })->pluck('id');
-                $memberIds = $memberIds->merge($membersFromGroups)->unique();
-            }
-
+            $memberIds = $this->resolveMemberIds($validated);
             $recipients = Member::whereIn('id', $memberIds)->get();
 
             // Persist the assessment schedule so the frontend can query schedule details
@@ -42,10 +31,8 @@ class AssessmentScheduleController extends Controller
                 'member_ids' => !empty($validated['member_ids']) ? $validated['member_ids'] : null,
             ];
 
-            // If frontend supplied a UTC ISO send_at, store it as well in scheduled_emails later; also include timezone for clarity
             $timezone = $validated['timezone'] ?? null;
-            if (!empty($validated['send_at'])) {
-                // store date/time pieces if available
+            if (! empty($validated['send_at'])) {
                 try {
                     $dt = Carbon::parse($validated['send_at'])->setTimezone($timezone ?: 'UTC');
                     $scheduleData['date'] = $dt->toDateString();
@@ -57,13 +44,7 @@ class AssessmentScheduleController extends Controller
 
             $assessmentSchedule = AssessmentSchedule::create($scheduleData);
 
-            // Prefer send_at (UTC ISO) from frontend if provided. Otherwise parse date + time and assume frontend local timezone.
-            if (!empty($validated['send_at'])) {
-                // frontend sends send_at as UTC ISO string
-                $sendAt = Carbon::parse($validated['send_at'])->setTimezone('UTC');
-            } else {
-                $sendAt = Carbon::parse($validated['date'] . ' ' . $validated['time']);
-            }
+            $sendAt = $this->determineSendAt($validated);
 
             $recipientEmails = $recipients->pluck('email')->filter()->unique()->values()->all();
 
@@ -81,69 +62,13 @@ class AssessmentScheduleController extends Controller
                 'recipient_emails' => $recipientEmails,
             ]);
 
-            // Create per-recipient token and queue the notification
-            foreach ($recipients as $recipient) {
-                $token = $linkService->createAnswerToken($assessment->id, $recipient->id, null);
-                $link = $linkService->generateFrontendLink($token, $recipient->id, null);
-
-                // Dispatch delayed notification (AssessmentInvitation handles link)
-                try {
-                    $recipient->notify((new AssessmentInvitation($link, $assessment->name, $assessment->id))->delay($sendAt));
-                } catch (\Exception $e) {
-                    Log::error('Failed to queue notification for recipient', ['recipient_id' => $recipient->id, 'error' => $e->getMessage()]);
-                }
-            }
+            $this->notifyRecipients($recipients, $linkService, $assessment, $sendAt);
 
             // Build the response payload expected by frontend
-            // Reuse ScheduledEmailController::show logic by assembling similar data here
             $emails = DB::table('scheduled_emails')->where('assessment_id', $assessment->id)->get();
 
-            // groups with members
-            $groupsWithMembers = [];
-            if (!empty($assessmentSchedule->group_ids)) {
-                $groups = \App\Models\Group::whereIn('id', $assessmentSchedule->group_ids)
-                    ->with(['members' => function ($query) {
-                        $query->with('memberRoles');
-                    }])
-                    ->get();
-                foreach ($groups as $group) {
-                    $groupsWithMembers[] = [
-                        'id' => $group->id,
-                        'name' => $group->name,
-                        'members' => $group->members->map(function ($member) {
-                            return [
-                                'id' => $member->id,
-                                'name' => trim(($member->first_name ?? '') . ' ' . ($member->last_name ?? '')) ?: 'Unknown',
-                                'email' => $member->email,
-                                'member_roles' => $member->memberRoles->map(function ($role) {
-                                    return ['id' => $role->id, 'name' => $role->name];
-                                })
-                            ];
-                        })
-                    ];
-                }
-            }
-
-            // members with details
-            $membersWithDetails = [];
-            if (!empty($assessmentSchedule->member_ids)) {
-                $members = \App\Models\Member::whereIn('id', $assessmentSchedule->member_ids)
-                    ->with(['memberRoles', 'groups'])
-                    ->get();
-                foreach ($members as $member) {
-                    $membersWithDetails[] = [
-                        'id' => $member->id,
-                        'name' => trim(($member->first_name ?? '') . ' ' . ($member->last_name ?? '')) ?: 'Unknown',
-                        'email' => $member->email,
-                        'groups' => $member->groups->map(function ($g) {
-                            return ['id' => $g->id, 'name' => $g->name];
-                        }),
-                        'member_roles' => $member->memberRoles->map(function ($r) {
-                            return ['id' => $r->id, 'name' => $r->name];
-                        })
-                    ];
-                }
-            }
+            $groupsWithMembers = $this->buildGroupsWithMembers($assessmentSchedule);
+            $membersWithDetails = $this->buildMembersWithDetails($assessmentSchedule);
 
             return response()->json([
                 'message' => 'Assessment has been scheduled successfully.',
@@ -158,5 +83,127 @@ class AssessmentScheduleController extends Controller
             Log::error('Error scheduling assessment:', ['error' => $e->getMessage()]);
             return response()->json(['message' => 'An unexpected error occurred while scheduling the assessment.'], 500);
         }
+    }
+
+    /**
+     * Resolve member ids from provided member_ids and group_ids in the validated payload.
+     * Returns a collection of unique member ids.
+     */
+    private function resolveMemberIds(array $validated)
+    {
+        $memberIds = collect($validated['member_ids'] ?? []);
+
+        if (! empty($validated['group_ids'])) {
+            $groupIds = $validated['group_ids'];
+            $membersFromGroups = Member::whereHas('groups', function ($query) use ($groupIds) {
+                $query->whereIn('groups.id', $groupIds);
+            })->pluck('id');
+
+            $memberIds = $memberIds->merge($membersFromGroups)->unique();
+        }
+
+        return $memberIds;
+    }
+
+    /**
+     * Determine the Carbon instance for when notifications should be sent.
+     */
+    private function determineSendAt(array $validated)
+    {
+        if (! empty($validated['send_at'])) {
+            try {
+                return Carbon::parse($validated['send_at'])->setTimezone('UTC');
+            } catch (\Exception $e) {
+                // fall through to parse date/time below
+            }
+        }
+
+        return Carbon::parse(($validated['date'] ?? '') . ' ' . ($validated['time'] ?? ''));
+    }
+
+    /**
+     * Notify recipients by generating a per-recipient link and queuing the notification.
+     */
+    private function notifyRecipients($recipients, AssessmentLinkService $linkService, Assessment $assessment, $sendAt): void
+    {
+        foreach ($recipients as $recipient) {
+            $token = $linkService->createAnswerToken($assessment->id, $recipient->id, null);
+            $link = $linkService->generateFrontendLink($token, $recipient->id, null);
+
+            try {
+                $recipient->notify((new AssessmentInvitation($link, $assessment->name, $assessment->id))->delay($sendAt));
+            } catch (\Exception $e) {
+                Log::error('Failed to queue notification for recipient', ['recipient_id' => $recipient->id, 'error' => $e->getMessage()]);
+            }
+        }
+    }
+
+    /**
+     * Build groups with members payload used by the frontend.
+     */
+    private function buildGroupsWithMembers(AssessmentSchedule $assessmentSchedule): array
+    {
+        $groupsWithMembers = [];
+
+        if (empty($assessmentSchedule->group_ids)) {
+            return $groupsWithMembers;
+        }
+
+        $groups = \App\Models\Group::whereIn('id', $assessmentSchedule->group_ids)
+            ->with(['members' => function ($query) {
+                $query->with('memberRoles');
+            }])
+            ->get();
+
+        foreach ($groups as $group) {
+            $groupsWithMembers[] = [
+                'id' => $group->id,
+                'name' => $group->name,
+                'members' => $group->members->map(function ($member) {
+                    return [
+                        'id' => $member->id,
+                        'name' => trim(($member->first_name ?? '') . ' ' . ($member->last_name ?? '')) ?: 'Unknown',
+                        'email' => $member->email,
+                        'member_roles' => $member->memberRoles->map(function ($role) {
+                            return ['id' => $role->id, 'name' => $role->name];
+                        })
+                    ];
+                })
+            ];
+        }
+
+        return $groupsWithMembers;
+    }
+
+    /**
+     * Build members with details payload used by the frontend.
+     */
+    private function buildMembersWithDetails(AssessmentSchedule $assessmentSchedule): array
+    {
+        $membersWithDetails = [];
+
+        if (empty($assessmentSchedule->member_ids)) {
+            return $membersWithDetails;
+        }
+
+        $members = \App\Models\Member::whereIn('id', $assessmentSchedule->member_ids)
+            ->with(['memberRoles', 'groups'])
+            ->get();
+
+        foreach ($members as $member) {
+            $membersWithDetails[] = [
+                'id' => $member->id,
+                'name' => trim(($member->first_name ?? '') . ' ' . ($member->last_name ?? '')) ?: 'Unknown',
+                'email' => $member->email,
+                'groups' => $member->groups->map(function ($g) {
+                    return ['id' => $g->id, 'name' => $g->name];
+                }),
+                'member_roles' => $member->memberRoles->map(function ($r) {
+                    return ['id' => $r->id, 'name' => $r->name];
+                })
+            ];
+        }
+
+        return $membersWithDetails;
     }
 }
