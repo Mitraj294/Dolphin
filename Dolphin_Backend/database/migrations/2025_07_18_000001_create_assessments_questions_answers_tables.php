@@ -11,7 +11,7 @@ return new class extends Migration {
         if (! Schema::hasTable('questions')) {
             Schema::create('questions', function (Blueprint $table) {
                 $table->id();
-                $table->string('question');
+                $table->text('text'); // Changed from 'question' to 'text' to match model
                 $table->json('options')->nullable();
                 $table->timestamps();
                 $table->softDeletes();
