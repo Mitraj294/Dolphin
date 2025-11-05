@@ -76,6 +76,7 @@ import Editor from "@tinymce/tinymce-vue";
 import axios from "axios";
 
 // TinyMCE core and plugins (self-hosted)
+// CRITICAL: Import tinymce core FIRST before icons, plugins, or themes
 import "tinymce/icons/default";
 import "tinymce/models/dom";
 import "tinymce/plugins/advlist";
