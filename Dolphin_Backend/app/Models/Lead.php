@@ -14,7 +14,7 @@ class Lead extends Model
         'last_name',
         'email',
         'phone',
-        'find_us',
+        'referral_source_id',
         'organization_name',
         'organization_size',
         'address',
@@ -22,7 +22,6 @@ class Lead extends Model
         'state_id',
         'city_id',
         'zip',
-        'notes',
         'status',
         'created_by',
         'sales_person_id'
@@ -33,8 +32,59 @@ class Lead extends Model
         'registered_at' => 'datetime',
     ];
 
+    /**
+     * Get all notes for the lead.
+     */
+    public function notes()
+    {
+        return $this->hasMany(LeadNote::class)->orderBy('note_date', 'desc');
+    }
+
+    /**
+     * Get the sales person assigned to this lead.
+     */
     public function salesPerson()
     {
         return $this->belongsTo(User::class, 'sales_person_id');
+    }
+
+    /**
+     * Get the user who created this lead.
+     */
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Get the referral source for this lead.
+     */
+    public function referralSource()
+    {
+        return $this->belongsTo(ReferralSource::class);
+    }
+
+    /**
+     * Get the country for this lead.
+     */
+    public function country()
+    {
+        return $this->belongsTo(Country::class);
+    }
+
+    /**
+     * Get the state for this lead.
+     */
+    public function state()
+    {
+        return $this->belongsTo(State::class);
+    }
+
+    /**
+     * Get the city for this lead.
+     */
+    public function city()
+    {
+        return $this->belongsTo(City::class);
     }
 }

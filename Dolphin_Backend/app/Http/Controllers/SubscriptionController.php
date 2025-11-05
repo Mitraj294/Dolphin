@@ -21,12 +21,12 @@ class SubscriptionController extends Controller
     public function hasExpired(Subscription $subscription): bool
     {
         // If no end date is set, consider it as never expiring
-        if (!$subscription->subscription_end) {
+        if (!$subscription->ends_at) {
             return false;
         }
 
         // Compare the end date with the current time
-        return $subscription->subscription_end->isPast();
+        return $subscription->ends_at->isPast();
     }
 
     /**
@@ -37,7 +37,7 @@ class SubscriptionController extends Controller
      */
     public function isActive(Subscription $subscription): bool
     {
-        return $subscription->status === 'active' && !$this->hasExpired($subscription);
+        return $subscription->isActive() && !$this->hasExpired($subscription);
     }
 
     /**
@@ -49,7 +49,7 @@ class SubscriptionController extends Controller
     public function checkAndUpdateStatus(Subscription $subscription): bool
     {
         if ($this->hasExpired($subscription) && $subscription->status === 'active') {
-            $subscription->update(['status' => 'expired']);
+            $subscription->update(['status' => 'canceled']);
             return false;
         }
 
@@ -105,14 +105,19 @@ class SubscriptionController extends Controller
         $user = $this->resolveUser($request);
 
         $subscription = $user?->subscriptions()->latest('created_at')->first();
+        $latestInvoice = $subscription?->invoices()->first();
 
         return response()->json([
             'status' => $subscription?->status ?? 'none',
-            'plan_amount' => $subscription?->amount,
-            'period' => $subscription?->amount == 2500 ? 'Annual' : 'Monthly',
-            'plan_name' => $subscription?->amount == 2500 ? 'Dolphin Standard Annual Plan' : 'Dolphin Basic Monthly Plan',
+            'plan_id' => $subscription?->plan_id,
             'subscription_id' => $subscription?->id,
-            'subscription_end' => $subscription?->subscription_end?->toDateTimeString(),
+            'started_at' => $subscription?->started_at?->toDateTimeString(),
+            'ends_at' => $subscription?->ends_at?->toDateTimeString(),
+            'current_period_end' => $subscription?->current_period_end?->toDateTimeString(),
+            'is_paused' => $subscription?->is_paused ?? false,
+            'cancel_at_period_end' => $subscription?->cancel_at_period_end ?? false,
+            'latest_amount_paid' => $latestInvoice?->amount_paid,
+            'currency' => $latestInvoice?->currency,
         ]);
     }
 
@@ -145,16 +150,24 @@ class SubscriptionController extends Controller
      */
     private function formatPlanPayload(Subscription $subscription): array
     {
+        $latestInvoice = $subscription->invoices()->first();
+
         return [
-            'plan' => $subscription->plan,
-            'plan_name' => $subscription->plan_name,
-            'amount' => $subscription->amount,
-            'period' => $subscription->amount == 2500 ? 'Annual' : 'Monthly',
+            'plan_id' => $subscription->plan_id,
             'status' => $subscription->status,
-            'payment_method' => $subscription->payment_method_type . ' ' . $subscription->payment_method,
-            'start' => $subscription->subscription_start,
-            'end' => $subscription->subscription_end,
-            'nextBill' => $subscription->subscription_end?->addDay()->toDateTimeString(),
+            'start' => $subscription->started_at,
+            'end' => $subscription->ends_at,
+            'current_period_end' => $subscription->current_period_end,
+            'trial_ends_at' => $subscription->trial_ends_at,
+            'cancel_at_period_end' => $subscription->cancel_at_period_end,
+            'is_paused' => $subscription->is_paused,
+            'latest_invoice' => $latestInvoice ? [
+                'amount' => $latestInvoice->amount_paid,
+                'currency' => $latestInvoice->currency,
+                'status' => $latestInvoice->status,
+                'paid_at' => $latestInvoice->paid_at,
+                'invoice_url' => $latestInvoice->hosted_invoice_url,
+            ] : null,
         ];
     }
 
@@ -163,23 +176,27 @@ class SubscriptionController extends Controller
      */
     private function formatHistoryPayload(Subscription $subscription): array
     {
-        // Ensure payment details array exists
-        $paymentDetails = $subscription->payment_method_details;
-        if (!is_array($paymentDetails)) {
-            $paymentDetails = [];
-        }
+        $invoices = $subscription->invoices;
 
         return [
-
-            'payment_method' => $subscription->payment_method_type . ' ' . $subscription->payment_method,
-            'paymentEmail' => $subscription->customer_email,
-            'paymentDate' => $subscription->payment_date ?? $subscription->created_at,
-            'subscriptionEnd' => $subscription->subscription_end,
-            'amount' => $subscription->amount,
-            'pdfUrl' => $subscription->receipt_url,
-            'description' => $subscription->amount == 2500 ? 'DOLPHIN Standard Subscription (at $2500.00 / year)' : 'DOLPHIN Basic Subscription (at $250.00 / month)',
-
-            'invoiceNumber' => $subscription->invoice_number,
+            'subscription_id' => $subscription->id,
+            'plan_id' => $subscription->plan_id,
+            'status' => $subscription->status,
+            'started_at' => $subscription->started_at,
+            'ends_at' => $subscription->ends_at,
+            'current_period_end' => $subscription->current_period_end,
+            'invoices' => $invoices->map(function ($invoice) {
+                return [
+                    'id' => $invoice->id,
+                    'amount_due' => $invoice->amount_due,
+                    'amount_paid' => $invoice->amount_paid,
+                    'currency' => $invoice->currency,
+                    'status' => $invoice->status,
+                    'paid_at' => $invoice->paid_at,
+                    'invoice_url' => $invoice->hosted_invoice_url,
+                    'stripe_invoice_id' => $invoice->stripe_invoice_id,
+                ];
+            }),
         ];
     }
 }

@@ -8,33 +8,59 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Subscription extends Model
 {
     use SoftDeletes;
+
     protected $fillable = [
         'user_id',
+        'plan_id',
         'stripe_subscription_id',
         'stripe_customer_id',
-        'plan',
         'status',
-        'payment_method',
-        'default_payment_method_id',
-        'payment_method_type',
-        'payment_method_brand',
-        'payment_method_last4',
-        'payment_date',
-        'subscription_start',
-        'subscription_end',
-        'amount',
-        'receipt_url',
-        'invoice_number',
-        'description',
-        'customer_name',
-        'customer_email',
-        'customer_country',
-        'meta',
+        'trial_ends_at',
+        'ends_at',
+        'started_at',
+        'current_period_end',
+        'cancel_at_period_end',
+        'is_paused',
     ];
+
     protected $casts = [
-        'payment_date' => 'datetime',
-        'subscription_start' => 'datetime',
-        'subscription_end' => 'datetime',
-        'meta' => 'array',
+        'trial_ends_at' => 'datetime',
+        'ends_at' => 'datetime',
+        'started_at' => 'datetime',
+        'current_period_end' => 'datetime',
+        'cancel_at_period_end' => 'boolean',
+        'is_paused' => 'boolean',
     ];
+
+    /**
+     * Get the user that owns the subscription.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get all invoices for the subscription.
+     */
+    public function invoices()
+    {
+        return $this->hasMany(SubscriptionInvoice::class)->orderBy('created_at', 'desc');
+    }
+
+    /**
+     * Check if subscription is active.
+     */
+    public function isActive(): bool
+    {
+        return $this->status === 'active';
+    }
+
+    /**
+     * Check if subscription is canceled.
+     */
+    public function isCanceled(): bool
+    {
+        return $this->status === 'canceled';
+    }
 }

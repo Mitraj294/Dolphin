@@ -175,20 +175,20 @@
             <FormLabel>How did you find us?</FormLabel>
             <div class="input-group org-findus-group">
               <FormDropdown
-                v-model="find_us"
+                v-model="referral_source_id"
                 icon="fas fa-search"
                 ref="findUsSelect"
                 :options="[
                   { value: null, text: 'Select', disabled: true },
-                  ...findUsOptions.map((o) => ({ value: o, text: o })),
+                  ...referralSources.map((o) => ({ value: o.id, text: o.name })),
                 ]"
                 required
               />
               <FormLabel
-                v-if="errors.find_us"
+                v-if="errors.referral_source_id"
                 class="error-message1
                 "
-                >{{ errors.find_us[0] }}</FormLabel
+                >{{ errors.referral_source_id[0] }}</FormLabel
               >
             </div>
           </div>
@@ -436,8 +436,6 @@ import {
   FormRow,
 } from '@/components/Common/Common_UI/Form';
 import {
-  findUsOptions,
-  normalizeFindUs,
   normalizeOrgSize,
   orgSizeOptions,
 } from '@/utils/formUtils';
@@ -475,8 +473,8 @@ export default {
       states: [],
       cities: [],
       currentYear: new Date().getFullYear(),
-      find_us: '',
-      findUsOptions: findUsOptions,
+      referral_source_id: null,
+      referralSources: [],
       orgSizeOptions: orgSizeOptions,
       showPassword: false,
       showConfirmPassword: false,
@@ -559,7 +557,7 @@ export default {
       const step2 = [
         'organization_name',
         'organization_size',
-        'find_us',
+        'referral_source_id',
         'country',
         'state',
         'organization_state',
@@ -588,7 +586,7 @@ export default {
         const map = {
           organization_name: 'orgNameInput',
           organization_size: 'orgSizeSelect',
-          find_us: 'findUsSelect',
+          referral_source_id: 'findUsSelect',
           country: 'countrySelect',
           state: 'stateSelect',
           organization_state: 'stateSelect',
@@ -651,7 +649,7 @@ export default {
         state: this.organization_state,
         zip: this.organization_zip,
         country: this.country,
-        find_us: this.find_us,
+        referral_source_id: this.referral_source_id,
       };
     },
       processRegistrationError(error) {
@@ -757,8 +755,7 @@ export default {
       set('organization_city');
       set('organization_state');
       set('organization_zip');
-      set('find_us');
-      if (this.find_us) this.find_us = normalizeFindUs(this.find_us);
+      set('referral_source_id');
       if (this.organization_size)
         this.organization_size = normalizeOrgSize(this.organization_size);
       return changed;
@@ -783,12 +780,19 @@ export default {
         lead.organization_city ||
         this.organization_city;
       this.organization_zip = lead.organization_zip || '';
-      this.find_us = lead.find_us || '';
-      if (this.find_us) this.find_us = normalizeFindUs(this.find_us);
+      this.referral_source_id = lead.referral_source_id || null;
       if (this.organization_size)
         this.organization_size = normalizeOrgSize(this.organization_size);
     },
 
+    async fetchReferralSources() {
+      try {
+        const res = await axios.get(`${API_BASE_URL}/api/referral-sources`);
+        this.referralSources = res.data || [];
+      } catch (e) {
+        console.warn('Failed to fetch referral sources', e);
+      }
+    },
     async fetchCountries() {
       try {
         const res = await axios.get(`${API_BASE_URL}/api/countries`);
@@ -932,12 +936,11 @@ export default {
   async mounted() {
     // Ensure lead prefill runs before fetching so we can resolve names -> ids
     await this.prefillFromLead();
+    await this.fetchReferralSources();
     await this.fetchCountries();
     // fetch dependent lists if prefilled
     if (this.country) await this.fetchStates();
     if (this.organization_state) await this.fetchCities();
-    // attempt to fetch existing find_us options from leads table
-    // await this.fetchFindUsOptions();
     this.$nextTick(() => {
       setTimeout(() => {
         if (this.$refs.firstNameInput) this.focusRef('firstNameInput');

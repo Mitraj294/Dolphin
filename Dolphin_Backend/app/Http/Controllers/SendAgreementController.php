@@ -128,18 +128,13 @@ class SendAgreementController extends Controller
             'last_name'  => $lead->last_name ?? $nameParts['last_name'],
             'password'   => Hash::make($passwordPlain),
         ];
-        $user = User::create($userData);
-
-        try {
-            if ($lead) {
-                $user->userDetails()->create([
-                    'phone'      => $lead->phone,
-                    'country_id' => $lead->country_id ?? null,
-                ]);
-            }
-        } catch (Exception $e) {
-            Log::warning('Failed to create userDetails: ' . $e->getMessage());
+        
+        if ($lead) {
+            $userData['phone'] = $lead->phone;
+            $userData['country_id'] = $lead->country_id ?? null;
         }
+        
+        $user = User::create($userData);
 
         try {
             $role = Role::where('name', 'organizationadmin')->first();

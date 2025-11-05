@@ -20,9 +20,9 @@ class OrganizationController extends Controller
         $user = $request->user()->load('roles');
         $query = Organization::with([
             'user.roles',
-            'user.userDetails.country',
-            'user.userDetails.state',
-            'user.userDetails.city',
+            'user.country',
+            'user.state',
+            'user.city',
             'salesPerson',
             'activeSubscription'
         ]);
@@ -70,9 +70,9 @@ class OrganizationController extends Controller
 
         $organization->load([
             'user.roles',
-            'user.userDetails.country',
-            'user.userDetails.state',
-            'user.userDetails.city',
+            'user.country',
+            'user.state',
+            'user.city',
             'salesPerson',
             'activeSubscription'
         ]);

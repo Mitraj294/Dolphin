@@ -232,7 +232,7 @@ export default {
         this.orgUserDetails &&
         (this.orgUserDetails.first_name || this.orgUserDetails.last_name)
       ) {
-        const fn = this.orgUserDetails.first_name || "";
+        const fn = this.org || "";
         const ln = this.orgUserDetails.last_name || "";
         const full = (fn + " " + ln).trim();
         if (full) return full;

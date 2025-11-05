@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Country;
 use App\Models\State;
 use App\Models\City;
+use App\Models\ReferralSource;
 use Illuminate\Support\Facades\Log;
 
 class LocationController extends Controller
@@ -68,5 +69,13 @@ class LocationController extends Controller
         } else {
             return response()->json(['error' => 'City not found'], 404);
         }
+    }
+
+    public function referralSources()
+    {
+        Log::info('[LocationController] Fetching referral sources');
+        $sources = ReferralSource::orderBy('name')->get(['id', 'name']);
+        Log::info('[LocationController] Referral sources fetched', ['count' => count($sources)]);
+        return response()->json($sources);
     }
 }

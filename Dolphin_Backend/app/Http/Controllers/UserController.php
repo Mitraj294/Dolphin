@@ -21,7 +21,7 @@ class UserController extends Controller
 
     public function index()
     {
-        $users = User::with(['userDetails.country', 'roles'])->get()->map(function ($user) {
+        $users = User::with(['country', 'roles'])->get()->map(function ($user) {
             return $this->formatUserPayload($user);
         });
 
@@ -71,7 +71,7 @@ class UserController extends Controller
 
             return response()->json([
                 'message' => 'User created successfully',
-                'user' => $this->formatUserPayload($user->load('roles', 'userDetails')),
+                'user' => $this->formatUserPayload($user->load('roles', 'country')),
                 'password' => $plainPassword,
             ], 201);
         } catch (ValidationException $e) {
@@ -200,11 +200,6 @@ class UserController extends Controller
         return DB::transaction(function () use ($data) {
             $user = User::create($data);
 
-            $user->userDetails()->create([
-                'phone' => $data['phone'],
-                'country_id' => $data['country_id'],
-            ]);
-
             if ($data['role'] === 'organizationadmin') {
                 $org = Organization::create([
                     'user_id' => $user->id,
@@ -236,8 +231,8 @@ class UserController extends Controller
             'last_name' => $user->last_name,
             'name' => $user->full_name,
             'role' => $user->roles->first()->name ?? 'user',
-            'phone' => $user->userDetails->phone ?? null,
-            'country' => $user->userDetails->country->name ?? null,
+            'phone' => $user->phone ?? null,
+            'country' => $user->country->name ?? null,
         ];
     }
 }

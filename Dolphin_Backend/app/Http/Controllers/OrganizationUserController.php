@@ -42,7 +42,7 @@ class OrganizationUserController extends Controller
                         'first_name' => $member->first_name,
                         'last_name' => $member->last_name,
                         'email' => $member->email,
-                        'phone' => $member->userDetails->phone ?? null,
+                        'phone' => $member->phone ?? null,
                         'roles' => $member->roles->pluck('name'),
                         'groups' => $member->groups->map(function ($group) {
                             return [
@@ -302,7 +302,7 @@ class OrganizationUserController extends Controller
             $organization->members()->syncWithoutDetaching($validated['user_id']);
 
             // Return updated member with details
-            $member = User::with(['roles', 'userDetails'])
+            $member = User::with(['roles'])
                 ->find($validated['user_id']);
 
             return response()->json([
@@ -312,7 +312,7 @@ class OrganizationUserController extends Controller
                     'first_name' => $member->first_name,
                     'last_name' => $member->last_name,
                     'email' => $member->email,
-                    'phone' => $member->userDetails->phone ?? null,
+                    'phone' => $member->phone ?? null,
                     'roles' => $member->roles->pluck('name'),
                 ],
             ]);

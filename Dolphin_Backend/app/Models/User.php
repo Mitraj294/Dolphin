@@ -22,15 +22,49 @@ class User extends Authenticatable
         'organization_id',
         'email',
         'password',
+        'phone',
+        'referral_source_id',
+        'address',
+        'country_id',
+        'state_id',
+        'city_id',
+        'zip',
         'created_at',
         'updated_at',
         'deleted_at',
     ];
 
     // Eloquent relationships
-    public function userDetails()
+    /**
+     * Get the country.
+     */
+    public function country()
     {
-        return $this->hasOne(UserDetail::class, 'user_id');
+        return $this->belongsTo(Country::class);
+    }
+
+    /**
+     * Get the state.
+     */
+    public function state()
+    {
+        return $this->belongsTo(State::class);
+    }
+
+    /**
+     * Get the city.
+     */
+    public function city()
+    {
+        return $this->belongsTo(City::class);
+    }
+
+    /**
+     * Get the referral source.
+     */
+    public function referralSource()
+    {
+        return $this->belongsTo(ReferralSource::class);
     }
 
     public function subscriptions()
@@ -46,7 +80,7 @@ class User extends Authenticatable
 
     public function roles()
     {
-        return $this->belongsToMany(Role::class, 'user_roles', 'user_id', 'role_id')->withTimestamps();
+        return $this->belongsToMany(Role::class, 'role_users', 'user_id', 'role_id')->withTimestamps();
     }
 
     /**

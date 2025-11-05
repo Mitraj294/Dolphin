@@ -97,4 +97,12 @@ class Organization extends Model
     {
         return $this->hasMany(OrganizationAssessment::class, 'organization_id');
     }
+
+    /**
+     * Get the organization's address.
+     */
+    public function address(): HasOne
+    {
+        return $this->hasOne(OrganizationAddress::class);
+    }
 }

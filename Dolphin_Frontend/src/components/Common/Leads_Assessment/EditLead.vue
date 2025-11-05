@@ -59,17 +59,22 @@
               <div>
                 <FormLabel>How did you find us?</FormLabel>
                 <FormDropdown
-                  v-model="form.find_us"
+                  v-model="form.referral_source_id"
                   icon="fas fa-search"
                   :options="[
                     { value: null, text: 'Select', disabled: true },
-                    ...findUsOptions.map((o) => ({ value: o, text: o })),
+                    ...referralSources.map((o) => ({
+                      value: o.id,
+                      text: o.name,
+                    })),
                   ]"
                   required
                 />
-                <FormLabel v-if="errors.find_us" class="error-message">{{
-                  errors.find_us[0]
-                }}</FormLabel>
+                <FormLabel
+                  v-if="errors.referral_source_id"
+                  class="error-message"
+                  >{{ errors.referral_source_id[0] }}</FormLabel
+                >
               </div>
               <div></div>
             </FormRow>
@@ -207,7 +212,7 @@ import {
   FormRow,
 } from "@/components/Common/Common_UI/Form";
 import MainLayout from "@/components/layout/MainLayout.vue";
-import { findUsOptions, orgSizeOptions } from "@/utils/formUtils";
+import { orgSizeOptions } from "@/utils/formUtils";
 import axios from "axios";
 
 export default {
@@ -222,14 +227,14 @@ export default {
   },
   data() {
     return {
-      findUsOptions,
+      referralSources: [],
       orgSizeOptions,
       form: {
         first_name: "",
         last_name: "",
         email: "",
         phone: "",
-        find_us: "",
+        referral_source_id: null,
         organization_name: "",
         organization_size: "",
         address: "",
@@ -248,6 +253,7 @@ export default {
     };
   },
   async created() {
+    await this.fetchReferralSources();
     await this.fetchCountries();
 
     const leadId = this.getLeadId();
@@ -332,7 +338,7 @@ export default {
         last_name: leadObj.last_name || "",
         email: leadObj.email || "",
         phone: leadObj.phone || "",
-        find_us: leadObj.find_us || "",
+        referral_source_id: leadObj.referral_source_id || null,
         organization_name: leadObj.organization_name || "",
         organization_size: leadObj.organization_size || "",
         address: leadObj.address || leadObj.address_line || "",
@@ -353,6 +359,11 @@ export default {
           name ? `Edit Lead : ${name}` : "Edit Lead"
         );
       });
+    },
+    async fetchReferralSources() {
+      const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
+      const res = await axios.get(`${API_BASE_URL}/api/referral-sources`);
+      this.referralSources = res.data;
     },
     async fetchCountries() {
       const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;

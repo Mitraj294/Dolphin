@@ -63,10 +63,6 @@ class LeadController extends Controller
         if (!$lead) {
             return response()->json(['message' => Message::MESSAGE], 404);
         }
-        // PATCH for notes-only update
-        if ($request->isMethod('patch') && $this->isPatchNotesOnly($request) && $request->has('notes')) {
-            return $this->performNotesUpdate($request, $lead);
-        }
 
         // Full update validation rules
         $data = $request->validate([
@@ -77,7 +73,6 @@ class LeadController extends Controller
             'find_us'           => LeadValidationRules::REQUIRED_STRING,
             'organization_name' => LeadValidationRules::REQUIRED_STRING . '|max:500',
             'organization_size' => LeadValidationRules::REQUIRED_STRING,
-            'notes'             => LeadValidationRules::OPTIONAL_STRING,
             'address'           => LeadValidationRules::REQUIRED_STRING . '|max:500',
             'country_id'        => LeadValidationRules::REQUIRED_INTEGER . '|exists:countries,id',
             'state_id'          => LeadValidationRules::REQUIRED_INTEGER . '|exists:states,id',
@@ -87,29 +82,6 @@ class LeadController extends Controller
 
         $lead->update($data);
         return response()->json(['message' => 'Lead updated successfully', 'lead' => $lead]);
-    }
-
-    /**
-     * Detect whether the incoming PATCH request only contains the 'notes' key.
-     */
-    private function isPatchNotesOnly(Request $request): bool
-    {
-        if (! $request->isMethod('patch')) {
-            return false;
-        }
-
-        $payloadKeys = array_keys($request->all());
-        return ! empty($payloadKeys) && collect($payloadKeys)->every(fn($k) => $k === 'notes');
-    }
-
-    /**
-     * Validate and perform notes-only update, returning the JSON response.
-     */
-    private function performNotesUpdate(Request $request, Lead $lead)
-    {
-        $data = $request->validate(['notes' => LeadValidationRules::OPTIONAL_STRING]);
-        $lead->update($data);
-        return response()->json(['message' => 'Notes updated successfully', 'lead' => $lead]);
     }
 
 
@@ -128,7 +100,6 @@ class LeadController extends Controller
             'find_us'           => LeadValidationRules::REQUIRED_STRING,
             'organization_name' => LeadValidationRules::REQUIRED_STRING . '|max:500',
             'organization_size' => LeadValidationRules::REQUIRED_STRING,
-            'notes'             => LeadValidationRules::OPTIONAL_STRING,
             'address'           => LeadValidationRules::REQUIRED_STRING . '|max:500',
             'country_id'        => LeadValidationRules::REQUIRED_INTEGER . '|exists:countries,id',
             'state_id'          => LeadValidationRules::REQUIRED_INTEGER . '|exists:states,id',
@@ -220,7 +191,7 @@ class LeadController extends Controller
 
     public function show($id)
     {
-        $lead = Lead::find($id);
+        $lead = Lead::with('notes.creator:id,first_name,last_name,email')->find($id);
         if (!$lead) {
             return response()->json(['message' => Message::MESSAGE], 404);
         }
@@ -232,7 +203,7 @@ class LeadController extends Controller
 
         $defaultTemplate = $this->buildDefaultTemplate($lead, $registration_link);
 
-        [$org, $orgUser, $orgUserDetails] = $this->lookupOrganizationAndDetails($lead);
+        [$org, $orgUser] = $this->lookupOrganizationAndDetails($lead);
 
         $resp = ['lead' => $lead, 'defaultTemplate' => $defaultTemplate];
 
@@ -246,7 +217,6 @@ class LeadController extends Controller
         if ($org) {
             $resp['organization'] = $org;
             $resp['orgUser'] = $orgUser;
-            $resp['orgUserDetails'] = $orgUserDetails;
         }
 
         return response()->json($resp);
@@ -270,7 +240,8 @@ class LeadController extends Controller
             'organization_state' => (string)($lead->state_id ?? ''),
             'organization_zip' => $lead->zip ?? '',
             'country' => (string)($lead->country_id ?? ''),
-            'find_us' => $lead->find_us ?? '',
+            'referral_source_id' => (string)($lead->referral_source_id ?? ''),
+            'find_us' => (string)($lead->referral_source_id ?? ''), // backward compatibility
             'lead_id' => $lead->id,
         ];
 
@@ -296,14 +267,13 @@ class LeadController extends Controller
     }
 
     /**
-     * Lookup organization, org user and user details for a lead's email.
-     * Returns [org|null, orgUser|null, orgUserDetails|null]
+     * Lookup organization and org user for a lead's email.
+     * Returns [org|null, orgUser|null]
      */
     private function lookupOrganizationAndDetails(Lead $lead): array
     {
         $org = null;
         $orgUser = null;
-        $orgUserDetails = null;
 
         try {
             $userModel = '\\App\\Models\\User';
@@ -313,17 +283,13 @@ class LeadController extends Controller
                 $org = $orgModel::where('user_id', $user->id)->first();
                 if ($org) {
                     $orgUser = $user;
-                    $detailsModel = '\\App\\Models\\UserDetail';
-                    if (class_exists($detailsModel)) {
-                        $orgUserDetails = $detailsModel::where('user_id', $user->id)->first();
-                    }
                 }
             }
         } catch (\Exception $e) {
             Log::warning('LeadController::show organization lookup failed: ' . $e->getMessage());
         }
 
-        return [$org, $orgUser, $orgUserDetails];
+        return [$org, $orgUser];
     }
 
     /**
@@ -489,10 +455,10 @@ class LeadController extends Controller
             return response()->json(['message' => Message::MESSAGE], 404);
         }
 
-        if (empty($lead->find_us)) {
-            Log::info("Lead prefill: lead_id={$lead->id} find_us is empty");
+        if (empty($lead->referral_source_id)) {
+            Log::info("Lead prefill: lead_id={$lead->id} referral_source_id is empty");
         } else {
-            Log::info("Lead prefill: lead_id={$lead->id} find_us={$lead->find_us}");
+            Log::info("Lead prefill: lead_id={$lead->id} referral_source_id={$lead->referral_source_id}");
         }
 
         return response()->json(['lead' => [
@@ -507,29 +473,25 @@ class LeadController extends Controller
             'organization_state_id'  => $lead->state_id ?? '',
             'organization_zip'       => $lead->zip ?? '',
             'country_id'             => $lead->country_id ?? '',
-            'find_us'                => $lead->find_us ?? '',
+            'referral_source_id'     => $lead->referral_source_id ?? '',
+            'find_us'                => $lead->referral_source_id ?? '', // backward compatibility
         ]]);
     }
 
 
-    // Get distinct values for 'find_us' field from leads table.
+    // Get referral sources from referral_sources table.
     // @return \Illuminate\Http\JsonResponse
 
     public function findUsOptions()
     {
-        $values = Lead::whereNotNull('find_us')
-            ->where('find_us', '!=', '')
-            ->distinct()
-            ->pluck('find_us')
-            ->filter()
-            ->values();
+        $sources = \App\Models\ReferralSource::orderBy('name')->get(['id', 'name']);
 
-        if ($values->isEmpty()) {
-            Log::info('Lead find_us options: none found');
+        if ($sources->isEmpty()) {
+            Log::info('Referral sources: none found');
         } else {
-            Log::info('Lead find_us options: ' . $values->join(', '));
+            Log::info('Referral sources fetched: ' . $sources->count());
         }
 
-        return response()->json(['options' => $values]);
+        return response()->json(['options' => $sources]);
     }
 }

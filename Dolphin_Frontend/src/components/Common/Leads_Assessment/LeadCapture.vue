@@ -61,16 +61,16 @@
               <div>
                 <FormLabel>How did you find us?</FormLabel>
                 <FormDropdown
-                  v-model="form.findUs"
+                  v-model="form.referral_source_id"
                   icon="fas fa-search"
                   :options="[
                     { value: null, text: 'Select', disabled: true },
-                    ...findUsOptions.map((o) => ({ value: o, text: o })),
+                    ...referralSources.map((o) => ({ value: o.id, text: o.name })),
                   ]"
                   required
                 />
-                <FormLabel v-if="errors.find_us" class="error-message">{{
-                  errors.find_us[0]
+                <FormLabel v-if="errors.referral_source_id" class="error-message">{{
+                  errors.referral_source_id[0]
                 }}</FormLabel>
               </div>
               <div></div>
@@ -214,7 +214,7 @@ import {
   FormRow,
 } from "@/components/Common/Common_UI/Form";
 import MainLayout from "@/components/layout/MainLayout.vue";
-import { findUsOptions, orgSizeOptions } from "@/utils/formUtils";
+import { orgSizeOptions } from "@/utils/formUtils";
 import axios from "axios";
 import Toast from "primevue/toast";
 import { useToast } from "primevue/usetoast";
@@ -237,7 +237,7 @@ export default {
   data() {
     return {
       showPassword: false,
-      findUsOptions,
+      referralSources: [],
       orgSizeOptions,
       form: {
         firstName: "",
@@ -245,7 +245,7 @@ export default {
         email: "",
         phone: "",
         password: "",
-        findUs: "",
+        referral_source_id: null,
         organization_name: "",
         organization_size: "",
         address: "",
@@ -276,6 +276,16 @@ export default {
   methods: {
     togglePassword() {
       this.showPassword = !this.showPassword;
+    },
+    async fetchReferralSources() {
+      const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
+      console.log("[LeadCapture] [FRONTEND] Fetching referral sources...");
+      const res = await axios.get(`${API_BASE_URL}/api/referral-sources`);
+      this.referralSources = res.data;
+      console.log(
+        "[LeadCapture] [FRONTEND] Referral sources fetched:",
+        this.referralSources
+      );
     },
     async fetchCountries() {
       const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
@@ -404,7 +414,7 @@ export default {
             email: this.form.email,
             phone: this.form.phone,
             password: this.form.password,
-            find_us: this.form.findUs,
+            referral_source_id: this.form.referral_source_id,
             organization_name: this.form.organization_name,
             organization_size: this.form.organization_size,
             address: this.form.address,
@@ -453,13 +463,13 @@ export default {
         email: "",
         phone: "",
         password: "",
-        findUs: "",
+        referral_source_id: null,
         organization_name: "",
         organization_size: "",
         address: "",
-        country_id: "",
-        state_id: "",
-        city_id: "",
+        country_id: null,
+        state_id: null,
+        city_id: null,
         zip: "",
       };
       this.states = [];
@@ -467,6 +477,7 @@ export default {
     },
   },
   mounted() {
+    this.fetchReferralSources();
     this.fetchCountries();
   },
 };

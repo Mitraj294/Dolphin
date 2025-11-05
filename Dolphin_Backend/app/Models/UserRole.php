@@ -3,14 +3,26 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
-class UserRole extends Model
+class RoleUser extends Model
 {
-    use SoftDeletes;
-    protected $table = 'user_roles';
+    protected $table = 'role_users';
     protected $fillable = ['user_id', 'role_id'];
-    public $incrementing = false;
-    protected $primaryKey = null;
     public $timestamps = true;
+
+    /**
+     * Get the user that owns the role assignment.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the role.
+     */
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
 }

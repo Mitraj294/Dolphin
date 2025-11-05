@@ -20,7 +20,8 @@ class RegisterRequest extends FormRequest
             'password' => 'required|string|min:6',
             'confirm_password' => 'required|string|min:6|same:password',
             'phone' => 'required|regex:/^[6-9]\d{9}$/',
-            'find_us' => 'required|string',
+            'referral_source_id' => 'required|integer|exists:referral_sources,id',
+            'find_us' => 'nullable|integer|exists:referral_sources,id', // backward compatibility
             'organization_name' => 'required|string|max:500',
             'organization_size' => 'required|string',
             'address' => 'required|string|max:500',

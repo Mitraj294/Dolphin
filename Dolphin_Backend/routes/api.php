@@ -3,10 +3,10 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AssessmentController;
 use App\Http\Controllers\AssessmentResponseController;
-use App\Http\Controllers\AssessmentScheduleController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\LeadController;
+use App\Http\Controllers\LeadNoteController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrganizationController;
@@ -89,6 +89,8 @@ Route::prefix('cities')->group(function () {
     Route::get('/', [LocationController::class, 'cities']);
     Route::get('/{id}', [LocationController::class, 'getCityById']);
 });
+
+Route::get('/referral-sources', [LocationController::class, 'referralSources']);
 
 /*
 |--------------------------------------------------------------------------
@@ -226,7 +228,14 @@ Route::middleware('auth:api')->group(function () {
 
         /* DOLPHIN ADMIN, ORGANIZATION ADMIN & SUPERADMIN */
         Route::middleware('auth.role:dolphinadmin,organizationadmin,superadmin')->group(function () {
-            Route::post('/assessment-schedules', [AssessmentScheduleController::class, 'store']);
+            // Lead notes management
+            Route::prefix('leads/{leadId}/notes')->group(function () {
+                Route::get('/', [LeadNoteController::class, 'index']);
+                Route::post('/', [LeadNoteController::class, 'store']);
+                Route::get('/{noteId}', [LeadNoteController::class, 'show']);
+                Route::put('/{noteId}', [LeadNoteController::class, 'update']);
+                Route::delete('/{noteId}', [LeadNoteController::class, 'destroy']);
+            });
         });
     });
 });

@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\User;
-use App\Models\UserDetail;
 use App\Models\Organization;
 use App\Models\Role;
 use App\Models\Country;
@@ -25,12 +24,8 @@ class AuthUserService
                 'last_name' => $data['last_name'],
                 'email' => $data['email'],
                 'password' => Hash::make($data['password']),
-            ]);
-
-            UserDetail::create([
-                'user_id' => $user->id,
                 'phone' => $data['phone'],
-                'find_us' => $data['find_us'],
+                'referral_source_id' => $data['referral_source_id'] ?? $data['find_us'] ?? null,
                 'address' => $data['address'],
                 'country_id' => $data['country'],
                 'state_id' => $data['state'],
@@ -71,7 +66,7 @@ class AuthUserService
 
     public function buildUserPayload(User $user): array
     {
-        $user->loadMissing(['userDetails.country', 'roles']);
+        $user->loadMissing(['country', 'roles']);
         $org = Organization::where('user_id', $user->id)->first();
 
         return [
@@ -80,9 +75,9 @@ class AuthUserService
             'role' => $user->roles->first()->name ?? 'user',
             'first_name' => $user->first_name,
             'last_name' => $user->last_name,
-            'phone' => $user->userDetails->phone ?? null,
-            'country' => $user->userDetails->country->name ?? null,
-            'country_id' => $user->userDetails->country_id ?? null,
+            'phone' => $user->phone ?? null,
+            'country' => $user->country->name ?? null,
+            'country_id' => $user->country_id ?? null,
             'organization_id' => $org?->id,
             'organization_name' => $org?->organization_name,
         ];
@@ -107,15 +102,20 @@ class AuthUserService
             return;
         }
 
-        $userDetail = UserDetail::firstOrNew(['user_id' => $user->id]);
-        $userDetail->phone = $detailsData['phone'] ?? $userDetail->phone;
+        $user->phone = $detailsData['phone'] ?? $user->phone;
 
         if (isset($detailsData['country'])) {
-            $userDetail->country_id = $this->resolveCountryId($detailsData['country']);
+            $user->country_id = $this->resolveCountryId($detailsData['country']);
         }
 
-        if ($userDetail->isDirty()) {
-            $userDetail->save();
+        if (isset($detailsData['referral_source_id'])) {
+            $user->referral_source_id = $detailsData['referral_source_id'];
+        } elseif (isset($detailsData['find_us'])) {
+            $user->referral_source_id = $detailsData['find_us'];
+        }
+
+        if ($user->isDirty()) {
+            $user->save();
         }
     }
 

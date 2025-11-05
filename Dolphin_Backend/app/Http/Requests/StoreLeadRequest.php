@@ -26,7 +26,8 @@ class StoreLeadRequest extends FormRequest
             'last_name'         => 'required|string|max:255',
             'email'             => 'required|string|email|max:255|unique:users,email,NULL,id,deleted_at,NULL',
             'phone'             => 'required|regex:/^[6-9]\d{9}$/',
-            'find_us'           => 'required|string',
+            'referral_source_id' => 'required|integer|exists:referral_sources,id',
+            'find_us'           => 'nullable|integer|exists:referral_sources,id', // backward compatibility
             'organization_name' => 'required|string|max:500',
             'organization_size' => 'required|string',
             'notes'             => 'nullable|string',
