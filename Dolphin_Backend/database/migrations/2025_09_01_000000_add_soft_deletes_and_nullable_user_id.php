@@ -16,7 +16,8 @@ class AddSoftDeletesAndNullableUserId extends Migration
     {
         $tables = [
             'answers',
-            'assessments',
+            // rename to the new table name used across the app
+            'organization_assessments',
             'groups',
             'members',
             'organizations',
@@ -71,7 +72,7 @@ class AddSoftDeletesAndNullableUserId extends Migration
     {
         $tables = [
             'answers',
-            'assessments',
+            'organization_assessments',
             'groups',
             'members',
             'organizations',

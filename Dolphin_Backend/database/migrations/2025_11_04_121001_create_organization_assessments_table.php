@@ -18,7 +18,6 @@ return new class extends Migration
                 $table->time('time')->nullable();
                 $table->timestamps();
                 $table->softDeletes();
-                // add foreign keys if users/organizations tables exist at runtime
                 $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
                 $table->foreign('organization_id')->references('id')->on('organizations')->onDelete('set null');
             });

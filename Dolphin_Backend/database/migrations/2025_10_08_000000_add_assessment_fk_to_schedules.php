@@ -9,8 +9,8 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // Add foreign key only if assessments table exists and schedules table exists
-        if (!Schema::hasTable('assessments') || !Schema::hasTable('assessment_schedules')) {
+        // Add foreign key only if organization_assessments table exists and schedules table exists
+        if (!Schema::hasTable('organization_assessments') || !Schema::hasTable('assessment_schedules')) {
             return;
         }
 
@@ -55,7 +55,7 @@ return new class extends Migration
             Schema::table('assessment_schedules', function (Blueprint $table) {
                 $table->foreign('assessment_id')
                     ->references('id')
-                    ->on('assessments')
+                    ->on('organization_assessments')
                     ->onDelete('cascade');
             });
         } catch (\Throwable $e) {

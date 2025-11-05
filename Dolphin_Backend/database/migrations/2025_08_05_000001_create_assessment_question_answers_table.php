@@ -11,8 +11,8 @@ return new class extends Migration {
             Schema::create('assessment_question_answers', function (Blueprint $table) {
                 $table->id();
 
-                // The assessment this answer belongs to
-                $table->foreignId('assessment_id')->constrained('assessments')->onDelete('cascade');
+                // The assessment this answer belongs to (use organization_assessments)
+                $table->foreignId('assessment_id')->constrained('organization_assessments')->onDelete('cascade');
 
                 // The organization-level question template (static question text)
                 $table->unsignedBigInteger('organization_assessment_question_id');

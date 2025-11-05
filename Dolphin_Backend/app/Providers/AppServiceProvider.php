@@ -26,6 +26,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Register mail view namespace for email templates
+        $this->app['view']->addNamespace('mail', resource_path('views/vendor/mail'));
+
         // Register model observers so organization contract dates are kept in sync
         Subscription::observe(SubscriptionObserver::class);
         Organization::observe(OrganizationObserver::class);

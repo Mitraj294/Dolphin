@@ -21,7 +21,8 @@ return new class extends Migration
                 $table->json('member_ids')->nullable();
                 $table->timestamps();
 
-                $table->foreign('assessment_id')->references('id')->on('assessments')->onDelete('cascade');
+                // point to organization_assessments (legacy `assessments` removed)
+                $table->foreign('assessment_id')->references('id')->on('organization_assessments')->onDelete('cascade');
             });
         } else {
             Schema::table('assessment_schedules', function (Blueprint $table) {
@@ -57,7 +58,8 @@ return new class extends Migration
                 $table->index('assessment_id');
                 $table->index('group_id');
                 $table->index('member_id');
-                $table->foreign('assessment_id')->references('id')->on('assessments')->onDelete('cascade');
+                // scheduled_emails.assessment_id should reference organization_assessments
+                $table->foreign('assessment_id')->references('id')->on('organization_assessments')->onDelete('cascade');
                 $table->foreign('group_id')->references('id')->on('groups')->nullOnDelete();
                 $table->foreign('member_id')->references('id')->on('members')->nullOnDelete();
             });
