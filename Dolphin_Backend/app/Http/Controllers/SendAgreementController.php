@@ -9,7 +9,6 @@ use App\Models\Lead;
 use App\Models\User;
 use App\Models\Role;
 use App\Models\Organization;
-use App\Models\GuestLink;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
@@ -93,13 +92,16 @@ class SendAgreementController extends Controller
     {
         $guestCode = $request->query('guest_code');
         if ($guestCode) {
-            [$responseData, $status] = $this->validateGuestCodeFlow($guestCode);
+            // NOTE: Guest code functionality removed (guest_links table deleted)
+            return response()->json([
+                'valid' => false,
+                'message' => 'Guest code functionality has been removed. Please login normally.'
+            ], 200);
         } else {
             $token = $request->query('token');
             [$responseData, $status] = $this->validateTokenFlow($token);
+            return response()->json($responseData, $status);
         }
-
-        return response()->json($responseData, $status);
     }
 
     private function resolveLead(array $validated): ?Lead
@@ -166,22 +168,8 @@ class SendAgreementController extends Controller
             $qs['price_id'] = $validated['price_id'];
         }
 
-        // create guest link
-        try {
-            $guestCode = Str::upper(Str::random(10));
-            $guestLink = GuestLink::create([
-                'code'      => $guestCode,
-                'user_id'   => $user->id,
-                'lead_id'   => $validated['lead_id'] ?? null,
-                'meta'      => ['price_id' => $validated['price_id'] ?? null],
-                'expires_at' => now()->addHours(2),
-            ]);
-            if ($guestLink) {
-                $qs['guest_code'] = $guestCode;
-            }
-        } catch (Exception $e) {
-            Log::warning('Failed to create guest token for email link: ' . $e->getMessage());
-        }
+        // NOTE: Guest link functionality removed (guest_links table deleted)
+        // Users must authenticate normally to access plans
 
         // add subscription details if available
         try {
@@ -229,59 +217,6 @@ class SendAgreementController extends Controller
         } catch (Exception $e) {
             Log::warning('SendAgreementController: failed to parse final HTML for logging: ' . $e->getMessage());
         }
-    }
-
-    private function validateGuestCodeFlow($guestCode): array
-    {
-        $responseData = ['valid' => false];
-        $status = 200;
-
-        try {
-            $guestLink = GuestLink::where('code', $guestCode)->first();
-            if (! $guestLink) {
-                $responseData['message'] = 'Invalid guest code';
-            } elseif ($guestLink->used_at) {
-                $responseData['message'] = 'Guest code already used';
-            } elseif ($guestLink->expires_at && Carbon::parse($guestLink->expires_at)->lt(Carbon::now())) {
-                $responseData['message'] = 'Guest code expired';
-            } else {
-                $user = User::find($guestLink->user_id);
-                if (! $user) {
-                    $responseData['message'] = 'User not found';
-                } else {
-                    try {
-                        $tokenResult = $user->createToken('GuestLink');
-                        if (isset($tokenResult->token)) {
-                            $tokenResult->token->expires_at = Carbon::now()->addHours(2);
-                            $tokenResult->token->save();
-                        }
-                        $plainToken = $tokenResult->accessToken ?? null;
-                        $guestLink->used_at = Carbon::now();
-                        $guestLink->save();
-
-                        $responseData = [
-                            'valid'      => true,
-                            'token'      => $plainToken,
-                            'expires_at' => $tokenResult->token->expires_at ?? null,
-                            'user'       => [
-                                'id'        => $user->id,
-                                'email'     => $user->email,
-                                'first_name' => $user->first_name,
-                                'last_name' => $user->last_name,
-                            ],
-                        ];
-                    } catch (\Exception $e) {
-                        Log::warning('Failed to mint guest token: ' . $e->getMessage());
-                        $responseData['message'] = 'Failed to mint token';
-                    }
-                }
-            }
-        } catch (\Exception $e) {
-            Log::warning('validateGuest guest_code flow failed: ' . $e->getMessage());
-            $responseData['message'] = 'Guest flow failed';
-        }
-
-        return [$responseData, $status];
     }
 
     private function validateTokenFlow($token): array

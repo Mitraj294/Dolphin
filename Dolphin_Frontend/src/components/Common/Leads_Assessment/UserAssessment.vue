@@ -150,34 +150,39 @@ export default {
       );
     });
 
-    // Fetch questions, answers, and subscription status from backend
+    // Fetch assessments and previous responses from backend
     const fetchQuestionsAndAnswers = async () => {
-      // Helper to fetch questions
+      // Helper to fetch assessments (replacing questions)
       const loadQuestions = async (headers, params) => {
-        const resQ = await axios.get(`${API_BASE_URL}/api/questions`, {
+        const resQ = await axios.get(`${API_BASE_URL}/api/assessments-list`, {
           headers,
           params,
         });
         if (Array.isArray(resQ.data)) {
-          questions.value = resQ.data;
+          // Transform assessment data to match old question format for compatibility
+          questions.value = resQ.data.map(assessment => ({
+            id: assessment.id,
+            question: assessment.title,
+            options: assessment.form_definition || []
+          }));
           // Initialize selectedWords array
           selectedWords.value = resQ.data.map(() => []);
         }
       };
 
-      // Helper to fetch previous answers
+      // Helper to fetch previous responses (replacing answers)
       const loadAnswers = async (headers, params) => {
-        const resA = await axios.get(`${API_BASE_URL}/api/answers`, {
+        const resA = await axios.get(`${API_BASE_URL}/api/assessment-responses`, {
           headers,
           params,
         });
         if (Array.isArray(resA.data)) {
-          for (const ans of resA.data) {
+          for (const response of resA.data) {
             const idx = questions.value.findIndex(
-              (q) => String(q.id) === String(ans.question_id)
+              (q) => String(q.id) === String(response.assessment_id)
             );
-            if (idx !== -1 && Array.isArray(ans.answer)) {
-              selectedWords.value[idx] = ans.answer;
+            if (idx !== -1 && Array.isArray(response.selected_options)) {
+              selectedWords.value[idx] = response.selected_options;
             }
           }
         }
@@ -270,20 +275,20 @@ export default {
         return;
       }
 
-      // Build answers array as expected by backend
-      const buildAnswersPayload = () =>
+      // Build responses array as expected by new backend (assessment-based)
+      const buildResponsesPayload = () =>
         questions.value.map((q, idx) => ({
-          question_id: q.id,
-          answer: selectedWords.value[idx] || [],
+          assessment_id: q.id,
+          selected_options: selectedWords.value[idx] || [],
         }));
 
-      const answersPayload = buildAnswersPayload();
+      const responsesPayload = buildResponsesPayload();
 
       const submitAnswers = async (payload, token) => {
         try {
           await axios.post(
-            `${API_BASE_URL}/api/answers`,
-            { answers: payload },
+            `${API_BASE_URL}/api/assessment-responses`,
+            { responses: payload },
             {
               headers: {
                 "Content-Type": "application/json",
@@ -310,7 +315,7 @@ export default {
         }
       };
 
-      await submitAnswers(answersPayload, authToken);
+      await submitAnswers(responsesPayload, authToken);
     };
 
     onMounted(fetchQuestionsAndAnswers);

@@ -61,4 +61,40 @@ class Organization extends Model
             ->where('status', 'active')
             ->orderBy('subscription_end', 'desc');
     }
+
+    /**
+     * Get organization users (enhanced relationship with status) via organization_users pivot
+     */
+    public function organizationUsers()
+    {
+        return $this->belongsToMany(User::class, 'organization_users', 'organization_id', 'user_id')
+            ->withPivot('status')
+            ->withTimestamps()
+            ->using(OrganizationUser::class);
+    }
+
+    /**
+     * Get organization members (simple membership) via organization_member pivot
+     */
+    public function members()
+    {
+        return $this->belongsToMany(User::class, 'organization_member', 'organization_id', 'user_id')
+            ->withTimestamps();
+    }
+
+    /**
+     * Get all groups belonging to this organization
+     */
+    public function groups(): HasMany
+    {
+        return $this->hasMany(Group::class, 'organization_id');
+    }
+
+    /**
+     * Get all assessments for this organization
+     */
+    public function assessments(): HasMany
+    {
+        return $this->hasMany(OrganizationAssessment::class, 'organization_id');
+    }
 }

@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreAssessmentScheduleRequest;
 use App\Models\OrganizationAssessment;
-use App\Models\Member;
+use App\Models\OrganizationAssessmentMember;
+use App\Models\OrganizationAssessmentGroup;
+use App\Models\User;
+use App\Models\Group;
 use App\Notifications\AssessmentInvitation;
 use App\Services\AssessmentLinkService;
 use Illuminate\Support\Carbon;
@@ -19,16 +22,29 @@ class AssessmentScheduleController extends Controller
         try {
             $validated = $request->validated();
             $assessment = OrganizationAssessment::findOrFail($validated['assessment_id']);
-            $memberIds = $this->resolveMemberIds($validated);
-            $recipients = Member::whereIn('id', $memberIds)->get();
+
+            // Resolve user IDs (supports both user_ids and member_ids for backwards compatibility)
+            $userIds = $this->resolveUserIds($validated);
+            $recipients = User::whereIn('id', $userIds)->get();
+
+            // Store assignments in pivot tables
+            $this->storeAssessmentAssignments($assessment, $validated, $userIds);
 
             // Persist the assessment schedule so the frontend can query schedule details
+            // Support both user_ids and member_ids for backwards compatibility
+            $memberIdsForSchedule = null;
+            if (!empty($validated['user_ids'])) {
+                $memberIdsForSchedule = $validated['user_ids'];
+            } elseif (!empty($validated['member_ids'])) {
+                $memberIdsForSchedule = $validated['member_ids'];
+            }
+
             $scheduleData = [
                 'assessment_id' => $assessment->id,
                 'date' => $validated['date'] ?? null,
                 'time' => $validated['time'] ?? null,
                 'group_ids' => !empty($validated['group_ids']) ? $validated['group_ids'] : null,
-                'member_ids' => !empty($validated['member_ids']) ? $validated['member_ids'] : null,
+                'member_ids' => $memberIdsForSchedule,
             ];
 
             $timezone = $validated['timezone'] ?? null;
@@ -86,23 +102,55 @@ class AssessmentScheduleController extends Controller
     }
 
     /**
-     * Resolve member ids from provided member_ids and group_ids in the validated payload.
-     * Returns a collection of unique member ids.
+     * Store assessment assignments in pivot tables
      */
-    private function resolveMemberIds(array $validated)
+    private function storeAssessmentAssignments(OrganizationAssessment $assessment, array $validated, $userIds): void
     {
-        $memberIds = collect($validated['member_ids'] ?? []);
+        // Store individual user assignments in organization_assessment_member
+        foreach ($userIds as $userId) {
+            OrganizationAssessmentMember::updateOrCreate(
+                [
+                    'organization_assessment_id' => $assessment->id,
+                    'user_id' => $userId,
+                ],
+                [
+                    'status' => 'Pending',
+                ]
+            );
+        }
+
+        // Store group assignments in organization_assessment_group
+        if (!empty($validated['group_ids'])) {
+            foreach ($validated['group_ids'] as $groupId) {
+                OrganizationAssessmentGroup::updateOrCreate(
+                    [
+                        'organization_assessment_id' => $assessment->id,
+                        'group_id' => $groupId,
+                    ]
+                );
+            }
+        }
+    }
+
+    /**
+     * Resolve user ids from provided user_ids/member_ids and group_ids in the validated payload.
+     * Returns a collection of unique user ids.
+     */
+    private function resolveUserIds(array $validated)
+    {
+        // Support both user_ids and member_ids for backwards compatibility
+        $userIds = collect($validated['user_ids'] ?? $validated['member_ids'] ?? []);
 
         if (! empty($validated['group_ids'])) {
             $groupIds = $validated['group_ids'];
-            $membersFromGroups = Member::whereHas('groups', function ($query) use ($groupIds) {
+            $usersFromGroups = User::whereHas('groups', function ($query) use ($groupIds) {
                 $query->whereIn('groups.id', $groupIds);
             })->pluck('id');
 
-            $memberIds = $memberIds->merge($membersFromGroups)->unique();
+            $userIds = $userIds->merge($usersFromGroups)->unique();
         }
 
-        return $memberIds;
+        return $userIds;
     }
 
     /**
@@ -149,9 +197,9 @@ class AssessmentScheduleController extends Controller
             return $groupsWithMembers;
         }
 
-        $groups = \App\Models\Group::whereIn('id', $assessmentSchedule->group_ids)
-            ->with(['members' => function ($query) {
-                $query->with('memberRoles');
+        $groups = Group::whereIn('id', $assessmentSchedule->group_ids)
+            ->with(['users' => function ($query) {
+                $query->with('roles');
             }])
             ->get();
 
@@ -159,12 +207,13 @@ class AssessmentScheduleController extends Controller
             $groupsWithMembers[] = [
                 'id' => $group->id,
                 'name' => $group->name,
-                'members' => $group->members->map(function ($member) {
+                'members' => $group->users->map(function ($user) {
                     return [
-                        'id' => $member->id,
-                        'name' => trim(($member->first_name ?? '') . ' ' . ($member->last_name ?? '')) ?: 'Unknown',
-                        'email' => $member->email,
-                        'member_roles' => $member->memberRoles->map(function ($role) {
+                        'id' => $user->id,
+                        'name' => trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? '')) ?: 'Unknown',
+                        'email' => $user->email,
+                        'member_role' => $user->pivot->role ?? null,
+                        'roles' => $user->roles->map(function ($role) {
                             return ['id' => $role->id, 'name' => $role->name];
                         })
                     ];
@@ -186,19 +235,19 @@ class AssessmentScheduleController extends Controller
             return $membersWithDetails;
         }
 
-        $members = \App\Models\Member::whereIn('id', $assessmentSchedule->member_ids)
-            ->with(['memberRoles', 'groups'])
+        $users = User::whereIn('id', $assessmentSchedule->member_ids)
+            ->with(['roles', 'groups'])
             ->get();
 
-        foreach ($members as $member) {
+        foreach ($users as $user) {
             $membersWithDetails[] = [
-                'id' => $member->id,
-                'name' => trim(($member->first_name ?? '') . ' ' . ($member->last_name ?? '')) ?: 'Unknown',
-                'email' => $member->email,
-                'groups' => $member->groups->map(function ($g) {
+                'id' => $user->id,
+                'name' => trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? '')) ?: 'Unknown',
+                'email' => $user->email,
+                'groups' => $user->groups->map(function ($g) {
                     return ['id' => $g->id, 'name' => $g->name];
                 }),
-                'member_roles' => $member->memberRoles->map(function ($r) {
+                'roles' => $user->roles->map(function ($r) {
                     return ['id' => $r->id, 'name' => $r->name];
                 })
             ];

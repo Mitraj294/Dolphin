@@ -309,7 +309,8 @@ export default {
           date: this.scheduleDate,
           time: this.scheduleTime,
           group_ids: this.selectedGroupIds.map((g) => g.id),
-          member_ids: this.selectedMemberIds.map((m) => m.id),
+          user_ids: this.selectedMemberIds.map((m) => m.id), // Changed from member_ids to user_ids
+          member_ids: this.selectedMemberIds.map((m) => m.id), // Keep for backwards compatibility
           // include selectedMembers with email and ids so parent can call /api/schedule-email
           selectedMembers: (this.selectedMemberIds || []).map((m) => ({
             id: m.id,
@@ -349,6 +350,15 @@ export default {
 
       this.scheduledLoading = true;
       try {
+        // NOTE: /api/scheduled-email/show endpoint was removed during cleanup
+        // Schedule functionality needs to be reimplemented
+        console.warn(
+          "Schedule checking disabled - endpoint removed during cleanup"
+        );
+        this.scheduledStatus = null;
+        this.scheduledDetails = null;
+
+        /* OLD CODE (endpoint removed):
         const authToken = storage.get("authToken");
         const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
         const url = `${API_BASE_URL}/api/scheduled-email/show?assessment_id=${encodeURIComponent(
@@ -359,15 +369,14 @@ export default {
           headers: { Authorization: `Bearer ${authToken}` },
         });
 
-        // The backend returns { scheduled: bool, schedule: ..., emails: ..., ... }
         if (response.data?.scheduled) {
           this.scheduledStatus = "scheduled";
-          // store the whole response so callers can access schedule/emails/groups_with_members etc.
           this.scheduledDetails = response.data;
         } else {
           this.scheduledStatus = null;
           this.scheduledDetails = null;
         }
+        */
       } catch (error) {
         this.scheduledStatus = null;
         console.error("Error checking schedule status:", error);
@@ -389,15 +398,18 @@ export default {
     async fetchMembers() {
       const authToken = storage.get("authToken");
       const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
-      const response = await axios.get(`${API_BASE_URL}/api/members`, {
-        headers: { Authorization: `Bearer ${authToken}` },
-      });
+      const response = await axios.get(
+        `${API_BASE_URL}/api/organization/members`,
+        {
+          headers: { Authorization: `Bearer ${authToken}` },
+        }
+      );
       const membersData = response.data?.data || response.data || [];
       return membersData.map((m) => ({
         id: m.id,
         name: `${m.first_name} ${m.last_name}`.trim(),
         email: m.email,
-        group_ids: Array.isArray(m.group_ids) ? m.group_ids : [],
+        group_ids: m.groups ? m.groups.map((g) => g.id) : [],
       }));
     },
 

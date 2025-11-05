@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\OrganizationAssessment;
-use App\Models\Member;
+use App\Models\User;
 use App\Models\Organization;
 use App\Http\Requests\StoreAssessmentRequest;
 use App\Http\Requests\IndexAssessmentRequest;
@@ -63,27 +63,36 @@ class AssessmentController extends Controller
     {
         try {
             $validated = $request->validated();
+
+            // log incoming validated payload to help diagnose 500s in dev
+            Log::info('[AssessmentController@store] payload', ['validated' => $validated]);
+
+            // Defensive check: ensure authenticated user is present
+            $user = $request->user();
+            if (!$user) {
+                Log::warning('[AssessmentController@store] unauthenticated request');
+                return response()->json(['message' => 'Unauthenticated'], 401);
+            }
+
             $orgId = $this->resolveOrganizationId($request, $validated);
 
             $assessment = OrganizationAssessment::create([
                 'name' => $validated['name'],
-                'user_id' => $request->user()->id,
+                'user_id' => $user->id,
                 'organization_id' => $orgId,
+                // store optional scheduling information if provided
+                'date' => $validated['date'] ?? null,
+                'time' => $validated['time'] ?? null,
             ]);
 
-            if (!empty($validated['question_ids'])) {
-                $assessment->questions()->attach($validated['question_ids']);
-            }
-
-            return response()->json(['assessment' => $assessment->load('questions')], 201);
+            // Do not attach questions on assessment creation; assessments are standalone records
+            return response()->json(['assessment' => $assessment], 201);
         } catch (\Exception $e) {
             Log::error('Failed to create assessment.', ['error' => $e->getMessage()]);
             return response()->json(['message' => 'Failed to create assessment.'], 500);
         }
     }
 
-
-    // Get a summary of an assessment's answers.
     // @param  int  $id
     // @return JsonResponse
 
@@ -91,13 +100,48 @@ class AssessmentController extends Controller
     {
         try {
             $assessment = OrganizationAssessment::findOrFail($id);
-            $tokens = DB::table('assessment_answer_tokens')->where('assessment_id', $id)->get();
-            $answers = DB::table('assessment_question_answers')->where('assessment_id', $id)->get();
 
-            $members = $this->getMembersFromTokens($tokens);
-            $this->attachAnswersToMembers($members, $answers);
+            // Get responses from assessment_responses table (not the old assessment_question_answers)
+            $responses = DB::table('assessment_responses')
+                ->where('assessment_id', $id)
+                ->get();
 
-            $summaryCounts = $this->calculateSummaryCounts($tokens);
+            // Get unique users who responded
+            $userIds = $responses->pluck('user_id')->unique();
+            $users = User::whereIn('id', $userIds)->get()->keyBy('id');
+
+            // Build members array from responses
+            $members = [];
+            foreach ($responses as $response) {
+                $user = $users->get($response->user_id);
+                $userId = $response->user_id;
+
+                if (!isset($members[$userId])) {
+                    $memberName = 'Unknown';
+                    if ($user) {
+                        $fullName = trim("{$user->first_name} {$user->last_name}");
+                        $memberName = !empty($fullName) ? $fullName : $user->email;
+                    }
+
+                    $members[$userId] = [
+                        'member_id' => $userId,
+                        'user_id' => $userId,
+                        'name' => $memberName,
+                        'responses' => [],
+                    ];
+                }
+
+                $members[$userId]['responses'][] = [
+                    'attempt_id' => $response->attempt_id,
+                    'selected_options' => $response->selected_options,
+                    'created_at' => $response->created_at,
+                ];
+            }
+
+            $summaryCounts = [
+                'total_responses' => $responses->count(),
+                'unique_users' => count($members),
+            ];
 
             return response()->json([
                 'assessment' => [
@@ -113,66 +157,6 @@ class AssessmentController extends Controller
             Log::error('Failed to generate assessment summary.', ['assessment_id' => $id, 'error' => $e->getMessage()]);
             return response()->json(['message' => 'Failed to generate assessment summary.'], 500);
         }
-    }
-
-
-    // Get member details from assessment tokens.
-    // @param  \Illuminate\Support\Collection  $tokens
-    // @return array
-
-    private function getMembersFromTokens($tokens): array
-    {
-        $members = [];
-        foreach ($tokens as $token) {
-            $member = Member::withTrashed()->find($token->member_id);
-            $memberName = 'Unknown';
-            if ($member) {
-                $fullName = trim("{$member->first_name} {$member->last_name}");
-                $memberName = !empty($fullName) ? $fullName : $member->email;
-            }
-            $members[$token->member_id] = [
-                'member_id' => $token->member_id,
-                'name' => $memberName,
-                'answers' => [],
-            ];
-        }
-        return $members;
-    }
-
-
-    // Attach answers to their respective members.
-    // @param  array  $members
-    // @param  \Illuminate\Support\Collection  $answers
-
-    private function attachAnswersToMembers(array &$members, $answers): void
-    {
-        $questionIds = $answers->pluck('organization_assessment_question_id')->unique();
-        $questions = DB::table('organization_assessment_questions')->whereIn('id', $questionIds)->pluck('text', 'id');
-
-        foreach ($answers as $answer) {
-            if (isset($members[$answer->member_id])) {
-                $members[$answer->member_id]['answers'][] = [
-                    'question' => $questions[$answer->organization_assessment_question_id] ?? '',
-                    'answer' => $answer->answer,
-                    'assessment_question_id' => $answer->assessment_question_id,
-                    'organization_assessment_question_id' => $answer->organization_assessment_question_id,
-                ];
-            }
-        }
-    }
-
-
-    // Calculate summary counts for an assessment.
-    // @param  \Illuminate\Support\Collection  $tokens
-    // @return array
-
-    private function calculateSummaryCounts($tokens): array
-    {
-        return [
-            'total_sent' => $tokens->count(),
-            'submitted' => $tokens->where('used', 1)->count(),
-            'pending' => $tokens->where('used', 0)->count(),
-        ];
     }
 
 

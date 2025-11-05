@@ -2,26 +2,24 @@
 
 namespace App\Http\Requests;
 
+/**
+ * DEPRECATED REQUEST: This validates data for the obsolete 'members' table.
+ * 
+ * The 'members' and 'member_roles' tables no longer exist.
+ * Use organization_member pivot table and user_roles instead.
+ * 
+ * This request is kept ONLY for backwards compatibility with MemberController.
+ */
+
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreMemberRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
     public function authorize(): bool
     {
-        // Only allow users with the 'organizationadmin' role to create members.
         return $this->user()->hasRole('organizationadmin');
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, mixed>
-     */
     public function rules(): array
     {
         return [
@@ -36,11 +34,6 @@ class StoreMemberRequest extends FormRequest
         ];
     }
 
-    /**
-     * Get custom error messages for validation rules.
-     *
-     * @return array<string, string>
-     */
     public function messages(): array
     {
         return [

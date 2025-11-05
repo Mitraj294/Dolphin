@@ -1,10 +1,32 @@
 <?php
 
-// Deprecated model shim removed. The application now uses `OrganizationAssessment`.
-// This file intentionally left minimal to signal that `Assessment` is deprecated.
+namespace App\Models;
 
-// Note: If any code still imports or instantiates `App\Models\Assessment` you
-// should update it to use `App\Models\OrganizationAssessment` instead. The
-// shim was removed to avoid silently carrying legacy behavior.
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
-// (No class defined)
+class Assessment extends Model
+{
+    use HasFactory;
+
+    protected $table = 'assessment';
+
+    protected $fillable = [
+        'title',
+        'description',
+        'form_definition',
+    ];
+
+    protected $casts = [
+        'form_definition' => 'array', // Cast JSON to array
+    ];
+
+    /**
+     * Get all responses for this assessment
+     */
+    public function responses(): HasMany
+    {
+        return $this->hasMany(AssessmentResponse::class, 'assessment_id');
+    }
+}

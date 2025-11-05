@@ -33,8 +33,11 @@ class UpdateGroupRequest extends FormRequest
                 'max:255',
                 Rule::unique('groups', 'name')->ignore($groupId)->whereNull('deleted_at')
             ],
+            // Accept both user_ids (new) and member_ids (backwards compatibility)
+            'user_ids' => 'sometimes|array',
+            'user_ids.*' => 'integer|exists:users,id',
             'member_ids' => 'sometimes|array',
-            'member_ids.*' => 'integer|exists:members,id',
+            'member_ids.*' => 'integer|exists:users,id',
         ];
     }
 }

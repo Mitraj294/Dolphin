@@ -13,10 +13,13 @@ class AssessmentQuestion extends Model
     protected $table = 'assessment_question';
     protected $fillable = ['assessment_id', 'question_id'];
 
-
-    // Get the organization assessment question associated with this entry.
-    public function question(): BelongsTo
+    public function assessment(): BelongsTo
     {
-        return $this->belongsTo(OrganizationAssessmentQuestion::class, 'question_id');
+        return $this->belongsTo(Assessment::class, 'assessment_id');
     }
+
+    /* DEPRECATED: OrganizationAssessmentQuestion model no longer exists.
+     * Questions are now stored in assessment.form_definition JSON field.
+     * This relationship has been removed. Access questions via Assessment model.
+     */
 }

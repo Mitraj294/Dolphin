@@ -48,7 +48,6 @@
       <!-- Modals -->
       <CreateAssessmentModal
         v-if="showCreateModal"
-        :questions="questions"
         @close="closeCreateModal"
         @assessment-created="handleAssessmentCreated"
         @validation-error="handleValidationError"
@@ -108,7 +107,7 @@ export default {
   data() {
     return {
       assessments: [],
-      questions: [],
+      // questions removed — assessments can be created without attaching questions
       allGroups: [],
       allMembers: [],
       selectedAssessment: null,
@@ -192,7 +191,6 @@ export default {
           e?.message
         );
         this.assessments = [];
-        this.questions = [];
         this._showToast("error", "Error", "Could not load assessment data.");
       } finally {
         this.loading = false;
@@ -235,20 +233,15 @@ export default {
       const base = process.env.VUE_APP_API_BASE_URL;
       const headers = { Authorization: `Bearer ${authToken}` };
 
-      const [assessmentsRes, questionsRes, groupsRes, membersRes] =
-        await Promise.all([
-          axios.get(`${base}/api/assessments`, { headers, params }),
-          axios.get(`${base}/api/organization-assessment-questions`, {
-            headers,
-          }),
-          axios.get(`${base}/api/groups`, { headers }),
-          axios.get(`${base}/api/members`, { headers }),
-        ]);
+      const [assessmentsRes, groupsRes, membersRes] = await Promise.all([
+        axios.get(`${base}/api/assessments`, { headers, params }),
+        axios.get(`${base}/api/groups`, { headers }),
+        axios.get(`${base}/api/organization/members`, { headers }),
+      ]);
 
       this.assessments = this.parseApiResponse(assessmentsRes, "assessments");
-      this.questions = this.parseApiResponse(questionsRes, "questions");
       this.allGroups = this.parseApiResponse(groupsRes, "groups");
-      this.allMembers = this.parseApiResponse(membersRes, "members");
+      this.allMembers = this.parseApiResponse(membersRes, "data");
 
       await this.fetchScheduleStatuses(authToken);
     },
@@ -274,15 +267,14 @@ export default {
       }
     },
     async fetchScheduleForAssessment(assessment, authToken) {
+      // NOTE: /api/scheduled-email/show endpoint was removed during cleanup
+      // Schedule functionality needs to be reimplemented using assessment_schedules table
       try {
-        const base = process.env.VUE_APP_API_BASE_URL;
-        const res = await axios.get(`${base}/api/scheduled-email/show`, {
-          params: { assessment_id: assessment.id },
-          headers: { Authorization: `Bearer ${authToken}` },
-        });
-        return res.data?.scheduled
-          ? { ...assessment, schedule: res.data }
-          : { ...assessment, schedule: null };
+        // TODO: Implement schedule fetching from /api/assessment-schedules endpoint
+        console.warn(
+          `[AssessmentsCard] Schedule fetching disabled for assessment ${assessment.id} - endpoint removed`
+        );
+        return { ...assessment, schedule: null };
       } catch (e) {
         console.warn(
           `[AssessmentsCard] Failed to fetch schedule for assessment ${assessment.id}`,

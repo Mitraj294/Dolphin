@@ -39,15 +39,42 @@ class OrganizationAssessment extends Model
         return $this->belongsTo(Organization::class, 'organization_id');
     }
 
-    // Relationship to assessment questions (pivot entries)
-    public function assessmentQuestions(): HasMany
+    /**
+     * Get users assigned to this assessment via organization_assessment_member pivot
+     */
+    public function assignedUsers()
     {
-        return $this->hasMany(AssessmentQuestion::class, 'assessment_id');
+        return $this->belongsToMany(User::class, 'organization_assessment_member', 'organization_assessment_id', 'user_id')
+            ->withPivot('status')
+            ->withTimestamps();
     }
 
-    // Many-to-many convenience relationship to actual question records
-    public function questions()
+    /**
+     * Get groups assigned to this assessment via organization_assessment_group pivot
+     */
+    public function assignedGroups()
     {
-        return $this->belongsToMany(OrganizationAssessmentQuestion::class, 'assessment_question', 'assessment_id', 'question_id');
+        return $this->belongsToMany(Group::class, 'organization_assessment_group', 'organization_assessment_id', 'group_id')
+            ->withTimestamps();
     }
+
+    /**
+     * Get all users in assigned groups (via groups)
+     */
+    public function allParticipants()
+    {
+        // Get users directly assigned
+        $directUsers = $this->assignedUsers()->get();
+
+        // Get users from assigned groups
+        $groupUsers = collect();
+        foreach ($this->assignedGroups as $group) {
+            $groupUsers = $groupUsers->merge($group->users);
+        }
+
+        // Merge and remove duplicates
+        return $directUsers->merge($groupUsers)->unique('id');
+    }
+
+    // NOTE: Question-related relationships removed: assessments are standalone records now.
 }

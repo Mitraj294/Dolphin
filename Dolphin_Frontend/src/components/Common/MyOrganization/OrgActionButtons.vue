@@ -45,149 +45,41 @@
         <button class="modal-close-btn" @click="showAddMemberModal = false">
           &times;
         </button>
-        <div class="modal-title">Add New Member</div>
+        <div class="modal-title">Add Member to Organization</div>
         <div
           class="modal-desc"
           style="font-size: 1.2rem !important; margin-bottom: 32px !important"
         >
-          Add a new member to your organization.
+          Select an existing user to add as a member to your organization.
         </div>
         <form class="modal-form" @submit.prevent="saveMember">
-          <FormRow
-            class="modal-form-row"
-            style="
-              margin-bottom: 0 !important;
-              display: flex;
-              gap: 18px;
-              align-items: flex-start;
-              flex-direction: row;
-            "
-          >
-            <div class="modal-form-row-div" style="flex: 1; min-width: 0">
+          <FormRow class="modal-form-row">
+            <div class="modal-form-row-div" style="width: 100%">
               <FormLabel
                 style="font-size: 1rem !important; margin: 0 0 6px 0 !important"
-                >First Name</FormLabel
-              >
-              <FormInput
-                v-model="newMember.firstName"
-                icon="fas fa-user"
-                type="text"
-                placeholder="Enter first name"
-                required
-              />
-              <FormLabel v-if="errors.first_name" class="error-message1">
-                {{ errors.first_name[0] }}
-              </FormLabel>
-            </div>
-
-            <div class="modal-form-row-div" style="flex: 1; min-width: 0">
-              <FormLabel
-                style="font-size: 1rem !important; margin: 0 0 6px 0 !important"
-                >Last Name</FormLabel
-              >
-              <FormInput
-                v-model="newMember.lastName"
-                icon="fas fa-user"
-                type="text"
-                placeholder="Enter last name"
-                required
-              />
-              <FormLabel v-if="errors.last_name" class="error-message1">
-                {{ errors.last_name[0] }}
-              </FormLabel>
-            </div>
-          </FormRow>
-          <FormRow
-            class="modal-form-row"
-            style="
-              margin-bottom: 0 !important;
-              display: flex;
-              gap: 18px;
-              align-items: flex-start;
-              flex-direction: row;
-            "
-          >
-            <div class="modal-form-row-div" style="flex: 1; min-width: 0">
-              <FormLabel
-                style="font-size: 1rem !important; margin: 0 0 6px 0 !important"
-                >Email</FormLabel
-              >
-              <FormInput
-                v-model="newMember.email"
-                icon="fas fa-envelope"
-                type="email"
-                placeholder="Enter email address"
-                required
-              />
-              <FormLabel v-if="errors.email" class="error-message1">
-                {{ errors.email[0] }}
-              </FormLabel>
-            </div>
-            <div class="modal-form-row-div" style="flex: 1; min-width: 0">
-              <FormLabel
-                style="font-size: 1rem !important; margin: 0 0 6px 0 !important"
-                >Phone</FormLabel
-              >
-              <FormInput
-                v-model="newMember.phone"
-                icon="fas fa-phone"
-                type="text"
-                placeholder="Enter phone number"
-                required
-              />
-              <FormLabel v-if="errors.phone" class="error-message1">
-                {{ errors.phone[0] }}
-              </FormLabel>
-            </div>
-          </FormRow>
-          <FormRow
-            class="modal-form-row"
-            style="
-              margin-bottom: 0 !important;
-              display: flex;
-              gap: 18px;
-              align-items: flex-start;
-              flex-direction: row;
-            "
-          >
-            <div class="modal-form-row-div" style="flex: 1; min-width: 0">
-              <FormLabel
-                style="font-size: 1rem !important; margin: 0 0 6px 0 !important"
-                >Role</FormLabel
+                >Select Users</FormLabel
               >
               <MultiSelectDropdown
-                :options="roles"
+                :options="availableUsersForMember"
                 :selectedItems="
-                  Array.isArray(newMember.roles) ? newMember.roles : []
+                  Array.isArray(newMember.selectedUsers)
+                    ? newMember.selectedUsers
+                    : []
                 "
-                @update:selectedItems="newMember.roles = $event"
-                placeholder="Select role"
+                @update:selectedItems="newMember.selectedUsers = $event"
+                placeholder="Select users to add as members"
                 :enableSelectAll="true"
+                icon="fas fa-users"
               />
-              <FormLabel v-if="errors.member_role" class="error-message1">
-                {{ errors.member_role[0] }}
+              <FormLabel v-if="errors.user_ids" class="error-message1">
+                {{ errors.user_ids[0] }}
               </FormLabel>
-            </div>
-            <div class="modal-form-row-div" style="flex: 1; min-width: 0">
-              <FormLabel
-                style="font-size: 1rem !important; margin: 0 0 6px 0 !important"
-                >Groups</FormLabel
-              >
-              <MultiSelectDropdown
-                :options="groups"
-                :selectedItems="
-                  Array.isArray(newMember.groups) ? newMember.groups : []
-                "
-                @update:selectedItems="newMember.groups = $event"
-                placeholder="Select groups"
-                :enableSelectAll="true"
-              />
             </div>
           </FormRow>
           <div class="modal-form-actions">
             <button type="submit" class="btn btn-primary">
               <i class="fas fa-save"></i>
-              Save
+              Add Members
             </button>
             <button
               type="button"
@@ -284,6 +176,7 @@
 </template>
 
 <script>
+import FormDropdown from "@/components/Common/Common_UI/Form/FormDropdown.vue";
 import FormInput from "@/components/Common/Common_UI/Form/FormInput.vue";
 import FormLabel from "@/components/Common/Common_UI/Form/FormLabel.vue";
 import FormRow from "@/components/Common/Common_UI/Form/FormRow.vue";
@@ -297,6 +190,7 @@ export default {
   components: {
     FormInput,
     FormLabel,
+    FormDropdown,
     MultiSelectDropdown,
     FormRow,
     Toast,
@@ -306,12 +200,7 @@ export default {
       showAddMemberModal: false,
       showAddGroupModal: false,
       newMember: {
-        firstName: "",
-        lastName: "",
-        email: "",
-        phone: "",
-        roles: [],
-        groups: [],
+        selectedUsers: [],
       },
       newGroup: {
         name: "",
@@ -320,48 +209,41 @@ export default {
       roles: [],
       groups: [],
       availableMembers: [],
+      availableUsersForMember: [],
       toast: null,
       errors: {},
     };
   },
   async mounted() {
     this.toast = useToast();
-    await this.loadRoles();
   },
   methods: {
-    async loadRoles() {
-      try {
-        const authToken = storage.get("authToken");
-        const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
-        const res = await axios.get(`${API_BASE_URL}/api/member-roles`, {
-          headers: { Authorization: `Bearer ${authToken}` },
-        });
-
-        if (Array.isArray(res.data)) {
-          this.roles = res.data.map((r) => ({
-            id: r.id,
-            name: r.name,
-          }));
-        }
-      } catch (e) {
-        console.error("Failed to fetch roles:", e);
-        // Fallback to hardcoded roles if API fails
-        this.roles = [];
-      }
-    },
-
     async openAddMemberModal() {
-      // Fetch groups for this organization
+      // Fetch available users with 'user' or 'salesperson' roles who are not already members
       try {
         const authToken = storage.get("authToken");
         const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
-        const res = await axios.get(`${API_BASE_URL}/api/groups`, {
-          headers: { Authorization: `Bearer ${authToken}` },
-        });
-        this.groups = Array.isArray(res.data) ? res.data : [];
+        const res = await axios.get(
+          `${API_BASE_URL}/api/organization/members/available`,
+          {
+            headers: { Authorization: `Bearer ${authToken}` },
+          }
+        );
+
+        // Format users for MultiSelectDropdown (expecting array with id and name)
+        this.availableUsersForMember = res.data.map((user) => ({
+          id: user.id,
+          name: `${user.first_name} ${user.last_name} (${user.email})`,
+        }));
       } catch (e) {
-        console.error("Failed to fetch groups:", e);
-        this.groups = [];
+        console.error("Failed to fetch available users:", e);
+        this.availableUsersForMember = [];
+        this.$toast.add({
+          severity: "error",
+          summary: "Error",
+          detail: "Failed to load available users",
+          life: 3000,
+        });
       }
 
       // Clear any previous errors
@@ -369,95 +251,124 @@ export default {
       this.showAddMemberModal = true;
     },
 
-    openAddGroupModal() {
-      // Fetch members for this organization
+    async openAddGroupModal() {
+      // Fetch members from organization_member table for this organization
       this.availableMembers = [];
       const authToken = storage.get("authToken");
       const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
-      axios
-        .get(`${API_BASE_URL}/api/members`, {
-          headers: { Authorization: `Bearer ${authToken}` },
-        })
-        .then((res) => {
-          const memberData = res.data.data || res.data;
-          if (Array.isArray(memberData)) {
-            this.availableMembers = memberData.map((m) => ({
-              ...m,
-              id: m.id || m.value || m,
-              name: `${m.first_name || m.firstName || ""} ${
-                m.last_name || m.lastName || ""
-              }`.trim(),
-            }));
-          } else {
-            this.availableMembers = [];
+
+      try {
+        const res = await axios.get(
+          `${API_BASE_URL}/api/organization/members/for-groups`,
+          {
+            headers: { Authorization: `Bearer ${authToken}` },
           }
-        })
-        .catch(() => {
+        );
+
+        const userData = res.data;
+        if (Array.isArray(userData)) {
+          this.availableMembers = userData.map((u) => ({
+            ...u,
+            id: u.id,
+            name: u.name || `${u.first_name || ""} ${u.last_name || ""}`.trim(),
+          }));
+        } else {
           this.availableMembers = [];
-        })
-        .finally(() => {
-          // Clear any previous errors
-          this.errors = {};
-          this.showAddGroupModal = true;
+        }
+      } catch (error) {
+        console.error("Failed to fetch organization members:", error);
+        this.availableMembers = [];
+        this.$toast.add({
+          severity: "error",
+          summary: "Error",
+          detail: "Failed to load organization members",
+          life: 3000,
         });
+      }
+
+      // Clear any previous errors
+      this.errors = {};
+      this.showAddGroupModal = true;
     },
 
     async saveMember() {
       try {
-        // Require at least one role
+        // Validate that at least one user is selected
         if (
-          !Array.isArray(this.newMember.roles) ||
-          this.newMember.roles.length === 0
+          !Array.isArray(this.newMember.selectedUsers) ||
+          this.newMember.selectedUsers.length === 0
         ) {
-          this.toast.add({
+          this.$toast.add({
             severity: "warn",
             summary: "Warning",
-            detail: "Please select a role for the member.",
+            detail: "Please select at least one user to add as member.",
             life: 4000,
           });
           return;
         }
-        const payload = {
-          first_name: this.newMember.firstName,
-          last_name: this.newMember.lastName,
-          email: this.newMember.email,
-          phone: this.newMember.phone,
-          // send role ids to match pivot-backed roles on the backend
-          member_role: Array.isArray(this.newMember.roles)
-            ? this.newMember.roles.map((r) => r.id || r.value || r)
-            : [],
-          group_ids: Array.isArray(this.newMember.groups)
-            ? this.newMember.groups.map((g) => g.id || g.value || g)
-            : [],
-        };
+
         const authToken = storage.get("authToken");
         const headers = {};
         if (authToken) headers["Authorization"] = `Bearer ${authToken}`;
-        await axios.post(
-          process.env.VUE_APP_API_BASE_URL + "/api/members",
-          payload,
-          { headers }
+
+        // Add each selected user as a member
+        const userIds = this.newMember.selectedUsers.map(
+          (u) => u.id || u.value || u
         );
+        let successCount = 0;
+        let failedCount = 0;
+
+        for (const userId of userIds) {
+          try {
+            await axios.post(
+              process.env.VUE_APP_API_BASE_URL +
+                "/api/organization/members/add",
+              { user_id: userId },
+              { headers }
+            );
+            successCount++;
+          } catch (err) {
+            console.error(`Failed to add user ${userId}:`, err);
+            failedCount++;
+          }
+        }
 
         // Success - clear errors and close modal
         this.errors = {};
         this.showAddMemberModal = false;
-        this.groups = [];
+        this.availableUsersForMember = [];
         this.newMember = {
-          firstName: "",
-          lastName: "",
-          email: "",
-          phone: "",
-          roles: [],
-          groups: [],
+          selectedUsers: [],
         };
 
-        this.toast.add({
-          severity: "success",
-          summary: "Success",
-          detail: "Member added successfully!",
-          life: 3000,
-        });
+        // Show appropriate success message
+        if (successCount > 0 && failedCount === 0) {
+          this.$toast.add({
+            severity: "success",
+            summary: "Success",
+            detail: `${successCount} member${
+              successCount > 1 ? "s" : ""
+            } added successfully!`,
+            life: 3000,
+          });
+        } else if (successCount > 0 && failedCount > 0) {
+          this.$toast.add({
+            severity: "warn",
+            summary: "Partial Success",
+            detail: `${successCount} member${
+              successCount > 1 ? "s" : ""
+            } added, ${failedCount} failed.`,
+            life: 4000,
+          });
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: "Error",
+            detail: "Failed to add members.",
+            life: 4000,
+          });
+        }
+
         this.$emit("member-added");
       } catch (e) {
         // Handle validation errors - don't close modal
@@ -468,7 +379,7 @@ export default {
           e.response.data.errors
         ) {
           this.errors = e.response.data.errors;
-          this.toast.add({
+          this.$toast.add({
             severity: "error",
             summary: "Validation Error",
             detail: "Please fix the errors below and try again.",
@@ -478,7 +389,7 @@ export default {
         }
 
         // Handle other types of errors
-        let msg = "Failed to add member.";
+        let msg = "Failed to add members.";
         if (e.response && e.response.data && e.response.data.message) {
           msg = e.response.data.message;
         } else if (
@@ -490,7 +401,7 @@ export default {
         } else {
           console.error(e);
         }
-        this.toast.add({
+        this.$toast.add({
           severity: "error",
           summary: "Error",
           detail: msg,
@@ -499,14 +410,9 @@ export default {
 
         // Close modal for non-validation errors
         this.showAddMemberModal = false;
-        this.groups = [];
+        this.availableUsersForMember = [];
         this.newMember = {
-          firstName: "",
-          lastName: "",
-          email: "",
-          phone: "",
-          roles: [],
-          groups: [],
+          selectedUsers: [],
         };
       }
     },
@@ -515,7 +421,8 @@ export default {
       try {
         const payload = {
           name: this.newGroup.name,
-          member_ids: Array.isArray(this.newGroup.members)
+          // Send as user_ids for new system, backend also accepts member_ids for compatibility
+          user_ids: Array.isArray(this.newGroup.members)
             ? this.newGroup.members.map((m) => m.id || m.value || m)
             : [],
         };

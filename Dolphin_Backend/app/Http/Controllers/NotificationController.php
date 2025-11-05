@@ -234,29 +234,19 @@ class NotificationController extends Controller
 
     private function getRecipientsForAnnouncement(Announcement $announcement)
     {
-        $announcement->load(['organizations.users', 'groups.members.user', 'admins']);
+        $announcement->load(['organizations.users', 'groups.users', 'admins']);
 
         $adminUsers = $announcement->admins;
         $orgUsers = $announcement->organizations->flatMap(function ($org) {
             return $org->users;
         });
 
-        $users = $adminUsers->merge($orgUsers)->unique('id');
-
-        $groupMembers = $announcement->groups->flatMap(function ($group) {
-            return $group->members;
+        $groupUsers = $announcement->groups->flatMap(function ($group) {
+            return $group->users;
         });
 
-        $userEmails = $users->pluck('email')->filter()->all();
-
-        $membersOnly = $groupMembers->filter(function ($member) use ($userEmails) {
-            if ($member->user_id) {
-                return false;
-            }
-            return !in_array($member->email, $userEmails);
-        })->unique('email');
-
-        return $users->merge($membersOnly);
+        // Merge all users and remove duplicates
+        return $adminUsers->merge($orgUsers)->merge($groupUsers)->unique('id');
     }
 
     // Fetch announcements for a user

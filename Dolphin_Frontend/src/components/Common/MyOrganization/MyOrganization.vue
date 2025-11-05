@@ -103,10 +103,10 @@ export default {
       if (authToken) headers["Authorization"] = `Bearer ${authToken}`;
       try {
         const response = await axios.get(
-          process.env.VUE_APP_API_BASE_URL + "/api/members",
+          process.env.VUE_APP_API_BASE_URL + "/api/organization/members",
           { headers }
         );
-        this.members = response.data;
+        this.members = response.data?.data || response.data || [];
       } catch (e) {
         console.error("Failed to load members:", e);
         this.members = [];

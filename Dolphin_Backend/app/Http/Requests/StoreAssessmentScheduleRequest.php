@@ -31,8 +31,11 @@ class StoreAssessmentScheduleRequest extends FormRequest
             'timezone' => 'sometimes|string',
             'group_ids' => 'sometimes|array',
             'group_ids.*' => 'exists:groups,id',
+            // Support both user_ids and member_ids for backwards compatibility
+            'user_ids' => 'sometimes|array',
+            'user_ids.*' => 'exists:users,id',
             'member_ids' => 'sometimes|array',
-            'member_ids.*' => 'exists:members,id',
+            'member_ids.*' => 'exists:users,id',  // Changed from members to users
         ];
     }
 }

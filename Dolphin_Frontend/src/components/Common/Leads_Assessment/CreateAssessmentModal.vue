@@ -3,16 +3,12 @@
     <div class="modal-card">
       <button class="modal-close" @click="$emit('close')">&times;</button>
       <div class="modal-title">Create Assessment</div>
+
       <form class="modal-form" @submit.prevent="handleSubmit">
         <div class="modal-form-row">
           <div
             class="modal-form-group"
-            style="
-              padding: 0 0;
-              background: none;
-              border-radius: 0;
-              height: auto;
-            "
+            style="padding: 0; background: none; border-radius: 0; height: auto"
           >
             <input
               v-model="assessment.name"
@@ -33,114 +29,7 @@
             />
           </div>
         </div>
-        <div
-          class="modal-form-row"
-          style="flex-direction: column; align-items: stretch; gap: 10px"
-        >
-          <label
-            for="questions"
-            style="
-              font-weight: 600;
-              margin-bottom: 16px;
-              font-size: 22px;
-              text-align: left;
-              display: block;
-              align-self: flex-start;
-            "
-          >
-            Questions
-          </label>
-          <div
-            style="
-              flex-direction: row-reverse;
-              align-items: center;
-              display: flex;
-              width: 100%;
-              margin-bottom: 8px;
-              border: white;
-              background: white;
-            "
-          >
-            <label
-              :class="[
-                'user-assessment-checkbox-label',
-                { checked: allSelected },
-              ]"
-              style="
-                display: flex;
-                align-items: center;
 
-                justify-content: flex-end !important;
-                font-size: 12px !important;
-                padding: 18px 24px;
-                background: white;
-                border-radius: 12px;
-                margin-bottom: 0;
-                text-align: left;
-                max-width: 200px !important;
-                border: white;
-              "
-            >
-              <span class="user-assessment-checkbox-custom"></span>
-              <input
-                type="checkbox"
-                :checked="allSelected"
-                @change="toggleSelectAll($event.target.checked)"
-              />
-              <span
-                style="
-                  flex: 1;
-                  text-align: right;
-                  font-size: 18px;
-                  font-weight: 500;
-                  color: #222;
-                "
-                >Select All</span
-              >
-            </label>
-          </div>
-
-          <div
-            v-for="q in questions"
-            :key="q.id"
-            style="width: 100%; margin-bottom: 8px"
-          >
-            <label
-              :for="'q-' + q.id"
-              class="user-assessment-checkbox-label"
-              :class="{
-                checked: assessment.selectedQuestionIds.includes(q.id),
-              }"
-              style="
-                justify-content: flex-start;
-                font-size: 18px;
-                padding: 18px 24px;
-                background: #f8f9fb;
-                border-radius: 12px;
-                margin-bottom: 0;
-                text-align: left;
-              "
-            >
-              <span class="user-assessment-checkbox-custom"></span>
-              <input
-                type="checkbox"
-                :id="'q-' + q.id"
-                :value="q.id"
-                v-model="assessment.selectedQuestionIds"
-              />
-              <span
-                style="
-                  flex: 1;
-                  text-align: left;
-                  font-size: 18px;
-                  font-weight: 500;
-                  color: #222;
-                "
-                >{{ q.text }}</span
-              >
-            </label>
-          </div>
-        </div>
         <div class="modal-form-actions">
           <button type="submit" class="modal-save-btn" :disabled="isSubmitting">
             {{ isSubmitting ? "Creating..." : "Create" }}
@@ -165,65 +54,36 @@ import axios from "axios";
 
 export default {
   name: "CreateAssessmentModal",
-  props: {
-    questions: {
-      type: Array,
-      required: true,
-      default: () => [],
-    },
-  },
-  emits: ["close", "assessment-created"],
+  emits: ["close", "assessment-created", "validation-error", "error"],
   data() {
     return {
       assessment: {
         name: "",
-        selectedQuestionIds: [],
       },
       isSubmitting: false,
     };
   },
   methods: {
     resetForm() {
-      this.assessment = {
-        name: "",
-        selectedQuestionIds: [],
-      };
+      this.assessment = { name: "" };
       this.isSubmitting = false;
     },
-    toggleSelectAll(checked) {
-      if (checked) {
-        // select all question ids
-        this.assessment.selectedQuestionIds = this.questions.map((q) => q.id);
-      } else {
-        // clear selection
-        this.assessment.selectedQuestionIds = [];
-      }
-    },
     async handleSubmit() {
-      // Validate input
-      const selectedQuestions = this.questions.filter((q) =>
-        this.assessment.selectedQuestionIds.includes(q.id)
-      );
-
-      if (!this.assessment.name || selectedQuestions.length === 0) {
+      if (!this.assessment.name || this.assessment.name.trim() === "") {
         this.$emit("validation-error", {
           type: "warn",
           title: "Missing Data",
-          message: "Please enter a name and select at least one question.",
+          message: "Please enter a name for the assessment.",
         });
         return;
       }
 
       this.isSubmitting = true;
-
       try {
         const authToken = storage.get("authToken");
         const res = await axios.post(
           process.env.VUE_APP_API_BASE_URL + "/api/assessments",
-          {
-            name: this.assessment.name,
-            question_ids: this.assessment.selectedQuestionIds,
-          },
+          { name: this.assessment.name },
           { headers: { Authorization: `Bearer ${authToken}` } }
         );
 
@@ -231,6 +91,12 @@ export default {
           this.$emit("assessment-created", res.data.assessment);
           this.resetForm();
           this.$emit("close");
+        } else {
+          this.$emit("error", {
+            type: "error",
+            title: "Error",
+            message: "Failed to create assessment. Please try again.",
+          });
         }
       } catch (e) {
         console.error("Error creating assessment", e);
@@ -246,18 +112,72 @@ export default {
       }
     },
   },
-  computed: {
-    allSelected() {
-      if (!Array.isArray(this.questions) || this.questions.length === 0)
-        return false;
-      // every question id must be present in selectedQuestionIds
-      return this.questions.every((q) =>
-        this.assessment.selectedQuestionIds.includes(q.id)
-      );
-    },
-  },
   mounted() {
     this.resetForm();
   },
 };
 </script>
+
+<style scoped>
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.modal-card {
+  width: 520px;
+  max-width: 95%;
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  right: 12px;
+  top: 8px;
+  border: none;
+  background: transparent;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.modal-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.modal-save-btn {
+  background: #0074c2;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  cursor: pointer;
+}
+
+.org-edit-cancel {
+  background: transparent;
+  border: none;
+  color: #444;
+  padding: 10px 18px;
+  cursor: pointer;
+}
+</style>

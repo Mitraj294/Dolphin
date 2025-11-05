@@ -2,24 +2,25 @@
 
 namespace App\Http\Requests;
 
+/**
+ * DEPRECATED REQUEST: This validates data for the obsolete 'answers' table.
+ * 
+ * The 'answers' and 'questions' tables no longer exist.
+ * Use assessment_responses table instead.
+ * 
+ * This request is kept ONLY for backwards compatibility with AnswerController.
+ * Create a new StoreAssessmentResponseRequest for new implementations.
+ */
+
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
 class StoreAnswerRequest extends FormRequest
 {
-
-    //Determine if the user is authorized to make this request.
-    //@return bool
-
     public function authorize(): bool
     {
-        // Only authenticated users can submit answers.
         return Auth::check();
     }
-
-
-    //Get the validation rules that apply to the request.
-    //@return array
 
     public function rules(): array
     {

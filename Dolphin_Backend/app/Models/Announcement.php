@@ -55,10 +55,11 @@ class Announcement extends Model
      */
     public function users(): BelongsToMany
     {
-        // The project migrations create an `announcement_admin` pivot table
+        // The project migrations create an `announcement_dolphin_admins` pivot table
         // (with columns announcement_id and admin_id) for direct user recipients.
         // Use that pivot and map admin_id -> users.id.
-        return $this->belongsToMany(User::class, 'announcement_admin', 'announcement_id', 'admin_id');
+        return $this->belongsToMany(User::class, 'announcement_dolphin_admins', 'announcement_id', 'admin_id')
+            ->withTimestamps();
     }
 
     /**
@@ -70,7 +71,8 @@ class Announcement extends Model
      */
     public function admins(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'announcement_admin', 'announcement_id', 'admin_id');
+        return $this->belongsToMany(User::class, 'announcement_dolphin_admins', 'announcement_id', 'admin_id')
+            ->withTimestamps();
     }
 
     /**
@@ -80,7 +82,8 @@ class Announcement extends Model
      */
     public function organizations(): BelongsToMany
     {
-        return $this->belongsToMany(Organization::class, 'announcement_organization');
+        return $this->belongsToMany(Organization::class, 'announcement_organizations')
+            ->withTimestamps();
     }
 
     /**
@@ -90,6 +93,7 @@ class Announcement extends Model
      */
     public function groups(): BelongsToMany
     {
-        return $this->belongsToMany(Group::class, 'announcement_group');
+        return $this->belongsToMany(Group::class, 'announcement_groups')
+            ->withTimestamps();
     }
 }

@@ -558,7 +558,7 @@ export default {
       try {
         const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
         const res = await axios.get(
-          `${API_BASE_URL}/api/assessment/${this.assessmentId}/summary`
+          `${API_BASE_URL}/api/assessments/${this.assessmentId}/summary`
         );
         const data = res.data;
 
@@ -606,7 +606,7 @@ export default {
     async _fetchAssessmentSummary(assessmentId, config) {
       const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
       const res = await axios.get(
-        `${API_BASE_URL}/api/assessment/${assessmentId}/summary`,
+        `${API_BASE_URL}/api/assessments/${assessmentId}/summary`,
         config
       );
       return res && res.data ? res.data : null;

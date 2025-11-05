@@ -65,8 +65,56 @@ class User extends Authenticatable
         return $this->hasRole('superadmin');
     }
 
+    /**
+     * Get all groups this user belongs to
+     */
+    public function groups()
+    {
+        return $this->belongsToMany(Group::class, 'group_user', 'user_id', 'group_id')
+            ->withPivot('role')
+            ->withTimestamps();
+    }
+
     public function users()
     {
         return $this->belongsToMany(User::class, 'user_role');
+    }
+
+    /**
+     * Get organizations this user is linked to via organization_users (with status)
+     */
+    public function organizationUsers()
+    {
+        return $this->belongsToMany(Organization::class, 'organization_users', 'user_id', 'organization_id')
+            ->withPivot('status')
+            ->withTimestamps()
+            ->using(OrganizationUser::class);
+    }
+
+    /**
+     * Get organizations this user is a member of via organization_member
+     */
+    public function organizationMemberships()
+    {
+        return $this->belongsToMany(Organization::class, 'organization_member', 'user_id', 'organization_id')
+            ->withTimestamps();
+    }
+
+    /**
+     * Get the organization this user belongs to via organization_id foreign key
+     */
+    public function belongsToOrganization()
+    {
+        return $this->belongsTo(Organization::class, 'organization_id');
+    }
+
+    /**
+     * Get assessments assigned to this user
+     */
+    public function assignedAssessments()
+    {
+        return $this->belongsToMany(OrganizationAssessment::class, 'organization_assessment_member', 'user_id', 'organization_assessment_id')
+            ->withPivot('status')
+            ->withTimestamps();
     }
 }

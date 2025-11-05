@@ -31,7 +31,7 @@ class GroupController extends Controller
 
         try {
             $user = $request->user();
-            $query = Group::with('members');
+            $query = Group::with('users');
 
             if ($user->hasRole('organizationadmin')) {
                 $orgId = $this->resolveOrganizationId($user);
@@ -79,11 +79,13 @@ class GroupController extends Controller
                 'user_id' => $user->id,
             ]);
 
-            if (!empty($validated['member_ids'])) {
-                $group->members()->sync($validated['member_ids']);
+            // Support both user_ids and member_ids for backwards compatibility
+            $userIds = $validated['user_ids'] ?? $validated['member_ids'] ?? [];
+            if (!empty($userIds)) {
+                $group->users()->sync($userIds);
             }
 
-            return response()->json($group->load('members'), 201);
+            return response()->json($group->load('users'), 201);
         } catch (\Exception $e) {
             Log::error('Failed to create group.', ['user_id' => $request->user()->id, 'error' => $e->getMessage()]);
             return response()->json(['error' => 'An unexpected error occurred while creating the group.'], 500);
@@ -103,7 +105,7 @@ class GroupController extends Controller
 
         try {
             $user = $request->user();
-            $query = Group::with('members');
+            $query = Group::with('users');
 
             if ($user->hasRole('organizationadmin')) {
                 $orgId = $this->resolveOrganizationId($user);
@@ -117,7 +119,8 @@ class GroupController extends Controller
                 $group = $query->findOrFail($id);
                 $response_data = [
                     'group' => $group,
-                    'members' => $group->members()->with('memberRoles')->get()
+                    'members' => $group->users, // Return users but keep 'members' key for backwards compatibility
+                    'users' => $group->users
                 ];
             }
         } catch (ModelNotFoundException $e) {
@@ -176,12 +179,14 @@ class GroupController extends Controller
                 'name' => $validated['name'],
             ]);
 
-            if (isset($validated['member_ids'])) {
-                $group->members()->sync($validated['member_ids']);
+            // Support both user_ids and member_ids for backwards compatibility
+            $userIds = $validated['user_ids'] ?? $validated['member_ids'] ?? null;
+            if ($userIds !== null) {
+                $group->users()->sync($userIds);
             }
 
             $status_code = 200;
-            $response_data = $group->load('members');
+            $response_data = $group->load('users');
         } catch (ModelNotFoundException $e) {
             $status_code = 404;
             $response_data['error'] = 'Group not found.';

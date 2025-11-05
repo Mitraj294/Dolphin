@@ -110,10 +110,6 @@
                   <i class="fas fa-user-circle profile-avatar"></i>
                   <span>Profile</span>
                 </div>
-                <button class="btn btn-primary" @click="openEditModal">
-                  <i class="fas fa-pen-to-square"></i>
-                  Edit
-                </button>
               </div>
 
               <div class="profile-info-table">
@@ -184,129 +180,16 @@
 
                 <div class="profile-actions">
                   <button
-                    class="btn btn-danger"
-                    @click="deleteMember(selectedMemberEdit)"
+                  class="btn btn-danger"
+                  @click="deleteMember(selectedMemberEdit)"
+                  title="Remove member from organization"
                   >
-                    <i class="fas fa-trash"></i>
-                    Delete Account
+                  <i class="fas fa-user-minus"></i>
+                  Remove from Organization
                   </button>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-        <!-- Edit Profile Modal -->
-        <div
-          v-if="showEditModal"
-          class="modal-overlay"
-          @click.self="showEditModal = false"
-        >
-          <div class="modal-card" style="max-width: 550px">
-            <button class="modal-close-btn" @click="showEditModal = false">
-              &times;
-            </button>
-            <div class="modal-title">Edit Member Profile</div>
-            <div class="modal-desc" style="font-size: 1.5rem !important">
-              Update member information.
-            </div>
-            <form class="modal-form" @submit.prevent="onEditSave">
-              <FormRow style="margin-bottom: 0 !important">
-                <FormLabel
-                  style="font-size: 1rem !important; margin: 0 !important"
-                  >First Name</FormLabel
-                >
-                <FormInput
-                  v-model="editMember.first_name"
-                  icon="fas fa-user"
-                  type="text"
-                  placeholder="Enter first name"
-                  required
-                />
-                <FormLabel v-if="errors.first_name" class="error-message1">{{
-                  errors.first_name[0]
-                }}</FormLabel>
-              </FormRow>
-              <FormRow style="margin-bottom: 0 !important">
-                <FormLabel
-                  style="font-size: 1rem !important; margin: 0 !important"
-                  >Last Name</FormLabel
-                >
-                <FormInput
-                  v-model="editMember.last_name"
-                  icon="fas fa-user"
-                  type="text"
-                  placeholder="Enter last name"
-                  required
-                />
-                <FormLabel v-if="errors.last_name" class="error-message1">
-                  {{ errors.last_name[0] }}
-                </FormLabel>
-              </FormRow>
-              <FormRow style="margin-bottom: 0 !important">
-                <FormLabel
-                  style="font-size: 1rem !important; margin: 0 !important"
-                  >Email</FormLabel
-                >
-                <FormInput
-                  v-model="editMember.email"
-                  icon="fas fa-envelope"
-                  type="email"
-                  placeholder="Enter email address"
-                  required
-                />
-                <FormLabel v-if="errors.email" class="error-message1">
-                  {{ errors.email[0] }}
-                </FormLabel>
-              </FormRow>
-              <FormRow style="margin-bottom: 0 !important">
-                <FormLabel
-                  style="font-size: 1rem !important; margin: 0 !important"
-                  >Phone</FormLabel
-                >
-                <FormInput
-                  v-model="editMember.phone"
-                  icon="fas fa-phone"
-                  type="text"
-                  placeholder="Enter phone number"
-                />
-                <FormLabel v-if="errors.phone" class="error-message1">{{
-                  errors.phone[0]
-                }}</FormLabel>
-              </FormRow>
-              <FormRow style="margin-bottom: 0 !important">
-                <FormLabel
-                  style="font-size: 1rem !important; margin: 0 !important"
-                  >Role</FormLabel
-                >
-                <MultiSelectDropdown
-                  :options="rolesForSelect"
-                  :selectedItems="
-                    Array.isArray(editMember.member_role_ids)
-                      ? editMember.member_role_ids
-                      : []
-                  "
-                  @update:selectedItems="onEditRolesUpdate"
-                  placeholder="Select role"
-                  :enableSelectAll="true"
-                />
-                <FormLabel v-if="errors.member_role" class="error-message1">
-                  {{ errors.member_role[0] }}
-                </FormLabel>
-              </FormRow>
-              <div class="modal-form-actions">
-                <button type="submit" class="btn btn-primary">
-                  <i class="fas fa-save"></i>
-                  Save
-                </button>
-                <button
-                  type="button"
-                  class="org-edit-cancel"
-                  @click="showEditModal = false"
-                >
-                  Cancel
-                </button>
-              </div>
-            </form>
           </div>
         </div>
       </div>
@@ -315,10 +198,6 @@
 </template>
 
 <script>
-import FormInput from "@/components/Common/Common_UI/Form/FormInput.vue";
-import FormLabel from "@/components/Common/Common_UI/Form/FormLabel.vue";
-import FormRow from "@/components/Common/Common_UI/Form/FormRow.vue";
-import MultiSelectDropdown from "@/components/Common/Common_UI/Form/MultiSelectDropdown.vue";
 import TableHeader from "@/components/Common/Common_UI/TableHeader.vue";
 import MainLayout from "@/components/layout/MainLayout.vue";
 import Pagination from "@/components/layout/Pagination.vue";
@@ -333,10 +212,6 @@ export default {
     MainLayout,
     Pagination,
     TableHeader,
-    FormRow,
-    FormLabel,
-    FormInput,
-    MultiSelectDropdown,
     Toast,
   },
   setup() {
@@ -355,14 +230,9 @@ export default {
       filteredMembers: [],
       loading: true,
       showMemberModal: false,
-      showEditModal: false,
       selectedMemberEdit: {},
-      editMember: {},
-      rolesForSelect: [],
-      rolesForSelectMap: {},
       groupsForSelect: [],
       groupsForSelectMap: {},
-      errors: {},
     };
   },
   computed: {
@@ -454,18 +324,21 @@ export default {
     },
 
     async fetchMemberById(memberId) {
+      // NOTE: Deprecated /api/members endpoint removed. Using cached member data instead.
       try {
-        const authToken = storage.get("authToken");
-        const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
-        const response = await axios.get(
-          `${API_BASE_URL}/api/members/${memberId}`,
-          {
-            headers: { Authorization: `Bearer ${authToken}` },
-          }
+        const existingMember = this.members.find(
+          (m) => m.id === Number.parseInt(memberId)
         );
-
-        const memberData = response.data.data;
-        this.selectedMemberEdit = this.normalizeMember(memberData);
+        if (existingMember) {
+          this.selectedMemberEdit = this.normalizeMember(existingMember);
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: "Error",
+            detail: "Member not found.",
+            life: 3000,
+          });
+        }
       } catch (error) {
         console.error("Failed to fetch member details:", error);
         this.$toast.add({
@@ -474,13 +347,6 @@ export default {
           detail: "Could not load member details.",
           life: 3000,
         });
-        // Fallback to existing member data if available
-        const existingMember = this.members.find(
-          (m) => m.id === Number.parseInt(memberId)
-        );
-        if (existingMember) {
-          this.selectedMemberEdit = this.normalizeMember(existingMember);
-        }
       }
     },
 
@@ -538,164 +404,12 @@ export default {
       }
     },
 
-    async openEditModal() {
-      const memberId = this.selectedMemberEdit?.id;
-      if (!memberId) {
-        this.$toast.add({
-          severity: "warn",
-          summary: "Warning",
-          detail: "No member selected.",
-          life: 3000,
-        });
-        return;
-      }
-
-      try {
-        const authToken = storage.get("authToken");
-        const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
-        const response = await axios.get(
-          `${API_BASE_URL}/api/members/${memberId}`,
-          {
-            headers: { Authorization: `Bearer ${authToken}` },
-          }
-        );
-
-        const memberData = response.data.data;
-        this.editMember = this.normalizeMember(memberData);
-
-        // Clear any previous errors
-        this.errors = {};
-        this.showEditModal = true;
-      } catch (error) {
-        console.error("Failed to fetch member details for editing:", error);
-        this.$toast.add({
-          severity: "error",
-          summary: "Error",
-          detail: "Could not load member details.",
-          life: 3000,
-        });
-        // Fallback to existing data if fetch fails
-        this.editMember = { ...this.selectedMemberEdit };
-
-        // Clear any previous errors
-        this.errors = {};
-        this.showEditModal = true;
-      }
-    },
-
     closeMemberModal() {
       this.showMemberModal = false;
       // Remove member_id from URL when closing modal
       const query = { ...this.$route.query };
       delete query.member_id;
       this.$router.push({ path: this.$route.path, query });
-    },
-
-    async onEditSave() {
-      try {
-        const authToken = storage.get("authToken");
-        const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
-
-        // Build payload with only fields that might have changed
-        const payload = {};
-
-        // Always include basic fields if they exist
-        if (this.editMember.first_name !== undefined)
-          payload.first_name = this.editMember.first_name;
-        if (this.editMember.last_name !== undefined)
-          payload.last_name = this.editMember.last_name;
-        if (this.editMember.email !== undefined)
-          payload.email = this.editMember.email;
-        if (this.editMember.phone !== undefined)
-          payload.phone = this.editMember.phone;
-
-        // Handle roles
-        if (
-          this.editMember.member_role_ids &&
-          this.editMember.member_role_ids.length > 0
-        ) {
-          payload.member_role = this.editMember.member_role_ids.map((r) => {
-            // Ensure we're sending integers, not objects
-            return typeof r === "object" ? Number.parseInt(r.id) : Number.parseInt(r);
-          });
-        }
-
-        console.log("Sending payload:", payload);
-        console.log("Member roles array:", payload.member_role);
-
-        const response = await axios.patch(
-          `${API_BASE_URL}/api/members/${this.editMember.id}`,
-          payload,
-          {
-            headers: { Authorization: `Bearer ${authToken}` },
-          }
-        );
-
-        const updatedMember = this.normalizeMember(
-          response.data.data || response.data
-        );
-
-        const index = this.members.findIndex((m) => m.id === updatedMember.id);
-        if (index !== -1) {
-          this.members.splice(index, 1, updatedMember);
-        }
-
-        this.selectedMemberEdit = { ...updatedMember };
-        this.onSearch();
-
-        // Clear errors and close modal on success
-        this.errors = {};
-        this.showEditModal = false;
-
-        this.$toast.add({
-          severity: "success",
-          summary: "Success",
-          detail: "Member updated successfully.",
-          life: 3000,
-        });
-      } catch (error) {
-        console.error("Failed to update member:", error);
-
-        // Handle validation errors - don't close modal
-        if (
-          error.response &&
-          error.response.status === 422 &&
-          error.response.data &&
-          error.response.data.errors
-        ) {
-          this.errors = error.response.data.errors;
-          this.$toast.add({
-            severity: "error",
-            summary: "Validation Error",
-            detail: "Please fix the errors below and try again.",
-            life: 3000,
-          });
-          return; // Don't close modal, let user fix errors
-        }
-
-        // Handle other types of errors
-        const errorDetail =
-          error.response?.data?.message || "An unexpected error occurred.";
-        this.$toast.add({
-          severity: "error",
-          summary: "Update Failed",
-          detail: errorDetail,
-          sticky: true,
-        });
-
-        // Close modal for non-validation errors
-        this.showEditModal = false;
-      }
-    },
-
-    getRoleForSelect(roleId) {
-      return (
-        this.rolesForSelectMap[roleId] || { id: roleId, name: `Role ${roleId}` }
-      );
-    },
-
-    onEditRolesUpdate(selectedItems) {
-      this.editMember.member_role_ids = selectedItems;
     },
 
     async deleteMember(member) {
@@ -707,11 +421,19 @@ export default {
         icon: "pi pi-trash",
         accept: async () => {
           try {
+            // NOTE: /api/members DELETE endpoint removed (used non-existent members table)
+            // Use /api/organization/members/remove endpoint instead
             const authToken = storage.get("authToken");
             const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
-            await axios.delete(`${API_BASE_URL}/api/members/${member.id}`, {
-              headers: { Authorization: `Bearer ${authToken}` },
-            });
+            await axios.post(
+              `${API_BASE_URL}/api/organization/members/remove`,
+              {
+                user_id: member.id,
+              },
+              {
+                headers: { Authorization: `Bearer ${authToken}` },
+              }
+            );
 
             this.members = this.members.filter((m) => m.id !== member.id);
             this.onSearch();
@@ -719,15 +441,15 @@ export default {
             this.$toast.add({
               severity: "info",
               summary: "Deleted",
-              detail: "Member has been deleted.",
+              detail: "Member has been removed from the organization.",
               life: 3000,
             });
           } catch (e) {
-            console.error("Failed to delete member", e);
+            console.error("Failed to remove member", e);
             this.$toast.add({
               severity: "error",
-              summary: "Delete Failed",
-              detail: "Failed to delete member.",
+              summary: "Remove Failed",
+              detail: "Failed to remove member from organization.",
               sticky: true,
             });
           }
@@ -776,28 +498,15 @@ export default {
         const authToken = storage.get("authToken");
         const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
 
-        const [membersRes, rolesRes, groupsRes] = await Promise.all([
-          axios.get(`${API_BASE_URL}/api/members`, {
-            headers: { Authorization: `Bearer ${authToken}` },
-          }),
-          axios.get(`${API_BASE_URL}/api/member-roles`, {
+        const [membersRes, groupsRes] = await Promise.all([
+          // Use new organization members endpoint
+          axios.get(`${API_BASE_URL}/api/organization/members`, {
             headers: { Authorization: `Bearer ${authToken}` },
           }),
           axios.get(`${API_BASE_URL}/api/groups`, {
             headers: { Authorization: `Bearer ${authToken}` },
           }),
         ]);
-
-        if (Array.isArray(rolesRes.data) && rolesRes.data.length) {
-          this.rolesForSelect = rolesRes.data.map((r) => ({
-            id: r.id,
-            name: r.name,
-          }));
-          this.rolesForSelectMap = this.rolesForSelect.reduce((map, role) => {
-            map[role.id] = role;
-            return map;
-          }, {});
-        }
 
         // Process groups data
         const groupsData = groupsRes.data?.data || groupsRes.data || [];
@@ -815,15 +524,37 @@ export default {
           );
         }
 
+        // Process members data - now these are users with groups
         const membersData = membersRes.data?.data || [];
-        this.members = membersData.map((m) => this.normalizeMember(m));
+        this.members = membersData.map((user) => {
+          // Map user data to match old member structure for compatibility
+          const member = {
+            id: user.id,
+            first_name: user.first_name,
+            last_name: user.last_name,
+            email: user.email,
+            phone: user.phone,
+            organization_id: user.organization_id,
+            // Groups with pivot role
+            groups: user.groups || [],
+            // Extract roles from group pivot data
+            memberRoles:
+              user.groups && user.groups.length > 0
+                ? user.groups.map((g) => ({
+                    id: g.id,
+                    name: g.pivot?.role || "member",
+                  }))
+                : [],
+          };
+          return this.normalizeMember(member);
+        });
         this.filteredMembers = [...this.members];
       } catch (error) {
         console.error("Failed to fetch initial data:", error);
         this.$toast.add({
           severity: "error",
           summary: "Failed to load data",
-          detail: "Could not fetch members and roles from the server.",
+          detail: "Could not fetch members from the server.",
           life: 5000,
         });
       } finally {
@@ -856,47 +587,6 @@ export default {
 @import "@/assets/global.css";
 @import "@/assets/modelcssnotificationandassesment.css";
 
-/* Modal form customization for member edit */
-.modal-form {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 8px !important;
-}
-
-.modal-form .form-row {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  width: 100%;
-  margin-bottom: 18px;
-}
-
-.modal-form .form-label {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text);
-  text-align: left;
-  margin-bottom: 6px;
-}
-
-/* Ensure form components work well in modal */
-.modal-form .form-box {
-  position: relative;
-}
-
-.modal-form .form-input.with-icon {
-  padding-left: 40px;
-}
-
-.modal-form .form-input-icon {
-  color: var(--muted);
-  font-size: 16px;
-}
-
-.modal-form .form-dropdown-chevron {
-  color: var(--muted);
-}
 .org-search {
   width: 260px;
   padding: 8px 24px 8px 32px;
@@ -1039,24 +729,6 @@ export default {
   align-items: center;
   box-sizing: border-box;
   gap: 40px;
-}
-
-.form-box {
-  padding: 0 !important;
-}
-.form-label .error-message1 {
-  color: red !important;
-  font-size: 0.85rem;
-  margin-top: 4px;
-  display: block;
-}
-
-.error-message1 {
-  color: red !important;
-  font-size: 0.85rem;
-  margin-top: 4px;
-  display: block;
-  font-weight: 400;
 }
 
 /* Profile Card Styles */
