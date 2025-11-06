@@ -1,6 +1,6 @@
 <template>
   <MainLayout
-    :navbarTitle="organization?.organization_name || 'Organization Details'"
+    :navbarTitle="organization?.name || 'Organization Details'"
     sidebarActive="organization"
   >
     <div class="page">
@@ -22,7 +22,7 @@
                 color: #222;
               "
             >
-              {{ organization.organization_name }}
+              {{ organization.name }}
             </div>
             <div class="org-detail-main-card-header">
               <button
@@ -48,11 +48,11 @@
                 <div class="org-detail-list-card org-detail-list-card--box">
                   <div class="org-detail-list-row">
                     <span>Organization Name</span
-                    ><b>{{ organization.organization_name || "N/A" }}</b>
+                    ><b>{{ organization.name || "N/A" }}</b>
                   </div>
                   <div class="org-detail-list-row">
                     <span>Organization Size</span>
-                    <b>{{ organization.organization_size || "N/A" }}</b>
+                    <b>{{ organization.size || "N/A" }}</b>
                   </div>
                   <div class="org-detail-list-row">
                     <span>Contract Start</span
@@ -85,7 +85,7 @@
                   </div>
                   <div class="org-detail-list-row">
                     <span>Admin Phone</span>
-                    <b>{{ organization.admin_phone || "N/A" }}</b>
+                    <b>{{ organization.phone_number || "N/A" }}</b>
                   </div>
                   <div class="org-detail-list-row">
                     <span>Sales Person</span

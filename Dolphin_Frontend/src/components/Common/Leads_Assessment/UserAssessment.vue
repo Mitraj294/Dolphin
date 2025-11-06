@@ -135,6 +135,10 @@ export default {
     // Track user subscription status
     const isSubscribed = ref(false); // Default: not subscribed
 
+    // Track timing for each question
+    const questionStartTimes = ref([]); // Array of start times, one per question
+    const questionEndTimes = ref([]); // Array of end times, one per question
+
     const totalSteps = computed(() => questions.value.length);
     const currentQuestion = computed(
       () => questions.value[step.value - 1] || { question: "", options: [] }
@@ -160,22 +164,46 @@ export default {
         });
         if (Array.isArray(resQ.data)) {
           // Transform assessment data to match old question format for compatibility
-          questions.value = resQ.data.map(assessment => ({
-            id: assessment.id,
-            question: assessment.title,
-            options: assessment.form_definition || []
-          }));
-          // Initialize selectedWords array
+          questions.value = resQ.data.map((assessment) => {
+            let options = [];
+            // Parse form_definition if it's a JSON string
+            if (typeof assessment.form_definition === "string") {
+              try {
+                options = JSON.parse(assessment.form_definition);
+              } catch (e) {
+                console.error("Failed to parse form_definition:", e);
+                options = [];
+              }
+            } else if (Array.isArray(assessment.form_definition)) {
+              options = assessment.form_definition;
+            }
+
+            return {
+              id: assessment.id,
+              question: assessment.title,
+              options: options,
+            };
+          });
+          // Initialize selectedWords, start times, and end times arrays
           selectedWords.value = resQ.data.map(() => []);
+          questionStartTimes.value = resQ.data.map(() => null);
+          questionEndTimes.value = resQ.data.map(() => null);
+          // Set start time for first question
+          if (resQ.data.length > 0) {
+            questionStartTimes.value[0] = new Date().toISOString();
+          }
         }
       };
 
       // Helper to fetch previous responses (replacing answers)
       const loadAnswers = async (headers, params) => {
-        const resA = await axios.get(`${API_BASE_URL}/api/assessment-responses`, {
-          headers,
-          params,
-        });
+        const resA = await axios.get(
+          `${API_BASE_URL}/api/assessment-responses`,
+          {
+            headers,
+            params,
+          }
+        );
         if (Array.isArray(resA.data)) {
           for (const response of resA.data) {
             const idx = questions.value.findIndex(
@@ -248,12 +276,22 @@ export default {
     // Navigation
     const goToNext = () => {
       if (step.value < totalSteps.value && canProceed.value) {
+        // Record end time for current question
+        questionEndTimes.value[step.value - 1] = new Date().toISOString();
         step.value++;
+        // Record start time for next question
+        if (!questionStartTimes.value[step.value - 1]) {
+          questionStartTimes.value[step.value - 1] = new Date().toISOString();
+        }
       }
     };
     const goToBack = () => {
       if (step.value > 1) {
         step.value--;
+        // Update start time if going back to a question
+        if (!questionStartTimes.value[step.value - 1]) {
+          questionStartTimes.value[step.value - 1] = new Date().toISOString();
+        }
       }
     };
 
@@ -275,11 +313,16 @@ export default {
         return;
       }
 
+      // Record end time for the last question
+      questionEndTimes.value[step.value - 1] = new Date().toISOString();
+
       // Build responses array as expected by new backend (assessment-based)
       const buildResponsesPayload = () =>
         questions.value.map((q, idx) => ({
           assessment_id: q.id,
           selected_options: selectedWords.value[idx] || [],
+          start_time: questionStartTimes.value[idx],
+          end_time: questionEndTimes.value[idx],
         }));
 
       const responsesPayload = buildResponsesPayload();

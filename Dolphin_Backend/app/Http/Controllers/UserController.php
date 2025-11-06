@@ -37,11 +37,10 @@ class UserController extends Controller
                 'email' => 'required|email|unique:users,email',
                 'first_name' => 'required|string|max:255',
                 'last_name' => 'required|string|max:255',
-                'phone' => 'required|regex:/^[6-9]\d{9}$/',
-                'country_id' => 'required|integer|exists:countries,id',
+                'phone_number' => 'required|regex:/^[6-9]\d{9}$/',
                 'role' => ['required', Rule::in(['user', 'organizationadmin', 'dolphinadmin', 'superadmin', 'salesperson'])],
-                'organization_name' => 'nullable|string|max:255|required_if:role,organizationadmin',
-                'organization_size' => 'nullable|string|max:255|required_if:role,organizationadmin',
+                'name' => 'nullable|string|max:255|required_if:role,organizationadmin',
+                'size' => 'nullable|string|max:255|required_if:role,organizationadmin',
             ]);
 
             $plainPassword = Str::random(12);
@@ -93,8 +92,10 @@ class UserController extends Controller
         $rules = [
             'first_name' => 'sometimes|string|max:255',
             'last_name' => 'sometimes|string|max:255',
+            'phone_number' => 'sometimes|regex:/^[6-9]\d{9}$/',
             'role' => ['required', 'string', Rule::in(['user', 'organizationadmin', 'dolphinadmin', 'superadmin', 'salesperson'])],
-            'organization_name' => 'nullable|string|max:255',
+            'name' => 'nullable|string|max:255',
+            'size' => 'nullable|string|max:255',
         ];
 
         if ($request->has('email')) {
@@ -120,10 +121,13 @@ class UserController extends Controller
                 $role = Role::where('name', $validatedData['role'])->firstOrFail();
                 $user->roles()->sync([$role->id]);
 
-                if ($request->has('organization_name')) {
+                if ($request->has('name')) {
                     Organization::updateOrCreate(
                         ['user_id' => $user->id],
-                        ['organization_name' => $validatedData['organization_name']]
+                        [
+                            'name' => $validatedData['name'],
+                            'size' => $validatedData['size'] ?? null,
+                        ]
                     );
                 }
             });
@@ -203,9 +207,8 @@ class UserController extends Controller
             if ($data['role'] === 'organizationadmin') {
                 $org = Organization::create([
                     'user_id' => $user->id,
-                    'organization_name' => $data['organization_name'],
-                    'organization_size' => $data['organization_size'],
-                    'country_id' => $data['country_id'],
+                    'name' => $data['name'] ?? 'Organization',
+                    'size' => $data['size'] ?? null,
                 ]);
 
                 // Persist organization_id back to user
@@ -224,15 +227,18 @@ class UserController extends Controller
 
     private function formatUserPayload(User $user): array
     {
+        $fullName = trim($user->first_name . ' ' . $user->last_name);
+        
         return [
             'id' => $user->id,
             'email' => $user->email,
             'first_name' => $user->first_name,
             'last_name' => $user->last_name,
-            'name' => $user->full_name,
+            'name' => $fullName ?: $user->email,
             'role' => $user->roles->first()->name ?? 'user',
-            'phone' => $user->phone ?? null,
+            'phone_number' => $user->phone_number ?? null,
             'country' => $user->country->name ?? null,
+            'country_id' => $user->country_id ?? null,
         ];
     }
 }

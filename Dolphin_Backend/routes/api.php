@@ -151,6 +151,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/assessment-responses', [AssessmentResponseController::class, 'store']);
         Route::get('/assessment-responses', [AssessmentResponseController::class, 'getUserResponses']);
         Route::get('/assessment-attempts', [AssessmentResponseController::class, 'getUserAttempts']);
+        Route::get('/assessment-timing', [AssessmentResponseController::class, 'getAssessmentTiming']);
 
         // REMOVED: Legacy questions/answers/organization-assessment-questions routes
         // (controllers deleted - used non-existent tables: questions, answers, organization_assessment_questions)

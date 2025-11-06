@@ -27,12 +27,14 @@
                   <div class="lead-detail-list-row">
                     <span>Sales Person</span
                     ><b>{{
-                      leadData.sales_person ??
-                      (orgData?.sales_person || orgData?.sales_person_id)
+                      orgData?.sales_person || leadData.sales_person || "N/A"
                     }}</b>
                   </div>
                   <div class="lead-detail-list-row">
-                    <span>Source</span><b>{{ leadData.source }}</b>
+                    <span>Source</span
+                    ><b>{{
+                      orgData?.referral_source || leadData.source || "N/A"
+                    }}</b>
                   </div>
                   <div class="lead-detail-list-row">
                     <span>Status</span><b>{{ leadData.status }}</b>
@@ -81,39 +83,11 @@
                     </div>
                     <div class="lead-detail-list-row">
                       <span>Address</span>
-                      <b>
-                        <template
-                          v-if="
-                            (orgData &&
-                              (orgData.address ||
-                                orgData.city ||
-                                orgData.state ||
-                                orgData.zip ||
-                                orgData.country)) ||
-                            addressDisplay.length
-                          "
-                        >
-                          {{
-                            orgData &&
-                            (orgData.address ||
-                              orgData.city ||
-                              orgData.state ||
-                              orgData.zip ||
-                              orgData.country)
-                              ? [
-                                  orgData.address,
-                                  orgData.city,
-                                  orgData.state,
-                                  orgData.zip,
-                                  orgData.country,
-                                ]
-                                  .filter(Boolean)
-                                  .join(", ")
-                              : addressDisplay.join(", ")
-                          }}
-                        </template>
-                        <template v-else>N/A</template>
-                      </b>
+                      <b>{{
+                        orgData?.address_display ||
+                        addressDisplay.join(", ") ||
+                        "N/A"
+                      }}</b>
                     </div>
                   </template>
                   <template v-else>
@@ -140,9 +114,28 @@
                     <div class="lead-detail-list-row">
                       <span>Address</span>
                       <b>
-                        <template v-if="addressDisplay.length">
-                          {{ addressDisplay.join(", ") }}
+                      
+                        <template v-if="orgData && orgData.address">
+                          <template v-if="orgData.address_display && orgData.address_display !== 'N/A'">
+                            {{ orgData.address_display }}
+                          </template>
+                          <template v-else>
+                            {{
+                              [
+                                orgData.address.address_line_1,
+                                orgData.address.address_line_2,
+                                orgData.address.city?.name || orgData.address.city,
+                                orgData.address.state?.name || orgData.address.state,
+                                orgData.address.zip_code
+                              ].filter(Boolean).join(', ') || (addressDisplay.length ? addressDisplay.join(', ') : 'N/A')
+                            }}
+                          </template>
                         </template>
+
+                        <template v-else-if="addressDisplay.length">
+                          {{ addressDisplay.join(', ') }}
+                        </template>
+
                         <template v-else>N/A</template>
                       </b>
                     </div>
@@ -391,7 +384,7 @@ export default {
           (leadObj.first_name || "") +
           (leadObj.last_name ? " " + leadObj.last_name : ""),
         email: leadObj.email || "",
-        phone: leadObj.phone || "",
+        phone: leadObj.phone_number || leadObj.phone || "",
         source: leadObj.find_us || "",
         sales_person: leadObj.sales_person || "",
         sales_person_id: leadObj.sales_person_id || null,
@@ -409,6 +402,8 @@ export default {
         id: leadObj.id || null,
         first_name: leadObj.first_name || "",
         last_name: leadObj.last_name || "",
+        organization_id: leadObj.organization_id || null,
+        user_id: leadObj.user_id || null,
       };
     },
 

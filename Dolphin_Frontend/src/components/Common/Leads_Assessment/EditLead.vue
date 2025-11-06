@@ -47,12 +47,12 @@
               <div>
                 <FormLabel>Phone</FormLabel>
                 <FormInput
-                  v-model="form.phone"
+                  v-model="form.phone_number"
                   icon="fas fa-phone"
                   placeholder="Type here"
                   required
-                /><FormLabel v-if="errors.phone" class="error-message">{{
-                  errors.phone[0]
+                /><FormLabel v-if="errors.phone_number" class="error-message">{{
+                  errors.phone_number[0]
                 }}</FormLabel>
               </div>
 
@@ -76,7 +76,21 @@
                   >{{ errors.referral_source_id[0] }}</FormLabel
                 >
               </div>
-              <div></div>
+              <div v-if="isReferralSourceOther">
+                <FormLabel>Please specify</FormLabel>
+                <FormInput
+                  v-model="form.referral_other_text"
+                  icon="fas fa-comment"
+                  placeholder="Please specify how you found us"
+                  :required="isReferralSourceOther"
+                />
+                <FormLabel
+                  v-if="errors.referral_other_text"
+                  class="error-message"
+                  >{{ errors.referral_other_text[0] }}</FormLabel
+                >
+              </div>
+              <div v-else></div>
             </FormRow>
             <FormRow>
               <div>
@@ -113,15 +127,30 @@
             </FormRow>
             <FormRow>
               <div>
-                <FormLabel>Address </FormLabel>
+                <FormLabel>Address Line 1</FormLabel>
                 <FormInput
-                  v-model="form.address"
+                  v-model="form.address_line_1"
                   icon="fas fa-map-marker-alt"
                   placeholder="Enter address"
                   required
-                /><FormLabel v-if="errors.address" class="error-message">{{
-                  errors.address[0]
-                }}</FormLabel>
+                /><FormLabel
+                  v-if="errors.address_line_1"
+                  class="error-message"
+                  >{{ errors.address_line_1[0] }}</FormLabel
+                >
+              </div>
+              <div>
+                <FormLabel>Address Line 2</FormLabel>
+                <FormInput
+                  v-model="form.address_line_2"
+                  icon="fas fa-map-marker-alt"
+                  placeholder="Enter address"
+                  required
+                /><FormLabel
+                  v-if="errors.address_line_2"
+                  class="error-message"
+                  >{{ errors.address_line_2[0] }}</FormLabel
+                >
               </div>
               <div>
                 <FormLabel>Country</FormLabel>
@@ -176,12 +205,12 @@
               <div>
                 <FormLabel>Zip Code</FormLabel>
                 <FormInput
-                  v-model="form.zip"
+                  v-model="form.zip_code"
                   icon="fas fa-map-marker-alt"
                   placeholder="Enter PIN code"
                   required
-                /><FormLabel v-if="errors.zip" class="error-message">{{
-                  errors.zip[0]
+                /><FormLabel v-if="errors.zip_code" class="error-message">{{
+                  errors.zip_code[0]
                 }}</FormLabel>
               </div>
               <div></div>
@@ -233,15 +262,17 @@ export default {
         first_name: "",
         last_name: "",
         email: "",
-        phone: "",
+        phone_number: "",
         referral_source_id: null,
+        referral_other_text: "",
         organization_name: "",
         organization_size: "",
-        address: "",
+        address_line_1: "",
+        address_line_2: "",
         country_id: null,
         state_id: null,
         city_id: null,
-        zip: "",
+        zip_code: "",
       },
       countries: [],
       states: [],
@@ -251,6 +282,18 @@ export default {
       errorMessage: "",
       errors: {},
     };
+  },
+  computed: {
+    isReferralSourceOther() {
+      // Check if the selected referral source is "Other"
+      if (!this.form.referral_source_id) return false;
+      const selected = this.referralSources.find(
+        (r) => r.id === this.form.referral_source_id
+      );
+      return (
+        selected && selected.name && selected.name.toLowerCase() === "other"
+      );
+    },
   },
   async created() {
     await this.fetchReferralSources();
@@ -312,19 +355,34 @@ export default {
         }
       }
 
+      // Prefer a canonical `name` query param if present; otherwise fall back to first/last/contact
+      let first = q.first_name || null;
+      let last = q.last_name || null;
+      if (!first && !last && q.name) {
+        const parts = (q.name || "").trim().split(/\s+/);
+        first = parts.shift() || null;
+        last = parts.join(" ") || null;
+      }
+      if (!first && !last && q.contact) {
+        first = q.contact.split(" ")[0] || null;
+        last = q.contact.split(" ")[1] || null;
+      }
+
       this.fillForm({
-        first_name: q.first_name || q.contact?.split(" ")[0],
-        last_name: q.last_name || q.contact?.split(" ")[1],
+        first_name: first,
+        last_name: last,
+        name: q.name || q.contact || null,
         email: q.email,
-        phone: q.phone,
-        find_us: q.source || q.find_us,
+        phone_number: q.phone_number || q.phone,
+        referral_source_id: q.referral_source_id,
         organization_name: q.organization || q.organization_name,
         organization_size: q.size || q.organization_size,
-        address: q.address || q.address_line,
+        address_line_1: q.address_line_1 || q.address || q.address_line,
+        address_line_2: q.address_line_2,
         country_id: q.country_id,
         state_id: q.state_id,
         city_id: q.city_id,
-        zip: q.zip,
+        zip_code: q.zip_code || q.zip,
         ...lead,
       });
 
@@ -333,27 +391,53 @@ export default {
     },
 
     fillForm(leadObj) {
+      // Extract organization data from relationship if available
+      const org = leadObj.organization || {};
+      const orgAddress = org.address || {};
+
       this.form = {
+        // Accept canonical 'name' from backend and split to first/last if needed
         first_name: leadObj.first_name || "",
         last_name: leadObj.last_name || "",
+        name: leadObj.name || null,
+        // If first/last missing but `name` exists, split it
+        ...(!leadObj.first_name && leadObj.name
+          ? {
+              first_name: (leadObj.name || "").split(/\s+/)[0] || "",
+              last_name:
+                (leadObj.name || "").split(/\s+/).slice(1).join(" ") || "",
+            }
+          : {}),
         email: leadObj.email || "",
-        phone: leadObj.phone || "",
-        referral_source_id: leadObj.referral_source_id || null,
-        organization_name: leadObj.organization_name || "",
-        organization_size: leadObj.organization_size || "",
-        address: leadObj.address || leadObj.address_line || "",
-        country_id: leadObj.country_id || null,
-        state_id: leadObj.state_id || null,
-        city_id: leadObj.city_id || null,
-        zip: leadObj.zip || "",
+        phone_number: leadObj.phone_number || leadObj.phone || "",
+        // Get referral data from organization
+        referral_source_id:
+          org.referral_source_id || leadObj.referral_source_id || null,
+        referral_other_text:
+          org.referral_other_text || leadObj.referral_other_text || "",
+        // Get organization data
+        organization_name: org.name || leadObj.organization_name || "",
+        organization_size: org.size || leadObj.organization_size || "",
+        // Get address data from organization address
+        address_line_1:
+          orgAddress.address_line_1 ||
+          leadObj.address_line_1 ||
+          leadObj.address ||
+          "",
+        address_line_2:
+          orgAddress.address_line_2 || leadObj.address_line_2 || "",
+        country_id: orgAddress.country_id || leadObj.country_id || null,
+        state_id: orgAddress.state_id || leadObj.state_id || null,
+        city_id: orgAddress.city_id || leadObj.city_id || null,
+        zip_code: orgAddress.zip_code || leadObj.zip_code || leadObj.zip || "",
       };
     },
 
     updatePageTitle(leadObj) {
       this.$nextTick(() => {
-        const name = `${leadObj.first_name || ""} ${
-          leadObj.last_name || ""
-        }`.trim();
+        const name =
+          (leadObj.name && String(leadObj.name).trim()) ||
+          `${leadObj.first_name || ""} ${leadObj.last_name || ""}`.trim();
         this.$root?.$emit(
           "page-title-override",
           name ? `Edit Lead : ${name}` : "Edit Lead"

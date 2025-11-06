@@ -19,32 +19,75 @@ class AuthUserService
     public function createUserAndDetails(array $data): User
     {
         return DB::transaction(function () use ($data) {
+            // Check if user is registering from a lead with existing organization
+            $lead = Lead::where('email', $data['email'])->first();
+            $existingOrgId = $lead?->organization_id ?? null;
+
             $user = User::create([
                 'first_name' => $data['first_name'],
                 'last_name' => $data['last_name'],
                 'email' => $data['email'],
                 'password' => Hash::make($data['password']),
-                'phone' => $data['phone'],
+                'phone_number' => $data['phone_number'] ?? $data['phone'] ?? null,
                 'referral_source_id' => $data['referral_source_id'] ?? $data['find_us'] ?? null,
-                'address' => $data['address'],
-                'country_id' => $data['country'],
-                'state_id' => $data['state'],
-                'city_id' => $data['city'],
-                'zip' => $data['zip'],
+                'address_line_1' => $data['address_line_1'] ?? $data['address'] ?? null,
+                'address_line_2' => $data['address_line_2'] ?? null,
+                'country_id' => $data['country_id'] ?? $data['country'] ?? null,
+                'state_id' => $data['state_id'] ?? $data['state'] ?? null,
+                'city_id' => $data['city_id'] ?? $data['city'] ?? null,
+                'zip_code' => $data['zip_code'] ?? $data['zip'] ?? null,
+                'organization_id' => $existingOrgId, // Link to existing org if available
             ]);
 
-            // Persist organization using DB columns `name` and `size`.
-            Organization::create([
-                'user_id' => $user->id,
-                'name' => $data['organization_name'] ?? null,
-                'size' => $data['organization_size'] ?? null,
-            ]);
+            $org = null;
 
-            // Set the organization_id on the user to reference the created organization
-            $org = Organization::where('user_id', $user->id)->first();
-            if ($org) {
-                $user->organization_id = $org->id;
-                $user->save();
+            if ($existingOrgId) {
+                // Use existing organization from lead
+                $org = Organization::find($existingOrgId);
+
+                // Update organization with user_id if not already set
+                if ($org && !$org->user_id) {
+                    $org->user_id = $user->id;
+                    $org->save();
+                }
+
+                // Create organization address if it doesn't exist
+                if ($org && !$org->address) {
+                    \App\Models\OrganizationAddress::create([
+                        'organization_id' => $org->id,
+                        'address_line_1' => $data['address_line_1'] ?? $data['address'] ?? null,
+                        'address_line_2' => $data['address_line_2'] ?? null,
+                        'country_id' => $data['country_id'] ?? $data['country'] ?? null,
+                        'state_id' => $data['state_id'] ?? $data['state'] ?? null,
+                        'city_id' => $data['city_id'] ?? $data['city'] ?? null,
+                        'zip_code' => $data['zip_code'] ?? $data['zip'] ?? null,
+                    ]);
+                }
+            } else {
+                // Create new organization
+                $org = Organization::create([
+                    'user_id' => $user->id,
+                    'name' => $data['name'] ?? $data['organization_name'] ?? null,
+                    'size' => $data['size'] ?? $data['organization_size'] ?? null,
+                    'referral_source_id' => $data['referral_source_id'] ?? $data['find_us'] ?? null,
+                ]);
+
+                // Create organization address
+                \App\Models\OrganizationAddress::create([
+                    'organization_id' => $org->id,
+                    'address_line_1' => $data['address_line_1'] ?? $data['address'] ?? null,
+                    'address_line_2' => $data['address_line_2'] ?? null,
+                    'country_id' => $data['country_id'] ?? $data['country'] ?? null,
+                    'state_id' => $data['state_id'] ?? $data['state'] ?? null,
+                    'city_id' => $data['city_id'] ?? $data['city'] ?? null,
+                    'zip_code' => $data['zip_code'] ?? $data['zip'] ?? null,
+                ]);
+
+                // Set the organization_id on the user
+                if ($org) {
+                    $user->organization_id = $org->id;
+                    $user->save();
+                }
             }
 
             $user->roles()->attach(Role::where('name', 'user')->first());
@@ -76,11 +119,12 @@ class AuthUserService
             'role' => $user->roles->first()->name ?? 'user',
             'first_name' => $user->first_name,
             'last_name' => $user->last_name,
-            'phone' => $user->phone ?? null,
+            'phone_number' => $user->phone_number ?? null,
             'country' => $user->country->name ?? null,
             'country_id' => $user->country_id ?? null,
             'organization_id' => $org?->id,
-            'organization_name' => $org?->name,
+            'organization_name' => $org?->name, // keep for frontend compatibility
+            'name' => $org?->name, // new field name
         ];
     }
 

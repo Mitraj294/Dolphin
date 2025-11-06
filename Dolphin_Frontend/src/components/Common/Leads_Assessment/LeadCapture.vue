@@ -49,13 +49,13 @@
               <div>
                 <FormLabel>Phone</FormLabel>
                 <FormInput
-                  v-model="form.phone"
+                  v-model="form.phone_number"
                   icon="fas fa-phone"
                   placeholder="Type here"
                   required
                 />
-                <FormLabel v-if="errors.phone" class="error-message">{{
-                  errors.phone[0]
+                <FormLabel v-if="errors.phone_number" class="error-message">{{
+                  errors.phone_number[0]
                 }}</FormLabel>
               </div>
               <div>
@@ -78,7 +78,21 @@
                   >{{ errors.referral_source_id[0] }}</FormLabel
                 >
               </div>
-              <div></div>
+              <div v-if="isReferralSourceOther">
+                <FormLabel>Please specify</FormLabel>
+                <FormInput
+                  v-model="form.referral_other_text"
+                  icon="fas fa-comment"
+                  placeholder="Please specify how you found us"
+                  :required="isReferralSourceOther"
+                />
+                <FormLabel
+                  v-if="errors.referral_other_text"
+                  class="error-message"
+                  >{{ errors.referral_other_text[0] }}</FormLabel
+                >
+              </div>
+              <div v-else></div>
             </FormRow>
             <FormRow>
               <div>
@@ -116,17 +130,31 @@
             </FormRow>
             <FormRow>
               <div>
-                <FormLabel>Address Line</FormLabel>
+                <FormLabel>Address Line 1</FormLabel>
                 <FormInput
-                  v-model="form.address"
+                  v-model="form.address_line_1"
                   icon="fas fa-map-marker-alt"
                   placeholder="153, Maggie Loop Pottsville"
                   required
                 />
-                <FormLabel v-if="errors.address" class="error-message">{{
-                  errors.address[0]
+                <FormLabel v-if="errors.address_line_1" class="error-message">{{
+                  errors.address_line_1[0]
                 }}</FormLabel>
               </div>
+              <div>
+                <FormLabel>Address Line 2</FormLabel>
+                <FormInput
+                  v-model="form.address_line_2"
+                  icon="fas fa-map-marker-alt"
+                  placeholder="Apartment, suite, etc. (optional)"
+                />
+                <FormLabel v-if="errors.address_line_2" class="error-message">{{
+                  errors.address_line_2[0]
+                }}</FormLabel>
+              </div>
+              <div></div>
+            </FormRow>
+            <FormRow>
               <div>
                 <FormLabel>Country</FormLabel>
                 <FormDropdown
@@ -182,13 +210,13 @@
               <div>
                 <FormLabel>Zip Code</FormLabel>
                 <FormInput
-                  v-model="form.zip"
+                  v-model="form.zip_code"
                   icon="fas fa-map-marker-alt"
                   placeholder="Enter PIN code"
                   required
                 />
-                <FormLabel v-if="errors.zip" class="error-message">{{
-                  errors.zip[0]
+                <FormLabel v-if="errors.zip_code" class="error-message">{{
+                  errors.zip_code[0]
                 }}</FormLabel>
               </div>
               <div></div>
@@ -247,16 +275,19 @@ export default {
       form: {
         firstName: "",
         lastName: "",
+        name: "",
         email: "",
-        phone: "",
+        phone_number: "",
         referral_source_id: null,
+        referral_other_text: "",
         organization_name: "",
         organization_size: null,
-        address: "",
+        address_line_1: "",
+        address_line_2: "",
         country_id: null,
         state_id: null,
         city_id: null,
-        zip: "",
+        zip_code: "",
       },
       countries: [],
       states: [],
@@ -267,6 +298,16 @@ export default {
       errors: {},
     };
   },
+  computed: {
+    isReferralSourceOther() {
+      // Check if the selected referral source is "Other"
+      if (!this.form.referral_source_id) return false;
+      const selected = this.referralSources.find(
+        (r) => r.id === this.form.referral_source_id
+      );
+      return selected && selected.name && selected.name.toLowerCase() === "other";
+    },
+  },
   watch: {
     "form.country_id"(val) {
       console.log(
@@ -275,6 +316,12 @@ export default {
         "type:",
         typeof val
       );
+    },
+    "form.referral_source_id"(val) {
+      // Clear "other" text when switching away from "Other" option
+      if (!this.isReferralSourceOther) {
+        this.form.referral_other_text = "";
+      }
     },
   },
   methods: {
@@ -410,20 +457,24 @@ export default {
         }
 
         const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
-        // build payload only with non-empty values to avoid sending empty strings
+        // build payload with all lead fields
         const payload = {
           first_name: this.form.firstName,
           last_name: this.form.lastName,
           email: this.form.email,
-          phone: this.form.phone,
+          phone_number: this.form.phone_number,
           referral_source_id: this.form.referral_source_id,
+          referral_other_text: this.form.referral_other_text,
           organization_name: this.form.organization_name,
           organization_size: this.form.organization_size,
-          address: this.form.address,
+          address_line_1: this.form.address_line_1,
+          address_line_2: this.form.address_line_2,
+          zip_code: this.form.zip_code,
           country_id: this.form.country_id,
           state_id: this.form.state_id,
           city_id: this.form.city_id,
-          zip: this.form.zip,
+          status: "Lead Stage",
+          create_organization: true, // Flag to tell backend to create organization
         };
 
         // Remove keys with null/empty-string values so backend doesn't validate them
@@ -480,24 +531,67 @@ export default {
         firstName: "",
         lastName: "",
         email: "",
-        phone: "",
+        phone_number: "",
         password: "",
         referral_source_id: null,
+        referral_other_text: "",
         organization_name: "",
         organization_size: null,
-        address: "",
+        address_line_1: "",
+        address_line_2: "",
         country_id: null,
         state_id: null,
         city_id: null,
-        zip: "",
+        zip_code: "",
       };
       this.states = [];
       this.cities = [];
+    },
+    // Prefill form from query params (support canonical `name`)
+    loadFromQuery() {
+      const q = this.$route.query || {};
+      // prefer q.name, then q.first_name/last_name, then q.contact split
+      if (q.name || q.first_name || q.contact) {
+        let first = q.first_name || null;
+        let last = q.last_name || null;
+        if (!first && !last && q.name) {
+          const parts = (q.name || "").trim().split(/\s+/);
+          first = parts.shift() || "";
+          last = parts.join(" ") || "";
+        }
+        if (!first && !last && q.contact) {
+          first = q.contact.split(" ")[0] || "";
+          last = q.contact.split(" ")[1] || "";
+        }
+
+        this.form.firstName = first || "";
+        this.form.lastName = last || "";
+        this.form.name =
+          q.name || `${this.form.firstName} ${this.form.lastName}`.trim();
+        this.form.email = q.email || this.form.email;
+        this.form.phone_number =
+          q.phone_number || q.phone || this.form.phone_number;
+        this.form.referral_source_id =
+          q.referral_source_id || this.form.referral_source_id;
+        this.form.organization_name =
+          q.organization || q.organization_name || this.form.organization_name;
+        this.form.organization_size =
+          q.size || q.organization_size || this.form.organization_size;
+        this.form.address_line_1 =
+          q.address_line_1 || q.address || this.form.address_line_1;
+        this.form.address_line_2 = q.address_line_2 || this.form.address_line_2;
+        this.form.country_id = q.country_id || this.form.country_id;
+        this.form.state_id = q.state_id || this.form.state_id;
+        this.form.city_id = q.city_id || this.form.city_id;
+        this.form.zip_code = q.zip_code || q.zip || this.form.zip_code;
+      }
     },
   },
   mounted() {
     this.fetchReferralSources();
     this.fetchCountries();
+    // If registration link provided canonical `name` or other query params, prefill
+    this.loadFromQuery();
   },
 };
 </script>

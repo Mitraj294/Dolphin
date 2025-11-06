@@ -207,8 +207,8 @@ export default {
 
     normalizeOrganizations(data) {
       return data.map((org) => ({
-        name: org.organization_name,
-        size: org.organization_size || "",
+        name: org.name,
+        size: org.size || "",
         main_contact: org.main_contact || "",
         contractStart: org.contract_start || "",
         contractEnd: org.contract_end || "",

@@ -22,6 +22,24 @@ class Organization extends Model
         'size',
         'referral_source_id',
         'referral_other_text',
+        'contract_start',
+        'contract_end',
+        'sales_person_id',
+        'last_contacted',
+        'certified_staff',
+        'user_id',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'contract_start' => 'date',
+        'contract_end' => 'date',
+        'last_contacted' => 'datetime',
+        'certified_staff' => 'integer',
     ];
 
     /**
@@ -38,6 +56,14 @@ class Organization extends Model
     public function salesPerson(): BelongsTo
     {
         return $this->belongsTo(User::class, 'sales_person_id');
+    }
+
+    /**
+     * Get the referral source associated with the organization.
+     */
+    public function referralSource(): BelongsTo
+    {
+        return $this->belongsTo(ReferralSource::class);
     }
 
     /**

@@ -23,16 +23,35 @@ class User extends Authenticatable
         'email_verified_at',
         'password',
         'status',
-        'remember_token',
         'last_login_at',
-        'created_at',
-        'updated_at',
-        'deleted_at',
         'force_password_change',
         'stripe_id',
         'pm_type',
         'pm_last_four',
         'trial_ends_at',
+    ];
+
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'last_login_at' => 'datetime',
+        'trial_ends_at' => 'datetime',
+        'force_password_change' => 'boolean',
+        'password' => 'hashed',
     ];
 
     // Eloquent relationships

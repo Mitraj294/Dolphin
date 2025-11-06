@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class AssessmentResponse extends Model
 {
@@ -37,5 +38,13 @@ class AssessmentResponse extends Model
     public function assessment(): BelongsTo
     {
         return $this->belongsTo(Assessment::class);
+    }
+
+    /**
+     * Get the timing data for this response
+     */
+    public function assessmentTime(): HasOne
+    {
+        return $this->hasOne(AssessmentTime::class);
     }
 }

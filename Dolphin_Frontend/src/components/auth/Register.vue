@@ -639,16 +639,17 @@ export default {
         first_name: this.first_name,
         last_name: this.last_name,
         email: this.email,
-        phone: this.phone,
+        phone_number: this.phone, // new field name
         password: this.password,
         confirm_password: this.confirm_password,
-        organization_name: this.organization_name,
-        organization_size: this.organization_size,
-        address: this.organization_address,
-        city: this.organization_city,
-        state: this.organization_state,
-        zip: this.organization_zip,
-        country: this.country,
+        name: this.organization_name, // organization name - new field
+        size: this.organization_size, // organization size - new field
+        address_line_1: this.organization_address, // new field name
+        address_line_2: '', // optional
+        city_id: this.organization_city, // new field name
+        state_id: this.organization_state, // new field name
+        zip_code: this.organization_zip, // new field name
+        country_id: this.country, // new field name
         referral_source_id: this.referral_source_id,
       };
     },
@@ -764,10 +765,10 @@ export default {
       this.first_name = lead.first_name || '';
       this.last_name = lead.last_name || '';
       this.email = lead.email || '';
-      this.phone = lead.phone || '';
+      this.phone = lead.phone_number || lead.phone || '';
       this.organization_name = lead.organization_name || '';
       this.organization_size = lead.organization_size || '';
-      this.organization_address = lead.organization_address || '';
+      this.organization_address = lead.address_line_1 || lead.organization_address || '';
       this.country = lead.country_id || lead.country || this.country;
       this.organization_state =
         lead.organization_state_id ||
@@ -779,7 +780,7 @@ export default {
         lead.city_id ||
         lead.organization_city ||
         this.organization_city;
-      this.organization_zip = lead.organization_zip || '';
+      this.organization_zip = lead.zip_code || lead.organization_zip || '';
       this.referral_source_id = lead.referral_source_id || null;
       if (this.organization_size)
         this.organization_size = normalizeOrgSize(this.organization_size);

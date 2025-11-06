@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Assessment;
 use App\Models\AssessmentResponse;
+use App\Models\AssessmentTime;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -43,6 +44,8 @@ class AssessmentResponseController extends Controller
                 'responses' => 'required|array',
                 'responses.*.assessment_id' => 'required|exists:assessment,id',
                 'responses.*.selected_options' => 'required|array',
+                'responses.*.start_time' => 'nullable|date',
+                'responses.*.end_time' => 'nullable|date',
                 'attempt_id' => 'nullable|integer',
             ]);
 
@@ -63,12 +66,27 @@ class AssessmentResponseController extends Controller
 
             DB::transaction(function () use ($responses, $userId, $attemptId) {
                 foreach ($responses as $responseData) {
-                    AssessmentResponse::create([
+                    // Create assessment response
+                    $assessmentResponse = AssessmentResponse::create([
                         'user_id' => $userId,
                         'attempt_id' => $attemptId,
                         'assessment_id' => $responseData['assessment_id'],
                         'selected_options' => json_encode($responseData['selected_options']),
                     ]);
+
+                    // Create timing data if provided
+                    if (isset($responseData['start_time']) && isset($responseData['end_time'])) {
+                        $startTime = new \DateTime($responseData['start_time']);
+                        $endTime = new \DateTime($responseData['end_time']);
+                        $timeSpent = $endTime->getTimestamp() - $startTime->getTimestamp();
+
+                        AssessmentTime::create([
+                            'assessment_response_id' => $assessmentResponse->id,
+                            'start_time' => $startTime,
+                            'end_time' => $endTime,
+                            'time_spent' => $timeSpent,
+                        ]);
+                    }
                 }
             });
 
@@ -79,7 +97,8 @@ class AssessmentResponseController extends Controller
         } catch (\Exception $e) {
             Log::error('Failed to store assessment responses.', [
                 'user_id' => Auth::id(),
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ]);
 
             return response()->json(['error' => 'An error occurred while saving responses.'], 500);
@@ -151,6 +170,62 @@ class AssessmentResponseController extends Controller
                 'error' => $e->getMessage()
             ]);
             return response()->json(['error' => 'Could not retrieve attempts.'], 500);
+        }
+    }
+
+    /**
+     * Get assessment timing data for a specific attempt
+     * 
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getAssessmentTiming(Request $request): JsonResponse
+    {
+        try {
+            $userId = Auth::id();
+            $attemptId = $request->query('attempt_id');
+
+            $validator = Validator::make(['attempt_id' => $attemptId], [
+                'attempt_id' => 'required|integer',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
+
+            // Get responses with timing data
+            $responses = AssessmentResponse::where('user_id', $userId)
+                ->where('attempt_id', $attemptId)
+                ->with(['assessment:id,title', 'assessmentTime'])
+                ->get();
+
+            $timingData = $responses->map(function ($response) {
+                $timing = $response->assessmentTime;
+                return [
+                    'assessment_id' => $response->assessment_id,
+                    'assessment_title' => $response->assessment->title ?? null,
+                    'start_time' => $timing->start_time ?? null,
+                    'end_time' => $timing->end_time ?? null,
+                    'time_spent' => $timing->time_spent ?? null,
+                    'time_spent_formatted' => $timing && $timing->time_spent
+                        ? gmdate("H:i:s", $timing->time_spent)
+                        : null,
+                ];
+            });
+
+            return response()->json([
+                'attempt_id' => $attemptId,
+                'timing_data' => $timingData,
+                'total_time_spent' => $responses->sum(function ($response) {
+                    return $response->assessmentTime->time_spent ?? 0;
+                })
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Failed to retrieve assessment timing.', [
+                'user_id' => Auth::id(),
+                'error' => $e->getMessage()
+            ]);
+            return response()->json(['error' => 'Could not retrieve timing data.'], 500);
         }
     }
 }

@@ -75,7 +75,7 @@
                       </span>
                     </td>
                     <td data-label="Email">{{ lead.email }}</td>
-                    <td data-label="Phone Number">{{ lead.phone }}</td>
+                    <td data-label="Phone Number">{{ lead.phone_number }}</td>
                     <td data-label="Organization">{{ lead.organization }}</td>
                     <td data-label="Size">{{ lead.size }}</td>
                     <td data-label="Source">{{ lead.source }}</td>
@@ -310,8 +310,17 @@ export default {
         });
         // Map leads and resolve referral source name if possible
         leads.value = response.data.map((lead) => {
+          // Figure out the referral source name
           let sourceName = lead.find_us || "";
-          if (
+          
+          // Check if backend provided referral_source_name
+          if (lead.referral_source_name) {
+            sourceName = lead.referral_source_name;
+            // If it's "Other" and has custom text, append it
+            if (lead.referral_source_name.toLowerCase() === 'other' && lead.referral_other_text) {
+              sourceName = `Other: ${lead.referral_other_text}`;
+            }
+          } else if (
             Array.isArray(referralSources.value) &&
             referralSources.value.length &&
             lead.referral_source_id
@@ -319,17 +328,43 @@ export default {
             const match = referralSources.value.find(
               (r) => String(r.id) === String(lead.referral_source_id)
             );
-            if (match) sourceName = match.name || match.text || sourceName;
+            if (match) {
+              sourceName = match.name || match.text || sourceName;
+              // If it's "Other" and has custom text, append it
+              if (sourceName.toLowerCase() === 'other' && lead.referral_other_text) {
+                sourceName = `Other: ${lead.referral_other_text}`;
+              }
+            }
           }
+
+          // Prefer backend 'name' (canonical); fallback to first+last or contact
+          const contactName =
+            lead.name ||
+            `${lead.first_name || ""} ${lead.last_name || ""}`.trim() ||
+            lead.contact ||
+            "";
+          const phone_number = lead.phone_number || lead.phone || "";
+          const organization =
+            (lead.organization &&
+              (lead.organization.name || lead.organization)) ||
+            lead.organization_name ||
+            "";
+          const size =
+            lead.organization_size ||
+            (lead.organization && lead.organization.size) ||
+            "";
+
           return {
             id: lead.id,
-            contact: `${lead.first_name} ${lead.last_name}`,
+            contact: contactName,
+            name: contactName,
             email: lead.email,
-            phone: lead.phone,
-            organization: lead.organization_name,
-            size: lead.organization_size,
+            phone_number: phone_number,
+            organization: organization,
+            size: size,
             source: sourceName,
             referral_source_id: lead.referral_source_id || null,
+            referral_other_text: lead.referral_other_text || null,
             status: lead.registered_at ? "Registered" : lead.status,
             notes: lead.notes,
             notesAction: lead.notes ? "View" : "Add",
