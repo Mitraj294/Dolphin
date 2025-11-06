@@ -128,12 +128,12 @@ class SendAgreementController extends Controller
             'last_name'  => $lead->last_name ?? $nameParts['last_name'],
             'password'   => Hash::make($passwordPlain),
         ];
-        
+
         if ($lead) {
             $userData['phone'] = $lead->phone;
             $userData['country_id'] = $lead->country_id ?? null;
         }
-        
+
         $user = User::create($userData);
 
         try {
@@ -172,8 +172,11 @@ class SendAgreementController extends Controller
             if ($currentSub) {
                 $qs['plan_amount'] = $currentSub->amount;
                 $qs['plan_name'] = $currentSub->plan_name;
-                if ($currentSub->subscription_end) {
-                    $qs['subscription_end'] = $currentSub->subscription_end->toDateTimeString();
+                // Prefer ends_at property on the subscription model
+                if (! empty($currentSub->ends_at)) {
+                    $qs['subscription_end'] = $currentSub->ends_at instanceof \Carbon\Carbon ? $currentSub->ends_at->toDateTimeString() : (string)$currentSub->ends_at;
+                } elseif (! empty($currentSub->subscription_end)) {
+                    $qs['subscription_end'] = $currentSub->subscription_end instanceof \Carbon\Carbon ? $currentSub->subscription_end->toDateTimeString() : (string)$currentSub->subscription_end;
                 }
                 $qs['subscription_status'] = $currentSub->status;
             }

@@ -176,7 +176,8 @@ class CheckSubscriptionStatus
             return response()->json([
                 'message' => $message,
                 'status' => $status,
-                'subscription_end' => $latest?->subscription_end?->toDateTimeString(),
+                // normalize to subscription_end key in response but use actual model property
+                'subscription_end' => $latest?->ends_at?->toDateTimeString() ?? ($latest?->subscription_end?->toDateTimeString() ?? null),
                 'subscription_id' => $latest?->id,
                 'redirect_url' => url('/manage-subscription'),
             ], 403);

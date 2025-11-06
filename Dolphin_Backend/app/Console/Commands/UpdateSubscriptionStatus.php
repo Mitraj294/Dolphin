@@ -30,7 +30,8 @@ class UpdateSubscriptionStatus extends Command
         $this->info('Performing daily subscription status cleanup...');
 
         $expiredSubscriptions = Subscription::where('status', 'active')
-            ->where('subscription_end', '<', Carbon::now())
+            // subscriptions table uses `ends_at` for the expiration datetime
+            ->where('ends_at', '<', Carbon::now())
             ->get();
 
         $count = $expiredSubscriptions->count();

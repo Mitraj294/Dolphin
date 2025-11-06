@@ -201,6 +201,7 @@ export default {
       countryName: "",
       stateName: "",
       cityName: "",
+      referralSources: [],
       // organization related
       orgData: null,
       orgUser: null,
@@ -411,6 +412,31 @@ export default {
       };
     },
 
+    async fetchReferralSources() {
+      try {
+        const API_BASE_URL = process.env.VUE_APP_API_BASE_URL || "";
+        const res = await axios.get(`${API_BASE_URL}/api/referral-sources`);
+        this.referralSources = res.data || res.data?.options || [];
+      } catch (e) {
+        console.warn("Failed to fetch referral sources", e);
+        this.referralSources = [];
+      }
+    },
+
+    mapReferralSourceName(leadObj) {
+      if (!leadObj) return "";
+      if (leadObj.find_us) return leadObj.find_us;
+      const id = leadObj.referral_source_id || null;
+      if (!id) return "";
+      if (Array.isArray(this.referralSources) && this.referralSources.length) {
+        const found = this.referralSources.find(
+          (r) => String(r.id) === String(id)
+        );
+        return found ? found.name || found.text || String(id) : String(id);
+      }
+      return String(id);
+    },
+
     // Load lead payload from API by id. Returns payload or null on failure.
     async loadLeadById(id) {
       if (id) {
@@ -433,6 +459,10 @@ export default {
     async initFromPayload(payload, id) {
       const leadObj = payload.lead ? payload.lead : payload;
       this.localLead = this.normalizeLeadObj(leadObj);
+      // Resolve referral source name (id -> name) when possible
+      await this.fetchReferralSources();
+      this.localLead.source =
+        this.mapReferralSourceName(leadObj) || this.localLead.source;
       if (payload.organization) {
         this.orgData = payload.organization;
         this.orgUser = payload.orgUser || null;

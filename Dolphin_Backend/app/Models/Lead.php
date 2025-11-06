@@ -10,21 +10,12 @@ class Lead extends Model
 {
     use HasFactory, SoftDeletes;
     protected $fillable = [
+        'organization_id',
         'first_name',
         'last_name',
         'email',
-        'phone',
-        'referral_source_id',
-        'organization_name',
-        'organization_size',
-        'address',
-        'country_id',
-        'state_id',
-        'city_id',
-        'zip',
+        'phone_number',
         'status',
-        'created_by',
-        'sales_person_id'
     ];
 
     protected $casts = [
@@ -86,5 +77,13 @@ class Lead extends Model
     public function city()
     {
         return $this->belongsTo(City::class);
+    }
+
+    /**
+     * Get the organization associated with the lead.
+     */
+    public function organization()
+    {
+        return $this->belongsTo(\App\Models\Organization::class, 'organization_id');
     }
 }

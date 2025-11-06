@@ -11,11 +11,12 @@ class OrganizationAddress extends Model
 
     protected $fillable = [
         'organization_id',
-        'address',
-        'country_id',
-        'state_id',
+        'address_line_1',
+        'address_line_2',
         'city_id',
-        'zip',
+        'state_id',
+        'country_id',
+        'zip_code',
     ];
 
     /**

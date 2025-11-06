@@ -33,10 +33,11 @@ class AuthUserService
                 'zip' => $data['zip'],
             ]);
 
+            // Persist organization using DB columns `name` and `size`.
             Organization::create([
                 'user_id' => $user->id,
-                'organization_name' => $data['organization_name'],
-                'organization_size' => $data['organization_size'],
+                'name' => $data['organization_name'] ?? null,
+                'size' => $data['organization_size'] ?? null,
             ]);
 
             // Set the organization_id on the user to reference the created organization
@@ -79,7 +80,7 @@ class AuthUserService
             'country' => $user->country->name ?? null,
             'country_id' => $user->country_id ?? null,
             'organization_id' => $org?->id,
-            'organization_name' => $org?->organization_name,
+            'organization_name' => $org?->name,
         ];
     }
 

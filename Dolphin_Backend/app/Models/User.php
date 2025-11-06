@@ -16,22 +16,23 @@ class User extends Authenticatable
 
 
     protected $fillable = [
-        'id',
         'first_name',
         'last_name',
-        'organization_id',
         'email',
+        'phone_number',
+        'email_verified_at',
         'password',
-        'phone',
-        'referral_source_id',
-        'address',
-        'country_id',
-        'state_id',
-        'city_id',
-        'zip',
+        'status',
+        'remember_token',
+        'last_login_at',
         'created_at',
         'updated_at',
         'deleted_at',
+        'force_password_change',
+        'stripe_id',
+        'pm_type',
+        'pm_last_four',
+        'trial_ends_at',
     ];
 
     // Eloquent relationships

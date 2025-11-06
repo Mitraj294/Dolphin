@@ -24,7 +24,10 @@ class OrganizationController extends Controller
             'user.state',
             'user.city',
             'salesPerson',
-            'activeSubscription'
+            'activeSubscription',
+            'address.country',
+            'address.state',
+            'address.city',
         ]);
 
         if ($user->hasRole('organizationadmin')) {
@@ -40,7 +43,8 @@ class OrganizationController extends Controller
         $latestSubscriptions = [];
         if (!empty($userIds)) {
             $subs = Subscription::whereIn('user_id', $userIds)
-                ->orderByDesc('subscription_end')
+                // subscriptions table uses `ends_at` (not `subscription_end`)
+                ->orderByDesc('ends_at')
                 ->get()
                 ->groupBy('user_id')
                 ->map(fn($group) => $group->first())
@@ -74,7 +78,10 @@ class OrganizationController extends Controller
             'user.state',
             'user.city',
             'salesPerson',
-            'activeSubscription'
+            'activeSubscription',
+            'address.country',
+            'address.state',
+            'address.city',
         ]);
 
         return response()->json($this->formatOrganizationPayload($organization));
@@ -86,6 +93,7 @@ class OrganizationController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            // accept the client-facing keys but map to DB columns below
             'organization_name' => 'required|string|max:255',
             'organization_size' => 'required|string',
             'user_id' => 'required|integer|exists:users,id',
@@ -95,9 +103,45 @@ class OrganizationController extends Controller
             'last_contacted' => 'nullable|date',
         ]);
 
-        $organization = Organization::create($validated);
+        // Map incoming fields to the organizations table columns (name, size)
+        $organizationData = [
+            'user_id' => $validated['user_id'],
+            'name' => $validated['organization_name'],
+            'size' => $validated['organization_size'],
+            'sales_person_id' => $validated['sales_person_id'] ?? null,
+            'contract_start' => $validated['contract_start'] ?? null,
+            'contract_end' => $validated['contract_end'] ?? null,
+            'last_contacted' => $validated['last_contacted'] ?? null,
+        ];
 
-        return response()->json($this->formatOrganizationPayload($organization), 201);
+        $organization = Organization::create($organizationData);
+
+        // create organization address if provided in request
+        try {
+            $addr = $request->only(['address', 'address_line_1', 'address_line_2', 'country_id', 'state_id', 'city_id', 'zip', 'zip_code']);
+            $hasAddr = false;
+            foreach (['address', 'address_line_1', 'address_line_2', 'country_id', 'state_id', 'city_id', 'zip', 'zip_code'] as $k) {
+                if (isset($addr[$k]) && $addr[$k] !== '') {
+                    $hasAddr = true;
+                    break;
+                }
+            }
+            if ($hasAddr) {
+                \App\Models\OrganizationAddress::create([
+                    'organization_id' => $organization->id,
+                    'address_line_1' => $addr['address_line_1'] ?? $addr['address'] ?? null,
+                    'address_line_2' => $addr['address_line_2'] ?? null,
+                    'country_id' => $addr['country_id'] ?? null,
+                    'state_id' => $addr['state_id'] ?? null,
+                    'city_id' => $addr['city_id'] ?? null,
+                    'zip_code' => $addr['zip_code'] ?? $addr['zip'] ?? null,
+                ]);
+            }
+        } catch (\Exception $e) {
+            Log::warning('Failed to create organization address on store', ['error' => $e->getMessage()]);
+        }
+
+        return response()->json($this->formatOrganizationPayload($organization->fresh()), 201);
     }
 
     /**
@@ -120,24 +164,48 @@ class OrganizationController extends Controller
             'last_name' => 'sometimes|string|max:255',
             'admin_phone' => 'sometimes|string|regex:/^[6-9]\d{9}$/',
             'address' => 'sometimes|string',
+            'address_line_1' => 'sometimes|string',
+            'address_line_2' => 'sometimes|string',
             'country_id' => 'sometimes|integer|exists:countries,id',
             'state_id' => 'sometimes|integer|exists:states,id',
             'city_id' => 'sometimes|integer|exists:cities,id',
             'zip' => 'sometimes|string|regex:/^[1-9][0-9]{5}$/',
+            'zip_code' => 'sometimes|string|regex:/^[1-9][0-9]{5}$/',
         ]);
 
         try {
             DB::transaction(function () use ($organization, $validated) {
-                $organizationData = array_filter($validated, function ($key) {
-                    return in_array($key, ['organization_name', 'organization_size', 'sales_person_id', 'contract_start', 'contract_end', 'last_contacted']);
-                }, ARRAY_FILTER_USE_KEY);
+                // Map client keys to DB columns for update
+                $organizationData = [];
+                if (array_key_exists('organization_name', $validated)) {
+                    $organizationData['name'] = $validated['organization_name'];
+                }
+                if (array_key_exists('organization_size', $validated)) {
+                    $organizationData['size'] = $validated['organization_size'];
+                }
+                if (array_key_exists('sales_person_id', $validated)) {
+                    $organizationData['sales_person_id'] = $validated['sales_person_id'];
+                }
+                if (array_key_exists('contract_start', $validated)) {
+                    $organizationData['contract_start'] = $validated['contract_start'];
+                }
+                if (array_key_exists('contract_end', $validated)) {
+                    $organizationData['contract_end'] = $validated['contract_end'];
+                }
+                if (array_key_exists('last_contacted', $validated)) {
+                    $organizationData['last_contacted'] = $validated['last_contacted'];
+                }
 
                 $userData = array_filter($validated, function ($key) {
                     return in_array($key, ['admin_email', 'first_name', 'last_name']);
                 }, ARRAY_FILTER_USE_KEY);
 
                 $userDetailsData = array_filter($validated, function ($key) {
-                    return in_array($key, ['admin_phone', 'address', 'country_id', 'state_id', 'city_id', 'zip']);
+                    return in_array($key, ['admin_phone']);
+                }, ARRAY_FILTER_USE_KEY);
+
+                $orgAddressData = array_filter($validated, function ($key) {
+                    return in_array($key, ['address', 'address_line_1', 'address_line_2', 'country_id', 'state_id', 'city_id', 'zip', 'zip_code']);
                 }, ARRAY_FILTER_USE_KEY);
 
                 if (!empty($organizationData)) {
@@ -150,6 +218,38 @@ class OrganizationController extends Controller
                     }
                     if (!empty($userDetailsData)) {
                         $organization->user->userDetails()->updateOrCreate(['user_id' => $organization->user_id], $userDetailsData);
+                    }
+
+                    // update/create organization address from provided fields
+                    if (!empty($orgAddressData)) {
+                        $addrPayload = [];
+                        if (array_key_exists('address_line_1', $orgAddressData)) {
+                            $addrPayload['address_line_1'] = $orgAddressData['address_line_1'];
+                        } elseif (array_key_exists('address', $orgAddressData)) {
+                            $addrPayload['address_line_1'] = $orgAddressData['address'];
+                        }
+                        if (array_key_exists('address_line_2', $orgAddressData)) {
+                            $addrPayload['address_line_2'] = $orgAddressData['address_line_2'];
+                        }
+                        if (array_key_exists('country_id', $orgAddressData)) {
+                            $addrPayload['country_id'] = $orgAddressData['country_id'];
+                        }
+                        if (array_key_exists('state_id', $orgAddressData)) {
+                            $addrPayload['state_id'] = $orgAddressData['state_id'];
+                        }
+                        if (array_key_exists('city_id', $orgAddressData)) {
+                            $addrPayload['city_id'] = $orgAddressData['city_id'];
+                        }
+                        if (array_key_exists('zip_code', $orgAddressData)) {
+                            $addrPayload['zip_code'] = $orgAddressData['zip_code'];
+                        } elseif (array_key_exists('zip', $orgAddressData)) {
+                            $addrPayload['zip_code'] = $orgAddressData['zip'];
+                        }
+
+                        if (!empty($addrPayload)) {
+                            $addrPayload['organization_id'] = $organization->id;
+                            \App\Models\OrganizationAddress::updateOrCreate(['organization_id' => $organization->id], $addrPayload);
+                        }
                     }
                 }
             });
@@ -187,7 +287,8 @@ class OrganizationController extends Controller
         $latestSubscription = $providedLatestSubscription;
         if (!$latestSubscription && $org->user_id) {
             $latestSubscription = Subscription::where('user_id', $org->user_id)
-                ->orderByDesc('subscription_end')
+                // use ends_at which is the datetime column present on subscriptions
+                ->orderByDesc('ends_at')
                 ->first();
         }
 
@@ -206,23 +307,27 @@ class OrganizationController extends Controller
             $userRole = $user->roles->first()->name ?? null;
         }
 
+        $address = $org->address; // OrganizationAddress model (preferred)
+
         return [
             // related user id and role (from pivot/roles)
             'user_id' => $org->user_id,
             'user_role' => $userRole,
             'id' => $org->id,
-            'organization_name' => $org->organization_name,
-            'organization_size' => $org->organization_size,
+            // map DB columns back to client-facing keys
+            'organization_name' => $org->name,
+            'organization_size' => $org->size,
             'main_contact' => $user?->first_name . ' ' . $user?->last_name,
             'admin_email' => $user?->email,
             'admin_phone' => $details?->phone,
-            'address' => $details?->address,
-            'city' => $details?->city?->name,
-            'state' => $details?->state?->name,
-            'country' => $details?->country?->name,
-            'zip' => $details?->zip,
+            'address' => $address?->address_line_1 ?? $details?->address,
+            'city' => $address?->city?->name ?? $details?->city?->name,
+            'state' => $address?->state?->name ?? $details?->state?->name,
+            'country' => $address?->country?->name ?? $details?->country?->name,
+            'zip' => $address?->zip_code ?? $details?->zip,
             'contract_start' => $subscription?->subscription_start?->toDateString() ?? $org->contract_start,
-            'contract_end' => $subscription?->subscription_end?->toDateString() ?? $org->contract_end,
+            // normalize subscription end -> uses `ends_at` on the subscriptions table
+            'contract_end' => $subscription?->ends_at?->toDateString() ?? $org->contract_end,
             'source' => $details?->find_us,
             'last_contacted' => $org->last_contacted,
             'sales_person_id' => $org->sales_person_id,

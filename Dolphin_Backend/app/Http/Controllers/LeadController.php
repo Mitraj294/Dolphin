@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Schema;
 use App\Mail\LeadAssessmentRegistrationMail;
 
 
@@ -70,14 +71,7 @@ class LeadController extends Controller
             'last_name'         => LeadValidationRules::REQUIRED_STRING,
             'email'             => LeadValidationRules::REQUIRED_EMAIL,
             'phone'             => 'required|regex:/^[6-9]\d{9}$/',
-            'find_us'           => LeadValidationRules::REQUIRED_STRING,
-            'organization_name' => LeadValidationRules::REQUIRED_STRING . '|max:500',
-            'organization_size' => LeadValidationRules::REQUIRED_STRING,
-            'address'           => LeadValidationRules::REQUIRED_STRING . '|max:500',
-            'country_id'        => LeadValidationRules::REQUIRED_INTEGER . '|exists:countries,id',
-            'state_id'          => LeadValidationRules::REQUIRED_INTEGER . '|exists:states,id',
-            'city_id'           => LeadValidationRules::REQUIRED_INTEGER . '|exists:cities,id',
-            'zip'               => 'required|regex:/^[1-9][0-9]{5}$/',
+            'status'            => LeadValidationRules::OPTIONAL_STRING,
         ]);
 
         $lead->update($data);
@@ -96,15 +90,8 @@ class LeadController extends Controller
             'last_name'         => LeadValidationRules::REQUIRED_STRING,
             // Allow creating leads even if a user already exists with this email.
             'email'             => 'required|string|email|max:255',
-            'phone'             => 'required|regex:/^[6-9]\d{9}$/',
-            'find_us'           => LeadValidationRules::REQUIRED_STRING,
-            'organization_name' => LeadValidationRules::REQUIRED_STRING . '|max:500',
-            'organization_size' => LeadValidationRules::REQUIRED_STRING,
-            'address'           => LeadValidationRules::REQUIRED_STRING . '|max:500',
-            'country_id'        => LeadValidationRules::REQUIRED_INTEGER . '|exists:countries,id',
-            'state_id'          => LeadValidationRules::REQUIRED_INTEGER . '|exists:states,id',
-            'city_id'           => LeadValidationRules::REQUIRED_INTEGER . '|exists:cities,id',
-            'zip'               => 'required|regex:/^[1-9][0-9]{5}$/',
+            'phone'      => 'required|regex:/^[6-9]\d{9}$/',
+            'status'            => LeadValidationRules::OPTIONAL_STRING,
         ]);
 
         // Record creator if authenticated
@@ -120,12 +107,6 @@ class LeadController extends Controller
             $matchedUser = $userModel::where('email', $lead->email)->first();
             if ($matchedUser) {
                 $lead->status = 'Registered';
-                if (empty($lead->registered_at)) {
-                    $lead->registered_at = $matchedUser->created_at ?? now();
-                }
-                if (property_exists($lead, 'user_id')) {
-                    $lead->user_id = $matchedUser->id;
-                }
                 $lead->save();
                 Log::info('LeadController: Created lead matched existing user; marked Registered', [
                     'lead_id' => $lead->id,
@@ -151,36 +132,47 @@ class LeadController extends Controller
             return response()->json(['message' => 'Unauthenticated.'], 401);
         }
 
-        // Superadmin may view all leads
+        $with = ['notes.creator:id,first_name,last_name,email', 'organization.user:id,first_name,last_name,email,phone_number', 'organization:id,name,size,contract_start,contract_end'];
+
         if (method_exists($user, 'isSuperAdmin') && $user->isSuperAdmin()) {
-            $leads = Lead::all();
+            $leads = Lead::with($with)->get();
+        } elseif (Schema::hasColumn('leads', 'created_by')) {
+            $leads = Lead::with($with)->where('created_by', $user->id)->get();
+        } else {
+            $orgId = null;
             try {
-                $ids = $leads->pluck('id')->values()->all();
-                Log::info('LeadController@index superadmin fetch', [
-                    'user_id' => $user->id,
-                    'count'   => $leads->count(),
-                    'ids'     => $ids
-                ]);
-                try {
-                    $debugPath = storage_path('logs/leads_debug.log');
-                    $payload = [
-                        'time'    => now()->toDateTimeString(),
-                        'user_id' => $user->id,
-                        'count'   => $leads->count(),
-                        'ids'     => $ids,
-                    ];
-                    file_put_contents($debugPath, json_encode($payload, JSON_PRETTY_PRINT) . PHP_EOL, FILE_APPEND | LOCK_EX);
-                } catch (\Exception $e) {
-                    Log::warning('LeadController@index file debug write failed: ' . $e->getMessage());
-                }
+                $orgId = $user->belongsToOrganization()->getQuery()->value('id');
             } catch (\Exception $e) {
-                Log::warning('LeadController@index logging failed: ' . $e->getMessage());
+                Log::warning('LeadController@index failed to determine user organization: ' . $e->getMessage());
             }
-            return response()->json($leads);
+            $leads = Lead::with($with)->where('organization_id', $orgId)->get();
         }
 
-        $leads = Lead::where('created_by', $user->id)->get();
-        return response()->json($leads);
+        $payload = $leads->map(function ($lead) {
+            return [
+                'id' => $lead->id,
+                'organization_id' => $lead->organization_id,
+                'first_name' => $lead->first_name,
+                'last_name' => $lead->last_name,
+                'contact' => trim(($lead->first_name ?? '') . ' ' . ($lead->last_name ?? '')),
+                'email' => $lead->email,
+                'phone_number' => $lead->phone_number ?? optional($lead->organization->user)->phone_number,
+                'status' => $lead->status,
+                'created_at' => $lead->created_at,
+                'updated_at' => $lead->updated_at,
+                'deleted_at' => $lead->deleted_at,
+                'organization' => $lead->organization ? [
+                    'id' => $lead->organization->id,
+                    'name' => $lead->organization->name ?? null,
+                    'size' => $lead->organization->size ?? null,
+                    'contract_start' => $lead->organization->contract_start ?? null,
+                    'contract_end' => $lead->organization->contract_end ?? null,
+                ] : null,
+                'notes_count' => $lead->notes ? $lead->notes->count() : 0,
+            ];
+        });
+
+        return response()->json($payload);
     }
 
 
@@ -191,7 +183,11 @@ class LeadController extends Controller
 
     public function show($id)
     {
-        $lead = Lead::with('notes.creator:id,first_name,last_name,email')->find($id);
+        $lead = Lead::with([
+            'notes.creator:id,first_name,last_name,email',
+            'organization.user:id,first_name,last_name,email,phone_number',
+            'organization',
+        ])->find($id);
         if (!$lead) {
             return response()->json(['message' => Message::MESSAGE], 404);
         }
@@ -203,19 +199,59 @@ class LeadController extends Controller
 
         $defaultTemplate = $this->buildDefaultTemplate($lead, $registration_link);
 
-        [$org, $orgUser] = $this->lookupOrganizationAndDetails($lead);
+        // Prefer relationship-based organization if available
+        $org = $lead->organization;
+        $orgUser = $org && $org->user ? $org->user : null;
 
-        $resp = ['lead' => $lead, 'defaultTemplate' => $defaultTemplate];
-
-        $salesPerson = $this->resolveSalesPersonForLead($lead, $org);
-        if ($salesPerson) {
-            $resp['sales_person'] = $salesPerson;
-            $lead->sales_person = $salesPerson['full_name'];
-            $lead->sales_person_id = $salesPerson['id'];
+        // Build address display if organization has address relation
+        $address = null;
+        try {
+            if ($org && property_exists($org, 'address')) {
+                $addr = $org->address;
+                if ($addr) {
+                    $parts = [];
+                    if (!empty($addr->address_line_1)) {
+                        $parts[] = $addr->address_line_1;
+                    }
+                    if (!empty($addr->address_line_2)) {
+                        $parts[] = $addr->address_line_2;
+                    }
+                    if (!empty($addr->city)) {
+                        $parts[] = is_object($addr->city) ? ($addr->city->name ?? null) : $addr->city;
+                    }
+                    if (!empty($addr->state)) {
+                        $parts[] = is_object($addr->state) ? ($addr->state->name ?? null) : $addr->state;
+                    }
+                    if (!empty($addr->zip_code)) {
+                        $parts[] = $addr->zip_code;
+                    }
+                    if (!empty($addr->country)) {
+                        $parts[] = is_object($addr->country) ? ($addr->country->name ?? null) : $addr->country;
+                    }
+                    $address = implode(', ', array_filter($parts));
+                }
+            }
+        } catch (\Exception $e) {
+            Log::warning('LeadController@show building address failed: ' . $e->getMessage());
         }
 
+        $resp = [
+            'lead' => $lead,
+            'defaultTemplate' => $defaultTemplate,
+        ];
+
         if ($org) {
-            $resp['organization'] = $org;
+            $resp['organization'] = [
+                'id' => $org->id,
+                'name' => $org->name ?? null,
+                'size' => $org->size ?? null,
+                'contract_start' => $org->contract_start ?? null,
+                'contract_end' => $org->contract_end ?? null,
+                'address' => $address ?? 'N/A',
+            ];
+        }
+
+        if ($orgUser) {
             $resp['orgUser'] = $orgUser;
         }
 
@@ -233,15 +269,6 @@ class LeadController extends Controller
             'first_name' => $lead->first_name ?? '',
             'last_name' => $lead->last_name ?? '',
             'phone' => $lead->phone ?? '',
-            'organization_name' => $lead->organization_name ?? '',
-            'organization_size' => $lead->organization_size ?? '',
-            'organization_address' => $lead->address ?? '',
-            'organization_city' => (string)($lead->city_id ?? ''),
-            'organization_state' => (string)($lead->state_id ?? ''),
-            'organization_zip' => $lead->zip ?? '',
-            'country' => (string)($lead->country_id ?? ''),
-            'referral_source_id' => (string)($lead->referral_source_id ?? ''),
-            'find_us' => (string)($lead->referral_source_id ?? ''), // backward compatibility
             'lead_id' => $lead->id,
         ];
 
@@ -266,67 +293,8 @@ class LeadController extends Controller
         HTML;
     }
 
-    /**
-     * Lookup organization and org user for a lead's email.
-     * Returns [org|null, orgUser|null]
-     */
-    private function lookupOrganizationAndDetails(Lead $lead): array
-    {
-        $org = null;
-        $orgUser = null;
 
-        try {
-            $userModel = '\\App\\Models\\User';
-            $user = $userModel::where('email', $lead->email)->first();
-            if ($user) {
-                $orgModel = '\\App\\Models\\Organization';
-                $org = $orgModel::where('user_id', $user->id)->first();
-                if ($org) {
-                    $orgUser = $user;
-                }
-            }
-        } catch (\Exception $e) {
-            Log::warning('LeadController::show organization lookup failed: ' . $e->getMessage());
-        }
-
-        return [$org, $orgUser];
-    }
-
-    /**
-     * Resolve sales person details for the lead or its organization.
-     * Returns associative array or null.
-     */
-    private function resolveSalesPersonForLead(Lead $lead, $org): ?array
-    {
-        try {
-            $salesPersonId = null;
-            if (! empty($lead->sales_person_id)) {
-                $salesPersonId = $lead->sales_person_id;
-            } elseif (! empty($org) && ! empty($org->sales_person_id)) {
-                $salesPersonId = $org->sales_person_id;
-            }
-
-            if ($salesPersonId) {
-                $userModel = '\\App\\Models\\User';
-                if (class_exists($userModel)) {
-                    $salesUser = $userModel::find($salesPersonId);
-                    if ($salesUser) {
-                        return [
-                            'id' => $salesUser->id,
-                            'first_name' => $salesUser->first_name ?? null,
-                            'last_name' => $salesUser->last_name ?? null,
-                            'full_name' => trim(($salesUser->first_name ?? '') . ' ' . ($salesUser->last_name ?? '')),
-                            'email' => $salesUser->email ?? null,
-                        ];
-                    }
-                }
-            }
-        } catch (\Exception $e) {
-            Log::warning('LeadController::show sales person lookup failed: ' . $e->getMessage());
-        }
-
-        return null;
-    }
+    // sales person resolution removed — application schema no longer guarantees sales_person_id on leads/orgs
 
 
     // Soft-delete a lead by id.
@@ -454,27 +422,13 @@ class LeadController extends Controller
         if (!$lead) {
             return response()->json(['message' => Message::MESSAGE], 404);
         }
-
-        if (empty($lead->referral_source_id)) {
-            Log::info("Lead prefill: lead_id={$lead->id} referral_source_id is empty");
-        } else {
-            Log::info("Lead prefill: lead_id={$lead->id} referral_source_id={$lead->referral_source_id}");
-        }
-
         return response()->json(['lead' => [
+            'organization_id'        => $lead->organization_id ?? null,
             'first_name'             => $lead->first_name,
             'last_name'              => $lead->last_name,
             'email'                  => $lead->email,
-            'phone'                  => $lead->phone,
-            'organization_name'      => $lead->organization_name ?? '',
-            'organization_size'      => $lead->organization_size ?? '',
-            'organization_address'   => $lead->address ?? '',
-            'organization_city_id'   => $lead->city_id ?? '',
-            'organization_state_id'  => $lead->state_id ?? '',
-            'organization_zip'       => $lead->zip ?? '',
-            'country_id'             => $lead->country_id ?? '',
-            'referral_source_id'     => $lead->referral_source_id ?? '',
-            'find_us'                => $lead->referral_source_id ?? '', // backward compatibility
+            'phone'           => $lead->phone ?? null,
+            'status'                 => $lead->status ?? null,
         ]]);
     }
 

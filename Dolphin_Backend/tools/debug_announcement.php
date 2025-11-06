@@ -62,7 +62,7 @@ $out = [
 foreach ($a->organizations as $org) {
     $out['organizations'][] = [
         'id' => $org->id,
-        'organization_name' => $org->organization_name ?? null,
+        'organization_name' => $org->name ?? null,
         'admin_email' => $org->admin_email ?? $org->user->email ?? null,
         'user_id' => $org->user_id ?? null,
     ];

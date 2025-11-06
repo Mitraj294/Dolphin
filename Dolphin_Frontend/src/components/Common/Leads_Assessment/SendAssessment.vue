@@ -38,11 +38,14 @@
             <!-- Editable template for email body -->
             <div class="send-assessment-label">Editable Template</div>
             <div class="send-assessment-template-box">
-              <Editor
-                v-model="templateContent"
-                :init="tinymceConfigSelfHosted"
-                @onInit="onTinyMCEInit"
-              />
+              <div v-if="editorLoaded">
+                <Editor
+                  v-model="templateContent"
+                  :init="tinymceConfigSelfHosted"
+                  @onInit="onTinyMCEInit"
+                />
+              </div>
+              <div v-else class="tinymce-loading">Loading editor…</div>
             </div>
 
             <!-- Form actions -->
@@ -75,28 +78,8 @@ import MainLayout from "@/components/layout/MainLayout.vue";
 import Editor from "@tinymce/tinymce-vue";
 import axios from "axios";
 
-// TinyMCE core and plugins (self-hosted)
-import "tinymce/icons/default";
-import "tinymce/models/dom";
-import "tinymce/plugins/advlist";
-import "tinymce/plugins/anchor";
-import "tinymce/plugins/autolink";
-import "tinymce/plugins/charmap";
-import "tinymce/plugins/code";
-import "tinymce/plugins/fullscreen";
-import "tinymce/plugins/help";
-import "tinymce/plugins/image";
-import "tinymce/plugins/insertdatetime";
-import "tinymce/plugins/link";
-import "tinymce/plugins/lists";
-import "tinymce/plugins/media";
-import "tinymce/plugins/preview";
-import "tinymce/plugins/searchreplace";
-import "tinymce/plugins/table";
-import "tinymce/plugins/visualblocks";
-import "tinymce/plugins/wordcount";
-import "tinymce/themes/silver";
-import "tinymce/tinymce";
+// NOTE: we dynamically load TinyMCE core, icons, theme and plugins at runtime
+// so we can ensure the global `tinymce` is defined before icons/plugins run.
 
 /**
 
@@ -112,6 +95,8 @@ export default {
   components: { MainLayout, Editor, FormInput, FormRow, FormLabel },
   data() {
     return {
+      // don't render Editor until TinyMCE and plugins are loaded
+      editorLoaded: false,
       leadId: null, // ID of the lead (from route, query, or backend)
       to: "", // Recipient email
       recipientName: "", // Recipient name
@@ -173,6 +158,11 @@ export default {
     };
   },
 
+  // Load TinyMCE core and plugins dynamically to ensure global is present
+  created() {
+    this.loadTinyMCEModules();
+  },
+
   // Lifecycle: On mount, load initial lead data if available
 
   mounted() {
@@ -194,6 +184,48 @@ export default {
   // Methods
 
   methods: {
+    // Dynamically import tinymce core, theme, icons and plugins
+    async loadTinyMCEModules() {
+      try {
+        // load core and assign to global so icon modules can access it
+        const tinymceModule = await import("tinymce/tinymce");
+        // some bundlers export default, others the module itself
+        globalThis.tinymce = tinymceModule.default || tinymceModule;
+
+        // load icons, theme, models and plugins
+        await import("tinymce/icons/default");
+        await import("tinymce/themes/silver");
+        await import("tinymce/models/dom");
+
+        const plugins = [
+          "advlist",
+          "anchor",
+          "autolink",
+          "charmap",
+          "code",
+          "fullscreen",
+          "help",
+          "image",
+          "insertdatetime",
+          "link",
+          "lists",
+          "media",
+          "preview",
+          "searchreplace",
+          "table",
+          "visualblocks",
+          "wordcount",
+        ];
+        await Promise.all(plugins.map((p) => import(`tinymce/plugins/${p}`)));
+
+        // mark editor as ready to render
+        this.editorLoaded = true;
+      } catch (e) {
+        // if dynamic import fails, still attempt to render editor (may error)
+        console.warn("Failed to dynamically load TinyMCE modules:", e);
+        this.editorLoaded = true;
+      }
+    },
     /**
      * Loads lead data and default template from backend for given leadId.
      */

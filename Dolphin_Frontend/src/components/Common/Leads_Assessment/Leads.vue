@@ -25,11 +25,17 @@
                 required
               />
 
-              <!-- Find Us Source Dropdown -->
+              <!-- Referral Source Dropdown -->
               <FormDropdown
-                v-model="form.find_us"
+                v-model="form.referral_source_id"
                 icon="fas fa-search"
-                :options="findUsOptionsWithDefault"
+                :options="[
+                  { value: null, text: 'Select', disabled: true },
+                  ...referralSources.map((r) => ({
+                    value: r.id,
+                    text: r.name || r.text || 'Unknown',
+                  })),
+                ]"
                 required
               />
             </div>
@@ -235,8 +241,9 @@ export default {
     // States
     const leads = ref([]);
     const search = ref("");
-    const form = ref({ organization_size: null, find_us: null });
+    const form = ref({ organization_size: null, referral_source_id: null });
     const isLoading = ref(false);
+    const referralSources = ref([]);
 
     // Table and pagination state
     const sortKey = ref("");
@@ -287,10 +294,6 @@ export default {
       { value: null, text: "Select", disabled: true },
       ...orgSizeOptions.map((o) => ({ value: o, text: o })),
     ];
-    const findUsOptionsWithDefault = [
-      { value: null, text: "Select", disabled: true },
-      ...findUsOptions.map((o) => ({ value: o, text: o })),
-    ];
 
     // Fetch leads from the API
     const fetchLeads = async () => {
@@ -305,18 +308,33 @@ export default {
         const response = await axios.get(`${API_BASE_URL}/api/leads`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        leads.value = response.data.map((lead) => ({
-          id: lead.id,
-          contact: `${lead.first_name} ${lead.last_name}`,
-          email: lead.email,
-          phone: lead.phone,
-          organization: lead.organization_name,
-          size: lead.organization_size,
-          source: lead.find_us,
-          status: lead.registered_at ? "Registered" : lead.status,
-          notes: lead.notes,
-          notesAction: lead.notes ? "View" : "Add",
-        }));
+        // Map leads and resolve referral source name if possible
+        leads.value = response.data.map((lead) => {
+          let sourceName = lead.find_us || "";
+          if (
+            Array.isArray(referralSources.value) &&
+            referralSources.value.length &&
+            lead.referral_source_id
+          ) {
+            const match = referralSources.value.find(
+              (r) => String(r.id) === String(lead.referral_source_id)
+            );
+            if (match) sourceName = match.name || match.text || sourceName;
+          }
+          return {
+            id: lead.id,
+            contact: `${lead.first_name} ${lead.last_name}`,
+            email: lead.email,
+            phone: lead.phone,
+            organization: lead.organization_name,
+            size: lead.organization_size,
+            source: sourceName,
+            referral_source_id: lead.referral_source_id || null,
+            status: lead.registered_at ? "Registered" : lead.status,
+            notes: lead.notes,
+            notesAction: lead.notes ? "View" : "Add",
+          };
+        });
       } catch (error) {
         console.error("Error fetching leads:", error);
         toast.add({
@@ -425,9 +443,11 @@ export default {
           (lead) => lead.size === form.value.organization_size
         );
       }
-      if (form.value.find_us) {
+      if (form.value.referral_source_id) {
         filtered = filtered.filter(
-          (lead) => lead.source === form.value.find_us
+          (lead) =>
+            String(lead.referral_source_id) ===
+            String(form.value.referral_source_id)
         );
       }
       return filtered;
@@ -576,8 +596,20 @@ export default {
     };
 
     // Lifecycle hooks
-    onMounted(() => {
-      fetchLeads();
+    const fetchReferralSources = async () => {
+      try {
+        const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
+        const res = await axios.get(`${API_BASE_URL}/api/referral-sources`);
+        referralSources.value = res.data || res.data?.options || [];
+      } catch (e) {
+        console.warn("Failed to fetch referral sources", e);
+        referralSources.value = [];
+      }
+    };
+
+    onMounted(async () => {
+      await fetchReferralSources();
+      await fetchLeads();
       document.addEventListener("click", handleClickOutside);
       document.addEventListener("keydown", onKeyDown);
     });
@@ -619,7 +651,8 @@ export default {
       findUsOptions,
       orgSizeOptions,
       orgSizeOptionsWithDefault,
-      findUsOptionsWithDefault,
+
+      referralSources,
       handleClickOutside,
       onKeyDown,
       form,

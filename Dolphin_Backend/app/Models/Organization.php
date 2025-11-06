@@ -18,14 +18,10 @@ class Organization extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'organization_name',
-        'organization_size',
-        'contract_start',
-        'contract_end',
-        'sales_person_id',
-        'last_contacted',
-        'certified_staff',
-        'user_id',
+        'name',
+        'size',
+        'referral_source_id',
+        'referral_other_text',
     ];
 
     /**
@@ -59,7 +55,7 @@ class Organization extends Model
     {
         return $this->hasOne(Subscription::class, 'user_id', 'user_id')
             ->where('status', 'active')
-            ->orderBy('subscription_end', 'desc');
+            ->orderBy('ends_at', 'desc');
     }
 
     /**

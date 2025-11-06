@@ -16,8 +16,9 @@ class SubscriptionObserver
         try {
             $orgs = Organization::where('user_id', $subscription->user_id)->get();
             foreach ($orgs as $org) {
-                $org->contract_start = $subscription->subscription_start;
-                $org->contract_end = $subscription->subscription_end;
+                // Subscription model uses started_at / ends_at
+                $org->contract_start = $subscription->started_at ?? $subscription->subscription_start ?? null;
+                $org->contract_end = $subscription->ends_at ?? $subscription->subscription_end ?? null;
                 $org->save();
             }
         } catch (Exception $e) {

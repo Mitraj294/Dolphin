@@ -17,18 +17,19 @@ class OrganizationObserver
                 return;
             }
             $latest = null;
+            // Order by started_at (actual column) to find the latest subscription
             $latest = Subscription::where('user_id', $organization->user_id)
-                ->orderBy('subscription_start', 'desc')
+                ->orderBy('started_at', 'desc')
                 ->first();
             if ($latest) {
                 // Only update and save if contract dates actually change to avoid recursive observer calls
                 $changed = false;
-                if ($organization->contract_start != $latest->subscription_start) {
-                    $organization->contract_start = $latest->subscription_start;
+                if ($organization->contract_start != ($latest->started_at ?? $latest->subscription_start ?? null)) {
+                    $organization->contract_start = $latest->started_at ?? $latest->subscription_start ?? null;
                     $changed = true;
                 }
-                if ($organization->contract_end != $latest->subscription_end) {
-                    $organization->contract_end = $latest->subscription_end;
+                if ($organization->contract_end != ($latest->ends_at ?? $latest->subscription_end ?? null)) {
+                    $organization->contract_end = $latest->ends_at ?? $latest->subscription_end ?? null;
                     $changed = true;
                 }
                 if ($changed) {

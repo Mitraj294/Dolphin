@@ -65,13 +65,18 @@
                   icon="fas fa-search"
                   :options="[
                     { value: null, text: 'Select', disabled: true },
-                    ...referralSources.map((o) => ({ value: o.id, text: o.name })),
+                    ...referralSources.map((o) => ({
+                      value: o.id,
+                      text: o.name,
+                    })),
                   ]"
                   required
                 />
-                <FormLabel v-if="errors.referral_source_id" class="error-message">{{
-                  errors.referral_source_id[0]
-                }}</FormLabel>
+                <FormLabel
+                  v-if="errors.referral_source_id"
+                  class="error-message"
+                  >{{ errors.referral_source_id[0] }}</FormLabel
+                >
               </div>
               <div></div>
             </FormRow>
@@ -244,10 +249,9 @@ export default {
         lastName: "",
         email: "",
         phone: "",
-        password: "",
         referral_source_id: null,
         organization_name: "",
-        organization_size: "",
+        organization_size: null,
         address: "",
         country_id: null,
         state_id: null,
@@ -406,23 +410,38 @@ export default {
         }
 
         const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
+        // build payload only with non-empty values to avoid sending empty strings
+        const payload = {
+          first_name: this.form.firstName,
+          last_name: this.form.lastName,
+          email: this.form.email,
+          phone: this.form.phone,
+          referral_source_id: this.form.referral_source_id,
+          organization_name: this.form.organization_name,
+          organization_size: this.form.organization_size,
+          address: this.form.address,
+          country_id: this.form.country_id,
+          state_id: this.form.state_id,
+          city_id: this.form.city_id,
+          zip: this.form.zip,
+        };
+
+        // Remove keys with null/empty-string values so backend doesn't validate them
+        for (const k of Object.keys(payload)) {
+          const v = payload[k];
+          if (v === null || v === "" || (Array.isArray(v) && v.length === 0)) {
+            delete payload[k];
+          }
+        }
+
+        // include password only when provided
+        if (this.form.password && this.form.password !== "") {
+          payload.password = this.form.password;
+        }
+
         const response = await axios.post(
           `${API_BASE_URL}/api/leads`,
-          {
-            first_name: this.form.firstName,
-            last_name: this.form.lastName,
-            email: this.form.email,
-            phone: this.form.phone,
-            password: this.form.password,
-            referral_source_id: this.form.referral_source_id,
-            organization_name: this.form.organization_name,
-            organization_size: this.form.organization_size,
-            address: this.form.address,
-            country_id: this.form.country_id,
-            state_id: this.form.state_id,
-            city_id: this.form.city_id,
-            zip: this.form.zip,
-          },
+          payload,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -465,7 +484,7 @@ export default {
         password: "",
         referral_source_id: null,
         organization_name: "",
-        organization_size: "",
+        organization_size: null,
         address: "",
         country_id: null,
         state_id: null,

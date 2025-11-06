@@ -57,12 +57,15 @@
               <div>
                 <FormLabel>Source</FormLabel>
                 <FormDropdown
-                  v-model="find_us"
+                  v-model="referral_source_id"
                   icon="fas fa-search"
                   ref="findUsSelect"
                   :options="[
                     { value: null, text: 'Select', disabled: true },
-                    ...findUsOptions.map((o) => ({ value: o, text: o })),
+                    ...referralSources.map((o) => ({
+                      value: o.id ?? o.value ?? o,
+                      text: o.name ?? o.text ?? o,
+                    })),
                   ]"
                   required
                 />
@@ -291,7 +294,7 @@ import {
 } from "@/components/Common/Common_UI/Form";
 import MainLayout from "@/components/layout/MainLayout.vue";
 import storage from "@/services/storage.js";
-import { findUsOptions, orgSizeOptions } from "@/utils/formUtils";
+import { orgSizeOptions } from "@/utils/formUtils";
 import axios from "axios";
 
 const API_BASE_URL = process.env.VUE_APP_API_BASE_URL;
@@ -383,6 +386,8 @@ function mapOrganizationToForm(found) {
     organization_name: found.organization_name || "",
     organization_size: found.organization_size || "",
     source: found.source || found.find_us || userDetails.find_us || "",
+    referral_source_id:
+      found.referral_source_id || userDetails.referral_source_id || null,
     address: found.address || userDetails.address || "",
     zip: found.zip || userDetails.zip || "",
     country_id: found.country_id || userDetails.country_id || null,
@@ -405,6 +410,7 @@ function mapOrganizationToForm(found) {
       (found.main_contact || "").split(" ").slice(1).join(" ") ||
       "",
     adminEmail: user.email || found.admin_email || "",
+    
     adminPhone: userDetails.phone || found.admin_phone || "",
     sales_person_id: found.sales_person_id || null,
     lastContacted: found.last_contacted
@@ -418,11 +424,14 @@ function mapFormToPayload(form) {
   return {
     organization_name: form.organization_name,
     organization_size: form.organization_size || null,
-    source: form.source || null,
+    referral_source_id: form.referral_source_id || null,
     address: form.address || null,
+    address_line_1: form.address || null,
+    address_line_2: form.address_line_2 || null,
     city_id: form.city_id || null,
     state_id: form.state_id || null,
     zip: form.zip || null,
+    zip_code: form.zip || null,
     country_id: form.country_id || null,
     sales_person_id: form.sales_person_id || null,
     certified_staff: form.certifiedStaff || null,
@@ -448,6 +457,7 @@ export default {
         organization_size: "",
         source: "",
         address: "",
+        address_line_2: "",
         zip: "",
         country_id: null,
         state_id: null,
@@ -467,8 +477,8 @@ export default {
       countries: [],
       organization_size: "",
       orgSizeOptions: orgSizeOptions,
-      find_us: "",
-      findUsOptions: findUsOptions,
+      referral_source_id: null,
+      referralSources: [],
       states: [],
       cities: [],
       salesPersons: [],
@@ -477,6 +487,7 @@ export default {
 
   async mounted() {
     await this.fetchCountries();
+    await this.fetchReferralSources();
     await this.fetchOrganization();
 
     // page title
@@ -510,10 +521,10 @@ export default {
         this.orgId = res.data.id;
         this.form = mapOrganizationToForm(res.data);
 
-        // Ensure top-level v-models (organization_size, find_us) used by the template
+        // Ensure top-level v-models (organization_size, referral_source_id) used by the template
         // are populated from the mapped form so the dropdowns show the current values.
         this.organization_size = this.form.organization_size || "";
-        this.find_us = this.form.source || "";
+        this.referral_source_id = this.form.referral_source_id || null;
 
         // Resolve location names to IDs
         if (!this.form.country_id) {
@@ -585,7 +596,9 @@ export default {
         // so the payload contains the user's selections.
         this.form.organization_size =
           this.organization_size || this.form.organization_size;
-        this.form.source = this.find_us || this.form.source;
+        // copy selected referral source id into form for payload
+        this.form.referral_source_id =
+          this.referral_source_id || this.form.referral_source_id || null;
 
         const payload = mapFormToPayload(this.form);
 
@@ -685,6 +698,18 @@ export default {
       } catch (e) {
         console.warn("Failed to fetch sales persons", e);
         this.salesPersons = [];
+      }
+    },
+
+    async fetchReferralSources() {
+      try {
+        const res = await axios.get(`${API_BASE_URL}/api/referral-sources`, {
+          headers: getAuthHeaders(),
+        });
+        this.referralSources = res.data || res.data?.options || [];
+      } catch (e) {
+        console.warn("Failed to fetch referral sources", e);
+        this.referralSources = [];
       }
     },
 
